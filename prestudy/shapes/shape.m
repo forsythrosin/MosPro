@@ -100,9 +100,6 @@ classdef shape < handle
             p = verticesRot(:, index) + obj.p;
         end
         
-    end
-    
-    
-    
-end
+    end %end of methods  
+end %end of classdef
 

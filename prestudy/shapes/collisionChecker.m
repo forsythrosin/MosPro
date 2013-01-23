@@ -21,11 +21,12 @@ classdef collisionChecker < handle
                 else
                     if obj.containsOrigin()
                         collision = true;
+                        %EPA call here?
                         break;
                     end
                 end
-            end
-        end
+            end %end of while
+        end %end of checkCollision
         
         function p3 = support(obj, s1, s2) 
             p1 = s1.getFarthestPointInDirection(obj.d);
@@ -70,6 +71,6 @@ classdef collisionChecker < handle
                 obj.d = abPerp;
             end
         end
-    end
-    
-end
+        
+    end %end of methods  
+end %end of classdef
