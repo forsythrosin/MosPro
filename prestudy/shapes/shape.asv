@@ -29,6 +29,34 @@ classdef shape < handle
             
         end
         
+        function move(obj)
+            obj.p = obj.p + obj.v;
+            obj.theta = obj.theta + obj.w;
+        end
+        
+        
+        function impulse(obj, anchor, force)  
+            perp = [-anchor(2), anchor(1)];
+            obj.v = obj.v + force / obj.mass;
+            obj.w = obj.w + perp * force' / obj.inertia;
+        end
+        
+        function j = getJ(obj, other, r, n)
+            e = 1;
+            m1 = obj.mass;
+            i1 = obj.inertia;
+            
+            m2 = other.mass;
+            i2 = other.inertia;
+            
+            rOrt = [-r(2) r(1)];
+            v1 = obj.v + obj.w * rOrt;
+            v2 = other.v + other.w * rOrt;           
+            
+            jr = -(1 + e)*vr * n' / (1/m + 1/i * (n * rOrt')^2);
+            j = jr*n;
+        end
+        
         function plot(obj)
             rot = [sin(obj.w) -cos(obj.w)
                    cos(obj.w) sin(obj.w)];
@@ -88,16 +116,16 @@ classdef shape < handle
             
             rot = [sin(obj.w) -cos(obj.w)
                    cos(obj.w) sin(obj.w)];
-            
+           
             verticesRot = rot*obj.vertices;
+            dist = (verticesRot' * d);
+           
             
-            p = (verticesRot' * d) * d';
-            p
+            index = find(dist == max(dist));
+            index = index(1);
+            p = verticesRot(:, index) + obj.p;
         end
         
-    end
-    
-    
-    
-end
+    end %end of methods  
+end %end of classdef
 

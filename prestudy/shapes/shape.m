@@ -12,10 +12,18 @@ classdef shape < handle
         inertia
     end
     methods
+        function m = getMass(obj)
+            m = obj.mass;
+        end
+        function i = getInertia(obj)
+            i = obj.inertia;
+        end        
+        
         function obj = shape(x, y, c)
             obj.p = [0 0]';
             obj.v = [0 0]';
             obj.w = 0;
+
             k = convhull(x', y');
             obj.vertices = [x(k); y(k)];
             obj.color = c;
@@ -26,12 +34,28 @@ classdef shape < handle
             obj.p = obj.p + cm;
             
             obj.calculateInertia();
+            obj.theta = 0;
             
         end
         
+        function move(obj)
+            obj.p = obj.p + obj.v;
+            obj.theta = obj.theta + obj.w;
+        end
+        
+        
+        function impulse(obj, anchor, force)
+            anchor = anchor - obj.p;
+            perp = [-anchor(2), anchor(1)]';
+            obj.v = obj.v + force / obj.mass;
+            obj.w = obj.w + perp' * force / obj.inertia;
+        end
+        
+        
+        
         function plot(obj)
-            rot = [sin(obj.w) -cos(obj.w)
-                   cos(obj.w) sin(obj.w)];
+            rot = [sin(obj.theta) -cos(obj.theta)
+                   cos(obj.theta) sin(obj.theta)];
             
             verticesRot = rot*obj.vertices;
             
@@ -81,20 +105,17 @@ classdef shape < handle
                   
                 obj.inertia = obj.inertia + ...
                     (b^3*h - b^2*h*a + b*h*a^2 + b*h^3) / 36 + b*h/2 * norm((p1+p2)/3)^2;
-            end            
+            end     
         end
         function p = getFarthestPointInDirection(obj, d)
             d = d/norm(d);
             
-            
-            
-            rot = [sin(obj.w) -cos(obj.w)
-                   cos(obj.w) sin(obj.w)];
+            rot = [sin(obj.theta) -cos(obj.theta)
+                   cos(obj.theta) sin(obj.theta)];
            
             verticesRot = rot*obj.vertices;
             dist = (verticesRot' * d);
-           
-            
+                      
             index = find(dist == max(dist));
             index = index(1);
             p = verticesRot(:, index) + obj.p;
