@@ -46,7 +46,20 @@ classdef shape < handle
         
         function impulse(obj, anchor, force)
             anchor = anchor - obj.p;
+            
+%             the anchor vect is with respect to the shape's CURRENT
+%             rotation => this vect should be rotated -theta rads to 
+%             correspond properly to the shape's LOCAL coordinates.
+%
+%             rot = [cos(obj.theta) sin(obj.theta)
+%                    -sin(obj.theta) cos(obj.theta)]; %negative rot-matrix
+%             anchor = rot * anchor;
+%
+%             maybe not...
+               
             perp = [-anchor(2), anchor(1)]';
+            perp = perp/norm(perp); %perp must be normalized!
+            
             obj.v = obj.v + force / obj.mass;
             obj.w = obj.w + perp' * force / obj.inertia;
         end
@@ -119,6 +132,10 @@ classdef shape < handle
             index = find(dist == max(dist));
             index = index(1);
             p = verticesRot(:, index) + obj.p;
+        end
+        
+        function k = getKineticEnergy(obj)
+            k = (obj.mass*(norm(obj.v))^2 + obj.inertia*(obj.w)^2) / 2;
         end
         
     end %end of methods  

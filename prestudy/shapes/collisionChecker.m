@@ -147,20 +147,18 @@ classdef collisionChecker < handle
             r2 = point - s2.p;
             r2Ort = [-r2(2) r2(1)]';
             r2Ort = r2Ort / norm(r2Ort);
-            v2 = s2.v + s2.w * r2Ort;           
-            
+            v2 = s2.v + s2.w * r2Ort;
             
             n = penetrationVector/norm(penetrationVector);
-            vr = v1 - v2;
-            %vr = ((v1 - v2)' * n) * n;
+            vr = v2 - v1;
                                     
-            jr = 0.5 * -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
+            jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
             j = jr*n;
             
-            %point
+            s1.impulse(point, -j);
+            s2.impulse(point, j);
             
-            s1.impulse(point, j);
-            s2.impulse(point, -j);
+            kineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy()
         end
         
         
