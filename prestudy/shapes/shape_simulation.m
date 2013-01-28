@@ -4,8 +4,8 @@ close all;
 figure;
 hold on;
 
-s1 = shape(2*[-1 -1 1 1 ],2*[-1 1 1 -1 ],'r');
-s2 = shape(2*[-1 -1 1 1 ],2*[-1 1 1 -1 ],'g');
+s1 = shape(2*[-1 -1 1 ],2*[-1 1 1 ],'r');
+s2 = shape(2*[-1 -1 1 ],2*[-1 1 1.5],'g');
 
 s1.w = 0.06;
 s2.p = [-4 4]';
@@ -21,22 +21,23 @@ s2.theta = 10;
 
 s1.v = [0.06 0.02]';
 
-size = 10;
+size = 12;
 
-totalKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy()
+% startingKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy()
 
 for t = 1:10000
     hold off;
     plot(size*[-1 -1 1 1],size*[-1 1 1 -1]);
     
     hold on;
+    s1.move();
+    s2.move();
+    
     s1.plot();
     s2.plot();
     %s3.plot();
     
     
-    s1.move();
-    s2.move();
 %     s1.w = s1.w + 0.01 * pi;
 %     s2.w = s2.w + 0.014;
 %     s3.w = s3.w + 0.01;

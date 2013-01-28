@@ -45,20 +45,14 @@ classdef shape < handle
         
         
         function impulse(obj, anchor, force)
-            anchor = anchor - obj.p;
-            
-%             the anchor vect is with respect to the shape's CURRENT
-%             rotation => this vect should be rotated -theta rads to 
-%             correspond properly to the shape's LOCAL coordinates.
-%
-%             rot = [cos(obj.theta) sin(obj.theta)
-%                    -sin(obj.theta) cos(obj.theta)]; %negative rot-matrix
-%             anchor = rot * anchor;
-%
-%             maybe not...
+            r = anchor - obj.p;
                
-            perp = [-anchor(2), anchor(1)]';
-            perp = perp/norm(perp); %perp must be normalized!
+            perp = [-r(2), r(1)]';
+            %perp = ([-r(2) r(1)] * force) * [-r(2) r(1)]';
+%             perp = perp/norm(perp); %perp must be normalized!
+            %plot([anchor(1) anchor(1)+2*perp(1)], [anchor(2) anchor(2)+2*perp(2)], obj.color);
+            %plot([anchor(1) anchor(1)+2*force(1)], [anchor(2) anchor(2)+2*force(2)], 'k');
+            %pause(2);
             
             obj.v = obj.v + force / obj.mass;
             obj.w = obj.w + perp' * force / obj.inertia;
@@ -67,15 +61,15 @@ classdef shape < handle
         
         
         function plot(obj)
-            rot = [sin(obj.theta) -cos(obj.theta)
-                   cos(obj.theta) sin(obj.theta)];
+            rot = [cos(obj.theta) -sin(obj.theta)
+                   sin(obj.theta) cos(obj.theta)];
             
             verticesRot = rot*obj.vertices;
             
             plot(obj.p(1) + verticesRot(1, :), ...
                      obj.p(2) + verticesRot(2, :), obj.color);
                  
-            plot(obj.p(1), obj.p(2), 'k*');
+%             plot(obj.p(1), obj.p(2), 'k*');
         end
         function calculateMass(obj) 
             v = obj.vertices;
@@ -123,8 +117,8 @@ classdef shape < handle
         function p = getFarthestPointInDirection(obj, d)
             d = d/norm(d);
             
-            rot = [sin(obj.theta) -cos(obj.theta)
-                   cos(obj.theta) sin(obj.theta)];
+            rot = [cos(obj.theta) -sin(obj.theta)
+                   sin(obj.theta) cos(obj.theta)];
            
             verticesRot = rot*obj.vertices;
             dist = (verticesRot' * d);
