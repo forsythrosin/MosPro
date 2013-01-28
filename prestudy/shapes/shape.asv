@@ -6,6 +6,7 @@ classdef shape < handle
         w
         vertices
         color
+        gravity
     end
     properties (GetAccess=private)
         mass
@@ -35,24 +36,55 @@ classdef shape < handle
             
             obj.calculateInertia();
             obj.theta = 0;
+            obj.gravity = [0 -0.02]';
             
         end
         
-        function move(obj)
-            obj.p = obj.p + obj.v;
+        function teleport(obj, transVect)
+            obj.p = obj.p + transVect;
+            
+            %potential energy gain/loss
+            deltaP = obj.mass * norm(obj.gravity) * transVect(2);
+            %resulting kinetic energy loss/gain
+            deltaV = -sign(transVect(2)) * sqrt(deltaP*2/obj.mass);
+            
+            obj.v = obj.v + deltaV;
+        end
+        
+        function move(obj, size)
+            
+            vBefore = obj.v;
+            obj.v = obj.v + obj.gravity;
+            obj.p = obj.p + (vBefore + obj.v) / 2;
+            
             obj.theta = obj.theta + obj.w;
+            
+            if (abs(obj.p(1)) > size)
+                obj.v(1) = -obj.v(1);
+                if sign(obj.p(1)) > 0
+                    obj.p(1) = size;
+                else
+                    obj.p(1) = -size;
+                end
+            end
+            
+            if (abs(obj.p(2)) > size)
+                obj.v(2) = -obj.v(2);
+%                 if sign(obj.p(2)) > 0
+                    teleport([0; size - obj.p(2)])
+%                      obj.p(2) = size;
+%                 else
+%                     obj.p(2) = -size;
+%                 end
+            end
+                        
+            
         end
         
         
         function impulse(obj, anchor, force)
             r = anchor - obj.p;
-               
-            perp = [-r(2), r(1)]';
-            %perp = ([-r(2) r(1)] * force) * [-r(2) r(1)]';
-            perp = perp/norm(perp); %perp must be normalized!
-            %plot([anchor(1) anchor(1)+2*perp(1)], [anchor(2) anchor(2)+2*perp(2)], obj.color);
-            %plot([anchor(1) anchor(1)+2*force(1)], [anchor(2) anchor(2)+2*force(2)], 'k');
-            %pause(2);
+            perp = [-r(2), r(1)]'; %perp must not be normalized!
             
             obj.v = obj.v + force / obj.mass;
             obj.w = obj.w + perp' * force / obj.inertia;
@@ -66,10 +98,8 @@ classdef shape < handle
             
             verticesRot = rot*obj.vertices;
             
-            plot(obj.p(1) + verticesRot(1, :), ...
+            fill(obj.p(1) + verticesRot(1, :), ...
                      obj.p(2) + verticesRot(2, :), obj.color);
-                 
-%             plot(obj.p(1), obj.p(2), 'k*');
         end
         function calculateMass(obj) 
             v = obj.vertices;
@@ -129,7 +159,11 @@ classdef shape < handle
         end
         
         function k = getKineticEnergy(obj)
-            k = (obj.mass*(norm(obj.v))^2 + obj.inertia*(obj.w)^2) / 2;
+            k = (obj.mass*norm(obj.v)^2 + obj.inertia*(obj.w)^2) / 2;
+        end
+
+        function p = getPotentialEnergy(obj, groundY)
+            p = obj.mass * norm(obj.gravity) * (obj.p(2) + groundY);
         end
         
     end %end of methods  

@@ -7,63 +7,70 @@ hold on;
 s1 = shape(2*[-1 -1 -1.2 1.2 0.1],2*[-1 1 0 0 1.1],'r');
 s2 = shape(2*[-0.3 -0.6 -1.2 1.5 0.3],2*[-1 1 0 0 1.3],'g');
 s3 = shape(2*[-0.6 -1.2 0.9 0.6],2*[1 0 0 1.3],'b');
+s4 = shape(2*[-0.5 -0.5 0.5 0.5],2*[0.5 -0.5 -0.5 0.5],'y');
 
-s1.w = 0.06;
+s1.w = 0.08;
 s2.p = [-4 4]';
 s2.theta = 10;
 
 s3.p = [4 -4]';
+s4.p = [6 -6]';
 
 %s2 = shape(5*[1 2 2 4 1],5*[1 2 1 5 2],'g');
 
-s1.v = [0.15 0.10]';
+s1.v = [0.15 0.40]';
 s3.v = [-0.15 0.10]';
 
-size = 12;
+size = 11;
 
-startingKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy()
+totalEnergy = s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy() + s4.getKineticEnergy() +  ...
+             s1.getPotentialEnergy(size) + s2.getPotentialEnergy(size) + s3.getPotentialEnergy(size) + s4.getPotentialEnergy(size);
 
-for t = 1:10000
+
+prevCollisions = 0;
+currentCollisions = 0;
+
+for t = 1:200000
+    prevCollisions = currentCollisions;
+    currentCollisions = 0;
+    
     hold off;
     plot(size*[-1 -1 1 1 -1],size*[-1 1 1 -1 -1]);
     
     hold on;
-    s1.move();
-    s2.move();
-    s3.move();
+    s1.move(size);
+    s2.move(size);
+    s3.move(size);
+    s4.move(size);
     
     s1.plot();
     s2.plot();
     s3.plot();
+    s4.plot();
   
     cc = collisionChecker();
     
-    if (cc.checkCollision(s1, s2) || cc.checkCollision(s1, s3) || cc.checkCollision(s2, s3)) 
-        fill(1*[-1 -1 1 1 -1] - size + 2,1*[-1 1 1 -1 -1] - size + 2, 'k');
-        totalKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy()
-    end
-    
-    if (abs(s1.p(1)) > size)
-        s1.v(1) = -s1.v(1);
-    end
-    if (abs(s1.p(2)) > size)
-        s1.v(2) = -s1.v(2);        
+    totalEnergy = [totalEnergy s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy() + s4.getKineticEnergy() +  ...
+             s1.getPotentialEnergy(size) + s2.getPotentialEnergy(size) + s3.getPotentialEnergy(size) + s4.getPotentialEnergy(size)];
+           
+    if (cc.checkCollision(s1, s2) || cc.checkCollision(s1, s3) || cc.checkCollision(s2, s3) || cc.checkCollision(s1, s4) || cc.checkCollision(s2, s4) || cc.checkCollision(s3, s4)) 
+%         fill(1*[-1 -1 1 1 -1] - size + 2,1*[-1 1 1 -1 -1] - size + 2, 'k');
+        xlabel('COLLISION!')
+        currentCollisions = currentCollisions + 1;
+        %if abs(totalKineticEnergy - lastKineticEnergy) > 0.001
+%             s1.v
+%             s3.v
+         %   xlabel('BAD COLLISION!') 
+            %pause();
+        %end
+        %lastKineticEnergy = totalKineticEnergy;
     end
         
-    if (abs(s2.p(1)) > size)
-        s2.v(1) = -s2.v(1);
-    end
-    if (abs(s2.p(2)) > size)
-        s2.v(2) = -s2.v(2);
-    end
+     %if currentCollisions + prevCollisions > 1
+      %   ylabel('OMFGWTFBBQ');
+      %   pause();
+     %end
+         
     
-    if (abs(s3.p(1)) > size)
-        s3.v(1) = -s3.v(1);
-    end
-    if (abs(s3.p(2)) > size)
-        s3.v(2) = -s3.v(2);
-    end
-    
-    
-    pause(0.01);
+    pause(0.001);
 end

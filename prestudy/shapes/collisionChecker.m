@@ -133,9 +133,10 @@ classdef collisionChecker < handle
             i2 = s2.getInertia();
 
             plot(point(1), point(2), 'k*');
+            plot(s1.p(1), s1.p(2), 'k*');
 
-            s1.p = s1.p + penetrationVector/2;
-            s2.p = s2.p - penetrationVector/2;
+%             s1.p = s1.p + penetrationVector/1.9;
+%             s2.p = s2.p - penetrationVector/1.9;
 
             r1 = point - s1.p;
             r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
@@ -146,13 +147,20 @@ classdef collisionChecker < handle
             v2 = s2.v + s2.w * r2Ort;
             
             n = penetrationVector/norm(penetrationVector);
+            if abs(norm(n) - 1) > 0.001
+                norm(n)
+                pause();
+            end
             vr = v2 - v1;
+            
+            
+            if ((penetrationVector' * vr) > 0)
+                jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
+                j = abs(jr)*n;
 
-            jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
-            j = abs(jr)*n;
-
-            s1.impulse(point, j);
-            s2.impulse(point, -j);
+                s1.impulse(point, j);
+                s2.impulse(point, -j);
+            end
         end
         
         

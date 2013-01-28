@@ -6,6 +6,7 @@ classdef shape < handle
         w
         vertices
         color
+        gravity
     end
     properties (GetAccess=private)
         mass
@@ -35,12 +36,48 @@ classdef shape < handle
             
             obj.calculateInertia();
             obj.theta = 0;
+            obj.gravity = [0 -0.02]';
             
         end
         
-        function move(obj)
-            obj.p = obj.p + obj.v;
+        function teleport(obj, transVect)
+            obj.p = obj.p + transVect;
+            
+            transVect
+            
+            %resulting kinetic energy loss/gain
+            deltaV = -sign(transVect(2)) * sqrt(2 * norm(obj.gravity) * abs(transVect(2)))
+            
+            obj.v = obj.v + [0 deltaV]';
+        end
+        
+        function move(obj, size)
+            
+            vBefore = obj.v;
+            obj.v = obj.v + obj.gravity;
+            obj.p = obj.p + (vBefore + obj.v) / 2;
+            
             obj.theta = obj.theta + obj.w;
+            
+            if (abs(obj.p(1)) > size)
+                obj.v(1) = -obj.v(1);
+                if sign(obj.p(1)) > 0
+                    obj.p(1) = size;
+                else
+                    obj.p(1) = -size;
+                end
+            end
+            
+            if (abs(obj.p(2)) > size)
+                obj.v(2) = -obj.v(2);
+                if sign(obj.p(2)) > 0
+                    obj.teleport([0 (size - obj.p(2))]');
+                else
+                    obj.teleport([0 (-size - obj.p(2))]');
+                end
+            end
+                        
+            
         end
         
         
@@ -121,7 +158,11 @@ classdef shape < handle
         end
         
         function k = getKineticEnergy(obj)
-            k = (obj.mass*(norm(obj.v))^2 + obj.inertia*(obj.w)^2) / 2;
+            k = (obj.mass*norm(obj.v)^2 + obj.inertia*(obj.w)^2) / 2;
+        end
+
+        function p = getPotentialEnergy(obj, groundY)
+            p = obj.mass * norm(obj.gravity) * (obj.p(2) + groundY);
         end
         
     end %end of methods  
