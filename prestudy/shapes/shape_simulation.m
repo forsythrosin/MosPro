@@ -6,18 +6,22 @@ hold on;
 
 s1 = shape(2*[-1 -1 -1.2 1.2 0.1],2*[-1 1 0 0 1.1],'r');
 s2 = shape(2*[-0.3 -0.6 -1.2 1.5 0.3],2*[-1 1 0 0 1.3],'g');
+s3 = shape(2*[-0.6 -1.2 0.9 0.6],2*[1 0 0 1.3],'b');
 
 s1.w = 0.06;
 s2.p = [-4 4]';
 s2.theta = 10;
 
+s3.p = [4 -4]';
+
 %s2 = shape(5*[1 2 2 4 1],5*[1 2 1 5 2],'g');
 
 s1.v = [0.15 0.10]';
+s3.v = [-0.15 0.10]';
 
 size = 12;
 
-startingKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy()
+startingKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy()
 
 for t = 1:10000
     hold off;
@@ -26,14 +30,17 @@ for t = 1:10000
     hold on;
     s1.move();
     s2.move();
+    s3.move();
     
     s1.plot();
     s2.plot();
+    s3.plot();
   
     cc = collisionChecker();
     
-    if (cc.checkCollision(s1, s2)) 
-        fill(1*[-1 -1 1 1 -1] - size + 2,1*[-1 1 1 -1 -1] - size + 2, 'b');
+    if (cc.checkCollision(s1, s2) || cc.checkCollision(s1, s3) || cc.checkCollision(s2, s3)) 
+        fill(1*[-1 -1 1 1 -1] - size + 2,1*[-1 1 1 -1 -1] - size + 2, 'k');
+        totalKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy()
     end
     
     if (abs(s1.p(1)) > size)
@@ -48,6 +55,13 @@ for t = 1:10000
     end
     if (abs(s2.p(2)) > size)
         s2.v(2) = -s2.v(2);
+    end
+    
+    if (abs(s3.p(1)) > size)
+        s3.v(1) = -s3.v(1);
+    end
+    if (abs(s3.p(2)) > size)
+        s3.v(2) = -s3.v(2);
     end
     
     

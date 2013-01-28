@@ -153,8 +153,6 @@ classdef collisionChecker < handle
 
             s1.impulse(point, j);
             s2.impulse(point, -j);
-            
-            totalKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy()
         end
         
         
