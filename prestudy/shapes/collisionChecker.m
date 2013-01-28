@@ -16,7 +16,6 @@ classdef collisionChecker < handle
             while true
                 obj.simplex = [obj.simplex support(s1, s2, obj.d)];
                 obj.d = obj.d / norm(obj.d);
-                %obj.simplex(end).p3' * obj.d
                 if obj.simplex(end).p3' * obj.d < 0
                     collision = false;
                     break;
@@ -115,9 +114,6 @@ classdef collisionChecker < handle
                 
                 e = e / norm(e);
                 
-                %a.p3
-                %b.p3
-                
                 n = ([-e(2) e(1)]*a.p3)*[-e(2) e(1)]';
                 
                 
@@ -136,34 +132,27 @@ classdef collisionChecker < handle
             m2 = s2.getMass();
             i2 = s2.getInertia();
 
-            plot(s1.p(1), s1.p(2), 'k*');
-            %pause(2);
+            plot(point(1), point(2), 'k*');
 
             s1.p = s1.p + penetrationVector/2;
             s2.p = s2.p - penetrationVector/2;
 
             r1 = point - s1.p;
-            r1Ort = [-r1(2) r1(1)]';
-%             r1Ort = ([-r1(2) r1(1)] * penetrationVector) * [-r1(2) r1(1)]';
-%             r1Ort = r1Ort / norm(r1Ort);
+            r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
             v1 = s1.v + s1.w * r1Ort;
 
             r2 = point - s2.p;
             r2Ort = [-r2(2) r2(1)]';
-%             r2Ort = ([-r2(2) r2(1)] * penetrationVector) * [-r2(2) r2(1)]';
-%             r2Ort = r2Ort / norm(r2Ort);
             v2 = s2.v + s2.w * r2Ort;
             
-%             if (v2' * v1) <= 0
-                n = penetrationVector/norm(penetrationVector);
-                vr = v2 - v1;
+            n = penetrationVector/norm(penetrationVector);
+            vr = v2 - v1;
 
-                jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
-                j = abs(jr)*n;
+            jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
+            j = abs(jr)*n;
 
-                s1.impulse(point, j);
-                s2.impulse(point, -j);
-%             end
+            s1.impulse(point, j);
+            s2.impulse(point, -j);
             
             totalKineticEnergy = s1.getKineticEnergy() + s2.getKineticEnergy()
         end

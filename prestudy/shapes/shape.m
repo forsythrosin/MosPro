@@ -46,13 +46,7 @@ classdef shape < handle
         
         function impulse(obj, anchor, force)
             r = anchor - obj.p;
-               
-            perp = [-r(2), r(1)]';
-            %perp = ([-r(2) r(1)] * force) * [-r(2) r(1)]';
-%             perp = perp/norm(perp); %perp must be normalized!
-            %plot([anchor(1) anchor(1)+2*perp(1)], [anchor(2) anchor(2)+2*perp(2)], obj.color);
-            %plot([anchor(1) anchor(1)+2*force(1)], [anchor(2) anchor(2)+2*force(2)], 'k');
-            %pause(2);
+            perp = [-r(2), r(1)]'; %perp must not be normalized!
             
             obj.v = obj.v + force / obj.mass;
             obj.w = obj.w + perp' * force / obj.inertia;
@@ -66,10 +60,8 @@ classdef shape < handle
             
             verticesRot = rot*obj.vertices;
             
-            plot(obj.p(1) + verticesRot(1, :), ...
+            fill(obj.p(1) + verticesRot(1, :), ...
                      obj.p(2) + verticesRot(2, :), obj.color);
-                 
-%             plot(obj.p(1), obj.p(2), 'k*');
         end
         function calculateMass(obj) 
             v = obj.vertices;
