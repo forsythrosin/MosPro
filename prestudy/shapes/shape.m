@@ -43,12 +43,8 @@ classdef shape < handle
         function teleport(obj, transVect)
             obj.p = obj.p + transVect;
             
-            transVect
-            
-            %resulting kinetic energy loss/gain
-            deltaV = -sign(transVect(2)) * sqrt(2 * norm(obj.gravity) * abs(transVect(2)))
-            
-            obj.v = obj.v + [0 deltaV]';
+            vMagnitude = sqrt(norm(obj.v)^2 - 2*abs(obj.gravity(2))*transVect(2));
+            obj.v = obj.v / norm(obj.v) * vMagnitude;
         end
         
         function move(obj, size)
