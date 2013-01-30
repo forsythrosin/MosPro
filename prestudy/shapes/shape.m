@@ -7,6 +7,7 @@ classdef shape < handle
         vertices
         color
         gravity
+        airResistance
     end
     properties (GetAccess=private)
         mass
@@ -37,20 +38,24 @@ classdef shape < handle
             obj.calculateInertia();
             obj.theta = 0;
             obj.gravity = [0 -0.02]';
+            obj.airResistance = 0.02;
             
         end
         
         function teleport(obj, transVect)
             obj.p = obj.p + transVect;
             
-            vMagnitude = sqrt(norm(obj.v)^2 - 2*abs(obj.gravity(2))*transVect(2));
+            vMagnitude = sqrt(abs(norm(obj.v)^2 - 2*abs(obj.gravity(2))*transVect(2)));
             obj.v = obj.v / norm(obj.v) * vMagnitude;
         end
         
-        function move(obj, size)
+        function thermalEnergy = move(obj, size)
+            initialEnergy = obj.getKineticEnergy() + obj.getPotentialEnergy(11);
             
             vBefore = obj.v;
             obj.v = obj.v + obj.gravity;
+            obj.v = (1 - obj.airResistance) * obj.v;
+            obj.w = (1 - obj.airResistance) * obj.w;
             obj.p = obj.p + (vBefore + obj.v) / 2;
             
             obj.theta = obj.theta + obj.w;
@@ -72,8 +77,8 @@ classdef shape < handle
                     obj.teleport([0 (-size - obj.p(2))]');
                 end
             end
-                        
             
+            thermalEnergy = initialEnergy - obj.getKineticEnergy() - obj.getPotentialEnergy(11);
         end
         
         
