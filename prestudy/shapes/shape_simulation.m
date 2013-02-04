@@ -24,13 +24,16 @@ s3.v = [-0.15 0.10]';
 size = 11;
 
 totalEnergy = s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy() + s4.getKineticEnergy() +  ...
-             s1.getPotentialEnergy(size) + s2.getPotentialEnergy(size) + s3.getPotentialEnergy(size) + s4.getPotentialEnergy(size);
+             s1.getPotentialEnergy(size) + s2.getPotentialEnergy(size) + s3.getPotentialEnergy(size) + s4.getPotentialEnergy(size)
 
+thermalEnergy = 0;
+totalThermalEnergy = [thermalEnergy];
 
 prevCollisions = 0;
 currentCollisions = 0;
 
 for t = 1:200000
+    subplot(1, 2, 1);
     prevCollisions = currentCollisions;
     currentCollisions = 0;
     
@@ -38,10 +41,14 @@ for t = 1:200000
     plot(size*[-1 -1 1 1 -1],size*[-1 1 1 -1 -1]);
     
     hold on;
-    s1.move(size);
-    s2.move(size);
-    s3.move(size);
-    s4.move(size);
+    thermalEnergy = s1.move(size);
+    thermalEnergy = thermalEnergy + s2.move(size);
+    thermalEnergy = thermalEnergy + s3.move(size);
+    thermalEnergy = thermalEnergy + s4.move(size);
+    if (abs(thermalEnergy) < 0.000000001)
+        thermalEnergy = 0;
+    end
+    totalThermalEnergy = [totalThermalEnergy totalThermalEnergy(end)+thermalEnergy];
     
     s1.plot();
     s2.plot();
@@ -65,6 +72,14 @@ for t = 1:200000
         %end
         %lastKineticEnergy = totalKineticEnergy;
     end
+    
+    hold off;
+    subplot(1, 2, 2);
+    plot (totalEnergy, 'b');
+    hold on;
+    plot (totalThermalEnergy, 'r');
+    plot ((totalThermalEnergy + totalEnergy) / 2, 'g');
+    (totalThermalEnergy(end) + totalEnergy(end)) / 2
         
      %if currentCollisions + prevCollisions > 1
       %   ylabel('OMFGWTFBBQ');

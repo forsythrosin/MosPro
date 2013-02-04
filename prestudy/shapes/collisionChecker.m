@@ -134,9 +134,17 @@ classdef collisionChecker < handle
 
             plot(point(1), point(2), 'k*');
             plot(s1.p(1), s1.p(2), 'k*');
-
-%             s1.p = s1.p + penetrationVector/1.9;
-%             s2.p = s2.p - penetrationVector/1.9;
+            
+            penetrationVector = penetrationVector * 1.1;
+            
+            ps1 = m1*m2/(m1+m2)/m1;
+            ps2 = m1*m2/(m1+m2)/m2;
+            
+            pv1 = penetrationVector * ps1;
+            pv2 = - penetrationVector * ps2;
+            
+            s1.teleport(pv1);
+            s2.teleport(pv2);
 
             r1 = point - s1.p;
             r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
