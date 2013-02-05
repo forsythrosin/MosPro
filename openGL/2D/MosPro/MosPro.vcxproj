@@ -10,26 +10,9 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="geometry2D.cpp" />
-    <ClCompile Include="glEngine2D.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="material2D.cpp" />
-    <ClCompile Include="shape2D.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="geometry2D.h" />
-    <ClInclude Include="glEngine2D.h" />
-    <ClInclude Include="material2D.h" />
-    <ClInclude Include="shape2D.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ColorFragmentShader.fragmentshader" />
-    <None Include="TransformVertexShader.vertexshader" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E5D0ED07-5973-403E-9832-951CFDBA400F}</ProjectGuid>
-    <RootNamespace>glEngine</RootNamespace>
+    <ProjectGuid>{58546FAB-812B-4AFB-AB34-CC2E1154D9D6}</ProjectGuid>
+    <RootNamespace>MosPro</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -61,7 +44,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw.lib; glew32.lib; opengl32.lib; kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -77,6 +60,27 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="graphics\geometry2D.cpp" />
+    <ClCompile Include="graphics\glEngine2D.cpp" />
+    <ClCompile Include="graphics\material2D.cpp" />
+    <ClCompile Include="graphics\shape2D.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="physics\physicsEngine2D.cpp" />
+    <ClCompile Include="physics\rigidBody2D.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="graphics\geometry2D.h" />
+    <ClInclude Include="graphics\glEngine2D.h" />
+    <ClInclude Include="graphics\material2D.h" />
+    <ClInclude Include="graphics\shape2D.h" />
+    <ClInclude Include="physics\physicsEngine2D.h" />
+    <ClInclude Include="physics\rigidBody2D.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ColorFragmentShader.fragmentshader" />
+    <None Include="TransformVertexShader.vertexshader" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
