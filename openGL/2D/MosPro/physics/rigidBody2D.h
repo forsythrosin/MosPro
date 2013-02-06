@@ -12,15 +12,20 @@
 #include "physicsEngine2D.h"
 
 
+class PhysicsEngine2D;
+
 class RigidBody2D {
 	public:
 		RigidBody2D(Shape2D *s, glm::vec2 p, glm::vec2 v, double angle = 0, double w = 0);
 
+		void step();
 		void impulse(glm::vec2 anchor, glm::vec2 j);
 
 		double getMass();
 		double getInertia();
-			
+		
+		double getKineticEnergy();
+		double getPotentialEnergy();
 		
 	private:
 		// position and velocity (linear and angular)
@@ -41,10 +46,9 @@ class RigidBody2D {
 		glm::vec2 getFarthestPointInDirection(glm::vec2);
 		glm::vec2 getCenterOfMass();
 
-		double getKineticEnergy();
-		double getPotentialEnergy();
+
 		
-	friend PhysicsEngine2D add();
+	friend PhysicsEngine2D;
 };
 
 #endif

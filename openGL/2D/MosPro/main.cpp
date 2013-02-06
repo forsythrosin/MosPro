@@ -4,7 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
+#include "physics/physicsEngine2D.h"
+#include "physics/rigidBody2D.h"
 #include "graphics/glEngine2D.h"
 
 
@@ -50,24 +51,27 @@ int main( void )
 
 	Shape2D* s1 = new Shape2D;
 	Shape2D* s2 = new Shape2D;
-	s1->setAttribs(vec2(0),0);
+	s1->setAttribs(glm::vec2(0), 0, 0.1);
 
-	glEngine2D GE;
-	GE.add(s1);
-	GE.add(s2);
-	GE.bindBuffers();
+	glm::vec2 p(0, 0);
+	glm::vec2 v(0, 0);
 
+	glEngine2D ge;
+	ge.add(s1);
+	ge.add(s2);
+	ge.bindBuffers();
 
-	double i = 0;
+	PhysicsEngine pe();
+
 
 	do{
-		i+=0.01;
-		GE.render();
+		pe.step();
+		ge.render();
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
 		   glfwGetWindowParam( GLFW_OPENED ) );
 
-	GE.deleteBuffers();
+	ge.deleteBuffers();
 	glfwTerminate();
 
 	return 0;

@@ -1,11 +1,43 @@
 #include "rigidBody2D.h"
+#include <iostream>
 
-RigidBody2D::RigidBody2D(Shape2D *s, glm::vec2 p, glm::vec2 v, double angle, double w) {
+RigidBody2D::RigidBody2D(Shape2D *s, glm::vec2 p, glm::vec2 v, double a, double w) {
 	shape = s;
 	position = p;
-	angle = angle;
+	angle = a;
 	velocity = v;
 	angularVelocity = w;
+
+	glm::vec2 com = getCenterOfMass();
+	position += com;
+
+	calculateMass();
+	calculateInertia();
+
+}
+
+void RigidBody2D::step() {
+
+	glm::vec2 vBefore = velocity;
+	velocity += engine->getGravity();
+	
+	glm::vec2 meanVelocity = 0.5f * (vBefore + velocity);
+
+	angle += angularVelocity;
+	position += meanVelocity;
+
+	shape->setAttribs(position, angle, 1.0);
+
+
+	// naive collision response with walls
+
+	if (position.y < -1 || position.y > 1) {
+		velocity.y *= -1;
+	}
+
+	if (position.x < -1 || position.x > 1) {
+		velocity.x *= -1;
+	}
 }
 
 
