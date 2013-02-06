@@ -49,15 +49,12 @@ int main( void )
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS); 
 
-	Shape2D s1;
-	Shape2D s2;
+	Shape2D* s1 = new Shape2D;
+	Shape2D* s2 = new Shape2D;
+	s1->setAttribs(glm::vec2(0), 0, 0.1);
 
 	glm::vec2 p(0, 0);
 	glm::vec2 v(0, 0);
-
-	RigidBody2D r1(&s1, p, v, 0.0, 0.0);
-
-	s1.setAttribs(glm::vec2(0), 0, 0.1);
 
 	glEngine2D ge;
 	ge.add(s1);
@@ -66,13 +63,9 @@ int main( void )
 
 	PhysicsEngine pe();
 
-	double i = 0;
 
 	do{
-		i+=0.01;
 		pe.step();
-		//GE.get(0)->setAttribs(glm::vec2(cos(i),sin(i)), 0, 0.1);
-		//GE.get(1)->setAttribs(glm::vec2(-cos(i),sin(i)), 0, 0.1);
 		ge.render();
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&

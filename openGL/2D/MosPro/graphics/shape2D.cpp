@@ -32,11 +32,11 @@ void Shape2D::setAttribs(glm::vec2 pos, double theta, double scale){
 		);
 }
 std::vector<glm::vec2> Shape2D::getLocalVertices(){
-	return geometry.getVectors();
+	return geometry->getVectors();
 }
 std::vector<glm::vec2> Shape2D::getGlobalVertices(){
 	std::vector<glm::vec2> outVec;
-	std::vector<glm::vec2> geo = geometry.getVectors();
+	std::vector<glm::vec2> geo = geometry->getVectors();
 	for(int i = 0; i < geo.size(); i++){
 		glm::vec4 v4 = modelMatrix*glm::vec4(geo[i],0,1);
 		glm::vec2 v2 = glm::vec2(v4.x,v4.y);
@@ -48,5 +48,5 @@ glm::mat4 Shape2D::getModel(){
 	return modelMatrix;
 }
 std::vector<glm::vec3> Shape2D::getMaterial(){
-	return material.getColors();
+	return material->getColors();
 }
