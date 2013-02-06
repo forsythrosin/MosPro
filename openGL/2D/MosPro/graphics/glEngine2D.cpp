@@ -7,44 +7,44 @@ glEngine2D::glEngine2D(){
 	matrixID = glGetUniformLocation(programID, "MVP");
 }
 
-void glEngine2D::add(Shape2D s){
+void glEngine2D::add(Shape2D* s){
 	shapeList.push_back(s);
 }
 
-Shape2D* glEngine2D::get(int i){
-	return &shapeList[i];
+Shape2D*& glEngine2D::get(int i){
+	return shapeList[i];
 }
 
 void glEngine2D::bindBuffers(){
 	for(unsigned int i = 0; i < shapeList.size();i++){
-		GLfloat* glBuffer = new GLfloat[shapeList[i].getLocalVertices().size()*3];
-		for(unsigned int j = 0; j < shapeList[i].getLocalVertices().size(); j++){
-			glBuffer[j*3+0] = shapeList[i].getLocalVertices()[j].x;
-			glBuffer[j*3+1] = shapeList[i].getLocalVertices()[j].y;
+		GLfloat* glBuffer = new GLfloat[shapeList[i]->getLocalVertices().size()*3];
+		for(unsigned int j = 0; j < shapeList[i]->getLocalVertices().size(); j++){
+			glBuffer[j*3+0] = shapeList[i]->getLocalVertices()[j].x;
+			glBuffer[j*3+1] = shapeList[i]->getLocalVertices()[j].y;
 			glBuffer[j*3+2] = 0;
 
 		}
 		GLuint vertexBuffer;
 		glGenBuffers(1, &vertexBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glBuffer)*shapeList[i].getLocalVertices().size()*3, glBuffer, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glBuffer)*shapeList[i]->getLocalVertices().size()*3, glBuffer, GL_STATIC_DRAW);
 		vertexBuffers.push_back(vertexBuffer);
 		delete[] glBuffer;
 
 
 		GLuint colorBuffer;
-		GLfloat* colorL = new GLfloat[shapeList[i].getLocalVertices().size()*3];
-		for(unsigned int j = 0; j < shapeList[i].getLocalVertices().size(); j++){
-			colorL[j*3+0] = shapeList[i].getMaterial()[j%shapeList[i].getMaterial().size()].x;
+		GLfloat* colorL = new GLfloat[shapeList[i]->getLocalVertices().size()*3];
+		for(unsigned int j = 0; j < shapeList[i]->getLocalVertices().size(); j++){
+			colorL[j*3+0] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].x;
 			std::cout << " " << colorL[j*3+0];
-			colorL[j*3+1] = shapeList[i].getMaterial()[j%shapeList[i].getMaterial().size()].y;
+			colorL[j*3+1] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].y;
 			std::cout << " " << colorL[j*3+1];
-			colorL[j*3+2] = shapeList[i].getMaterial()[j%shapeList[i].getMaterial().size()].z;
+			colorL[j*3+2] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].z;
 			std::cout << " " << colorL[j*3+2] << std::endl;
 		}
 		glGenBuffers(1, &colorBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glBuffer)*shapeList[i].getLocalVertices().size()*3, colorL, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glBuffer)*shapeList[i]->getLocalVertices().size()*3, colorL, GL_STATIC_DRAW);
 		colorBuffers.push_back(colorBuffer);
 		delete[] colorL;
 	}
@@ -56,8 +56,8 @@ void glEngine2D::render(){
 	for(unsigned int i = 0; i < vertexBuffers.size(); i++){
 
 		glUseProgram(programID);
-		glm::mat4 t = shapeList[i].getModel();
-		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &shapeList[i].getModel()[0][0]);
+		glm::mat4 t = shapeList[i]->getModel();
+		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &shapeList[i]->getModel()[0][0]);
 
 
 		glEnableVertexAttribArray(0);
@@ -84,7 +84,7 @@ void glEngine2D::render(){
 			0,
 			(void*)0
 		);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, shapeList.at(i).getLocalVertices().size());
+		glDrawArrays(GL_TRIANGLE_FAN, 0, shapeList.at(i)->getLocalVertices().size());
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 	}

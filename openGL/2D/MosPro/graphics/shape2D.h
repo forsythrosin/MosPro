@@ -8,8 +8,8 @@
 #include "material2D.h"
 class Shape2D{
 public:
-	Shape2D():geometry(Geometry2D()), material(Material2D()){};
-	Shape2D(Geometry2D g, Material2D m):geometry(g), material(m){};
+	Shape2D():geometry(new Geometry2D), material(new Material2D){};
+	Shape2D(Geometry2D* g, Material2D* m):geometry(g), material(m){};
 	void setAttribs(double x, double y, double theta, double scale = 1);
 	void setAttribs(glm::vec2 pos, double theta, double scale = 1);
 	void setGeo(Geometry2D geo); //Not implemented
@@ -19,8 +19,8 @@ public:
 	std::vector<glm::vec3> getMaterial();
 	glm::mat4 getModel();
 private:
-	Geometry2D geometry;
-	Material2D material;
+	Geometry2D* geometry;
+	Material2D* material;
 	glm::mat4 modelMatrix;
 	double scale;
 };
