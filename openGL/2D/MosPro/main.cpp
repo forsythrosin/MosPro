@@ -50,7 +50,7 @@ int main( void )
 
 	Shape2D* s1 = new Shape2D;
 	Shape2D* s2 = new Shape2D;
-	s1->setAttribs(glm::vec2(0), 0, 0.1);
+	s1->setAttribs(vec2(0),0);
 
 	glEngine2D GE;
 	GE.add(s1);
@@ -62,8 +62,6 @@ int main( void )
 
 	do{
 		i+=0.01;
-		s1->setAttribs(glm::vec2(cos(i),sin(i)), 0, 0.1);
-		s2->setAttribs(glm::vec2(-cos(i),sin(i)), 0, 0.1);
 		GE.render();
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&

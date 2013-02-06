@@ -10,8 +10,7 @@ class Shape2D{
 public:
 	Shape2D():geometry(new Geometry2D), material(new Material2D){};
 	Shape2D(Geometry2D* g, Material2D* m):geometry(g), material(m){};
-	void setAttribs(double x, double y, double theta, double scale = 1);
-	void setAttribs(glm::vec2 pos, double theta, double scale = 1);
+	void setAttribs(glm::vec2 pos, double theta);
 	void setGeo(Geometry2D geo); //Not implemented
 	void setMat(Material2D mat); //Not implemented
 	std::vector<glm::vec2> getLocalVertices();
