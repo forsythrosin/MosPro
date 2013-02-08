@@ -1,8 +1,2 @@
 # Some file extensions not to be committed #
 ############################################
-
-*.vcproj
-*.sln
-*.suo
-*.filters
-*.user

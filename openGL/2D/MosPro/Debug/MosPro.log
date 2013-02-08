@@ -1,0 +1,17 @@
+﻿Build started 2013-02-05 15:49:17.
+     1>Project "H:\Programmering\TNM085\git\openGL\2D\MosPro\MosPro.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\MosPro.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+       Link:
+         All outputs are up-to-date.
+         MosPro.vcxproj -> H:\Programmering\TNM085\git\openGL\2D\MosPro\Debug\MosPro.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\MosPro.unsuccessfulbuild".
+         Touching "Debug\MosPro.lastbuildstate".
+     1>Done Building Project "H:\Programmering\TNM085\git\openGL\2D\MosPro\MosPro.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.38
