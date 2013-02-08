@@ -16,6 +16,7 @@ void Shape2D::setAttribs(double x, double y, double theta, double scale){
 		);
 }
 void Shape2D::setAttribs(glm::vec2 pos, double theta, double scale){
+
 	this->scale = scale;
 		modelMatrix = glm::translate(
 			glm::mat4(1.0f), 

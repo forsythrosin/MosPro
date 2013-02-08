@@ -56,7 +56,6 @@ void glEngine2D::render(){
 	for(unsigned int i = 0; i < vertexBuffers.size(); i++){
 
 		glUseProgram(programID);
-		glm::mat4 t = shapeList[i]->getModel();
 		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &shapeList[i]->getModel()[0][0]);
 
 
