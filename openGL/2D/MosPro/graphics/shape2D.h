@@ -6,6 +6,7 @@
 #include <vector>
 #include "geometry2D.h"
 #include "material2D.h"
+#define GLM_FORCE_RADIANS
 class Shape2D{
 public:
 	Shape2D():geometry(new Geometry2D), material(new Material2D){};
