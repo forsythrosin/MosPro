@@ -8,6 +8,7 @@ classdef shape < handle
         color
         gravity
         airResistance
+        movable
     end
     properties (GetAccess=private)
         mass
@@ -19,12 +20,16 @@ classdef shape < handle
         end
         function i = getInertia(obj)
             i = obj.inertia;
-        end        
+        end
+        function vel = getVelocity(obj)
+            vel = obj.v;
+        end
         
-        function obj = shape(x, y, c)
+        function obj = shape(x, y, c, movable)
             obj.p = [0 0]';
             obj.v = [0 0]';
             obj.w = 0;
+            obj.movable = movable;
 
             k = convhull(x', y');
             obj.vertices = [x(k); y(k)];
@@ -38,54 +43,55 @@ classdef shape < handle
             obj.calculateInertia();
             obj.theta = 0;
             obj.gravity = [0 -0.02]';
-            obj.airResistance = 0.02;
-            
+            obj.airResistance = 0.0;
         end
         
         function teleport(obj, transVect)
             obj.p = obj.p + transVect;
-            
+
             vMagnitude = sqrt(abs(norm(obj.v)^2 - 2*abs(obj.gravity(2))*transVect(2)));
-            obj.v = obj.v / norm(obj.v) * vMagnitude;
+            
+            if (obj.v > 0)
+                obj.v = obj.v / norm(obj.v) * vMagnitude;
+            end
         end
         
-        function thermalEnergy = move(obj, size)
-            initialEnergy = obj.getKineticEnergy() + obj.getPotentialEnergy(11);
-            
-            vBefore = obj.v;
-            obj.v = obj.v + obj.gravity;
-            obj.v = (1 - obj.airResistance) * obj.v;
-            obj.w = (1 - obj.airResistance) * obj.w;
-            obj.p = obj.p + (vBefore + obj.v) / 2;
-            
-            obj.theta = obj.theta + obj.w;
-            
-            if (abs(obj.p(1)) > size)
-                obj.v(1) = -obj.v(1);
-                if sign(obj.p(1)) > 0
-                    obj.p(1) = size;
-                else
-                    obj.p(1) = -size;
+        function move(obj, size)
+            if (obj.movable)
+                vBefore = obj.v;
+                obj.v = obj.v + obj.gravity;
+                obj.v = (1 - obj.airResistance) * obj.v;
+                obj.w = (1 - obj.airResistance) * obj.w;
+                obj.p = obj.p + (vBefore + obj.v) / 2;
+                
+
+                obj.theta = obj.theta + obj.w;
+
+                if (abs(obj.p(1)) > size)
+                    obj.v(1) = -obj.v(1);
+                    if sign(obj.p(1)) > 0
+                        obj.p(1) = size;
+                    else
+                        obj.p(1) = -size;
+                    end
+                end
+
+                if (abs(obj.p(2)) > size)
+                    obj.v(2) = -obj.v(2);
+                    if sign(obj.p(2)) > 0
+                        obj.teleport([0 (size - obj.p(2))]');
+                    else
+                        obj.teleport([0 (-size - obj.p(2))]');
+                    end
                 end
             end
-            
-            if (abs(obj.p(2)) > size)
-                obj.v(2) = -obj.v(2);
-                if sign(obj.p(2)) > 0
-                    obj.teleport([0 (size - obj.p(2))]');
-                else
-                    obj.teleport([0 (-size - obj.p(2))]');
-                end
-            end
-            
-            thermalEnergy = initialEnergy - obj.getKineticEnergy() - obj.getPotentialEnergy(11);
         end
         
         
         function impulse(obj, anchor, force)
             r = anchor - obj.p;
             perp = [-r(2), r(1)]'; %perp must not be normalized!
-            
+
             obj.v = obj.v + force / obj.mass;
             obj.w = obj.w + perp' * force / obj.inertia;
         end

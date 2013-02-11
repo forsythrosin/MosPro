@@ -1,33 +1,48 @@
 clear all;
 close all;
 
-figure;
+figure('units','normalized','outerposition',[0 0.5 1 0.5]);
 hold on;
 
-s1 = shape(2*[-1 -1 -1.2 1.2 0.1],2*[-1 1 0 0 1.1],'r');
-s2 = shape(2*[-0.3 -0.6 -1.2 1.5 0.3],2*[-1 1 0 0 1.3],'g');
-s3 = shape(2*[-0.6 -1.2 0.9 0.6],2*[1 0 0 1.3],'b');
-s4 = shape(2*[-0.5 -0.5 0.5 0.5],2*[0.5 -0.5 -0.5 0.5],'y');
+shapes = [
+    shape(5*[-1 -1 -1.2 1.2 0.1],2*[-1 1 0 0 1.1],'r', true)
+    shape(2*[-0.3 -0.6 -1.2 1.5 0.3],2*[-1 1 0 0 1.3],'g', true)
+    shape(3*[-5.5 -5.5 5.5 5.5],2*[1 -1 -1 1],'b', false)
+    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'y', true)
+    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'m', true)
+    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'c', true)
+    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'k', true)
+    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'w', true)
+    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'w', true)
+    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'g', true)
+];
 
-s1.w = 0.08;
-s2.p = [-4 4]';
-s2.theta = 10;
+shapes(1).p = [-3 4]';
+shapes(2).p = [-4 8]';
+shapes(2).theta = 10;
 
-s3.p = [4 -4]';
-s4.p = [6 -6]';
-
-%s2 = shape(5*[1 2 2 4 1],5*[1 2 1 5 2],'g');
-
-s1.v = [0.15 0.40]';
-s3.v = [-0.15 0.10]';
+shapes(3).p = [0 -11]';
+%shapes(2).p = [0 -11]';
+shapes(4).p = [-3 8]';
+shapes(5).p = [-7 10]';
+shapes(6).p = [7 10]';
+shapes(7).p = [-7.5 -5]';
+shapes(8).p = [-7 -8]';
+shapes(9).p = [-1 -8.5]';
+shapes(10).p = [10.5 10.5]';
 
 size = 11;
 
-totalEnergy = s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy() + s4.getKineticEnergy() +  ...
-             s1.getPotentialEnergy(size) + s2.getPotentialEnergy(size) + s3.getPotentialEnergy(size) + s4.getPotentialEnergy(size)
+totalKineticEnergy = 0;
+totalPotentialEnergy = 0;
+for i = 1:length(shapes)
+    totalKineticEnergy = totalKineticEnergy + shapes(i).getKineticEnergy();
+    totalPotentialEnergy = totalPotentialEnergy + shapes(i).getPotentialEnergy(size);
+end
 
 thermalEnergy = 0;
 totalThermalEnergy = [thermalEnergy];
+totalEnergy = (totalThermalEnergy(end) + totalKineticEnergy + totalPotentialEnergy);
 
 prevCollisions = 0;
 currentCollisions = 0;
@@ -41,51 +56,46 @@ for t = 1:200000
     plot(size*[-1 -1 1 1 -1],size*[-1 1 1 -1 -1]);
     
     hold on;
-    thermalEnergy = s1.move(size);
-    thermalEnergy = thermalEnergy + s2.move(size);
-    thermalEnergy = thermalEnergy + s3.move(size);
-    thermalEnergy = thermalEnergy + s4.move(size);
-    if (abs(thermalEnergy) < 0.000000001)
-        thermalEnergy = 0;
+    for i = 1:length(shapes)
+        shapes(i).move(size);
     end
-    totalThermalEnergy = [totalThermalEnergy totalThermalEnergy(end)+thermalEnergy];
     
-    s1.plot();
-    s2.plot();
-    s3.plot();
-    s4.plot();
+    for i = 1:length(shapes)
+        shapes(i).plot();
+    end
   
     cc = collisionChecker();
+
+    kineticEnergy = 0;
+    potentialEnergy = 0;
+    for i = 1:length(shapes)
+        kineticEnergy = kineticEnergy + shapes(i).getKineticEnergy();
+        potentialEnergy = potentialEnergy + shapes(i).getPotentialEnergy(size);
+    end
     
-    totalEnergy = [totalEnergy s1.getKineticEnergy() + s2.getKineticEnergy() + s3.getKineticEnergy() + s4.getKineticEnergy() +  ...
-             s1.getPotentialEnergy(size) + s2.getPotentialEnergy(size) + s3.getPotentialEnergy(size) + s4.getPotentialEnergy(size)];
-           
-    if (cc.checkCollision(s1, s2) || cc.checkCollision(s1, s3) || cc.checkCollision(s2, s3) || cc.checkCollision(s1, s4) || cc.checkCollision(s2, s4) || cc.checkCollision(s3, s4)) 
-%         fill(1*[-1 -1 1 1 -1] - size + 2,1*[-1 1 1 -1 -1] - size + 2, 'k');
-        xlabel('COLLISION!')
-        currentCollisions = currentCollisions + 1;
-        %if abs(totalKineticEnergy - lastKineticEnergy) > 0.001
-%             s1.v
-%             s3.v
-         %   xlabel('BAD COLLISION!') 
-            %pause();
-        %end
-        %lastKineticEnergy = totalKineticEnergy;
+    totalKineticEnergy = [totalKineticEnergy kineticEnergy];
+    totalPotentialEnergy = [totalPotentialEnergy potentialEnergy];
+    lastTotalEnergy = totalEnergy;
+    totalEnergy = (totalKineticEnergy(end) + totalPotentialEnergy(end));
+    if (abs(totalEnergy - lastTotalEnergy) > 0.001)
+        %pause();
+    end
+    
+    for i = 1:length(shapes)-1
+       for j = i+1:length(shapes)
+          collision = cc.checkCollision(shapes(i), shapes(j));
+          if collision
+              xlabel('COLLISION!');
+          end
+       end
     end
     
     hold off;
     subplot(1, 2, 2);
-    plot (totalEnergy, 'b');
+    %plot (totalKineticEnergy, 'b');
     hold on;
-    plot (totalThermalEnergy, 'r');
-    plot ((totalThermalEnergy + totalEnergy) / 2, 'g');
-    (totalThermalEnergy(end) + totalEnergy(end)) / 2
-        
-     %if currentCollisions + prevCollisions > 1
-      %   ylabel('OMFGWTFBBQ');
-      %   pause();
-     %end
-         
+    %plot (totalPotentialEnergy, 'g');
+    %plot ((totalKineticEnergy + totalPotentialEnergy), 'm');
     
     pause(0.001);
 end

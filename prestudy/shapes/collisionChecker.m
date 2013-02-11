@@ -88,7 +88,7 @@ classdef collisionChecker < handle
                         t1 = s2;
                         t2 = s1;
                     end
-                    plot([point(1) point(1)+penetrationVector(1)], [point(2) point(2)+penetrationVector(2)], 'k');
+                    %plot([point(1) point(1)+penetrationVector(1)], [point(2) point(2)+penetrationVector(2)], 'k');
                     break;
                 else
                     before = obj.simplex(1: e.index - 1);
@@ -125,26 +125,38 @@ classdef collisionChecker < handle
         
         
         function collisionRespond(obj, s1, s2, point, penetrationVector)
-            e = 1;
+            e = 0.5;
             m1 = s1.getMass();
             i1 = s1.getInertia();
 
             m2 = s2.getMass();
             i2 = s2.getInertia();
 
-            plot(point(1), point(2), 'k*');
-            plot(s1.p(1), s1.p(2), 'k*');
+            %plot(point(1), point(2), 'k*');
+            %plot(s1.p(1), s1.p(2), 'k*');
             
-            penetrationVector = penetrationVector * 1.1;
+            penetrationVector = penetrationVector * 1.0001;
             
-            ps1 = m1*m2/(m1+m2)/m1;
-            ps2 = m1*m2/(m1+m2)/m2;
+            if (~s1.movable)
+                ps1 = 0;
+                ps2 = 1;
+            elseif (~s2.movable)
+                ps2 = 0;
+                ps1 = 1;
+            else
+                ps1 = m1*m2/(m1+m2)/m1;
+                ps2 = m1*m2/(m1+m2)/m2;
+            end
             
             pv1 = penetrationVector * ps1;
             pv2 = - penetrationVector * ps2;
             
-            s1.teleport(pv1);
-            s2.teleport(pv2);
+            if (s1.movable)
+                s1.teleport(pv1);
+            end
+            if (s2.movable)
+                s2.teleport(pv2);
+            end
 
             r1 = point - s1.p;
             r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
@@ -155,19 +167,28 @@ classdef collisionChecker < handle
             v2 = s2.v + s2.w * r2Ort;
             
             n = penetrationVector/norm(penetrationVector);
-            if abs(norm(n) - 1) > 0.001
-                norm(n)
-                pause();
-            end
             vr = v2 - v1;
             
+            if (abs(vr' * n) < 0.15)
+                e = 0;
+            end
             
             if ((penetrationVector' * vr) > 0)
-                jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
-                j = abs(jr)*n;
-
-                s1.impulse(point, j);
-                s2.impulse(point, -j);
+                
+                if (~s1.movable)
+                    jr = -(1 + e)*vr' * n / (1/m2 + 1/i2 * (n' * r2Ort)^2);
+                    j = abs(jr)*n;
+                    s2.impulse(point, -j);
+                elseif (~s2.movable)
+                    jr = -(1 + e)*vr' * n / (1/m1 + 1/i1 * (n' * r1Ort)^2);
+                    j = abs(jr)*n;
+                    s1.impulse(point, j);
+                else
+                    jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
+                    j = abs(jr)*n;
+                    s1.impulse(point, j);
+                    s2.impulse(point, -j);
+                end
             end
         end
         
