@@ -9,9 +9,8 @@
 #define GLM_FORCE_RADIANS
 class Shape2D{
 public:
-	Shape2D():geometry(new Geometry2D), material(new Material2D){};
-	Shape2D(Geometry2D* g, Material2D* m):geometry(g), material(m){};
-	void setAttribs(glm::vec2 pos, double theta);
+	Shape2D(Geometry2D* g = new Geometry2D, Material2D* m = new Material2D):geometry(g), material(m){};
+	void setAttribs(glm::vec2 pos, double theta, glm::vec2 pivot);
 	void setGeo(Geometry2D geo); //Not implemented
 	void setMat(Material2D mat); //Not implemented
 	std::vector<glm::vec2> getLocalVertices();

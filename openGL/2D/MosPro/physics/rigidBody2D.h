@@ -10,6 +10,9 @@
 #include <math.h>
 #include "../graphics/shape2D.h"
 #include "physicsEngine2D.h"
+#include <iostream>
+#include <glm\glm.hpp>
+#include "../glmIO.h"
 
 
 class PhysicsEngine2D;
@@ -21,9 +24,13 @@ class RigidBody2D {
 		void step();
 		void impulse(glm::vec2 anchor, glm::vec2 j);
 
+		glm::vec2 getPosition();
+
 		double getMass();
 		double getInertia();
 		
+		Shape2D* getShape();
+
 		double getKineticEnergy();
 		double getPotentialEnergy();
 		
@@ -37,9 +44,14 @@ class RigidBody2D {
 		// mass and inertia
 		double mass;
 		double inertia;
-		
+		glm::vec2 com;
+
+
 		Shape2D* shape;
 		PhysicsEngine2D* engine;
+
+
+
 
 		void calculateMass();
 		void calculateInertia();

@@ -6,7 +6,8 @@
 #include <vector>
 #include "shape2D.h"
 #include "bufferObject.h"
-
+#include "../lib/shader.hpp"
+#include <iostream>
 
 
 

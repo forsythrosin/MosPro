@@ -1,5 +1,5 @@
 #include "rigidBody2D.h"
-#include <iostream>
+
 
 RigidBody2D::RigidBody2D(Shape2D *s, glm::vec2 p, glm::vec2 v, double a, double w) {
 	shape = s;
@@ -8,11 +8,14 @@ RigidBody2D::RigidBody2D(Shape2D *s, glm::vec2 p, glm::vec2 v, double a, double 
 	velocity = v;
 	angularVelocity = w;
 
-	glm::vec2 com = getCenterOfMass();
-	position += com;
+	com = getCenterOfMass();
 
 	calculateMass();
 	calculateInertia();
+
+	//std::cout << "com: " << com;
+
+	shape->setAttribs(position, angle, com);
 
 }
 
@@ -26,23 +29,22 @@ void RigidBody2D::step() {
 	angle += angularVelocity;
 	position += meanVelocity;
 
-	shape->setAttribs(position, angle, 1.0);
+	shape->setAttribs(position, angle, com);
 
 
 	// naive collision response with walls
 
-	if (position.y < -1 || position.y > 1) {
+	if (position.y < -10 || position.y > 10) {
 		velocity.y *= -1;
 	}
 
-	if (position.x < -1 || position.x > 1) {
+	if (position.x < -10 || position.x > 10) {
 		velocity.x *= -1;
 	}
 }
 
 
 
-// Private methods
 
 glm::vec2 RigidBody2D::getCenterOfMass() {
 	std::vector<glm::vec2> v = shape->getLocalVertices();
@@ -126,8 +128,15 @@ void RigidBody2D::impulse(glm::vec2 anchor, glm::vec2 j) {
 	
 	glm::perp(r, perp);
 
-	velocity.x += j.x / mass;
-	velocity.y += j.y / mass;
+	velocity += j / (float)mass;
 
 	angularVelocity += glm::dot(perp, j) / inertia;
+}
+
+glm::vec2 RigidBody2D::getPosition() {
+	return position;
+}
+
+Shape2D* RigidBody2D::getShape(){
+	return this->shape;
 }
