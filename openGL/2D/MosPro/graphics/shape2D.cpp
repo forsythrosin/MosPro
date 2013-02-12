@@ -7,7 +7,7 @@ void Shape2D::setAttribs(glm::vec2 pos, double theta, glm::vec2 pivot){
 		)*
 		glm::rotate<glm::lowp_float>(
 			glm::mat4(1.0f),
-			theta,
+			glm::degrees(theta),
 			glm::vec3(0.0f,0.0f,1.0f)
 		)*
 		glm::translate(
@@ -15,6 +15,10 @@ void Shape2D::setAttribs(glm::vec2 pos, double theta, glm::vec2 pivot){
 			glm::vec3(-pivot, 0));
 }
 
+Shape2D::~Shape2D(){
+	delete geometry;
+	delete material;
+}
 
 std::vector<glm::vec2> Shape2D::getLocalVertices(){
 	return geometry->getVectors();

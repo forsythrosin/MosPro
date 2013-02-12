@@ -2,6 +2,8 @@
 
 
 MinkowskiPoint2D::MinkowskiPoint2D(Shape2D* s1, Shape2D* s2, glm::vec2 d, bool debug){
+	this->s1 = s1;
+	this->s2 = s2;
 	this->p1 = getFarthestPointInDirection(s1, d);
 	this->p2 = getFarthestPointInDirection(s2, -d);
 	this->p = this->p1 - this->p2;
@@ -10,10 +12,6 @@ MinkowskiPoint2D::MinkowskiPoint2D(Shape2D* s1, Shape2D* s2, glm::vec2 d, bool d
 		std::cout << "p2: " << this->p2 << std::endl;
 		std::cout << "p3: " << this->p << std::endl;
 	}
-}
-
-
-MinkowskiPoint2D::~MinkowskiPoint2D(void){
 }
 
 glm::vec2 MinkowskiPoint2D::getFarthestPointInDirection(Shape2D* s1, glm::vec2 d){
@@ -34,4 +32,12 @@ glm::vec2 MinkowskiPoint2D::getFarthestPointInDirection(Shape2D* s1, glm::vec2 d
 
 glm::vec2 MinkowskiPoint2D::getP(){
 	return p;
+}
+
+glm::vec2 MinkowskiPoint2D::getP1(){
+	return p1;
+}
+
+glm::vec2 MinkowskiPoint2D::getP2(){
+	return p2;
 }

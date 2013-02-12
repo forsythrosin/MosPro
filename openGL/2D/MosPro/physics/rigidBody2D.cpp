@@ -27,6 +27,7 @@ void RigidBody2D::step() {
 	glm::vec2 meanVelocity = 0.5f * (vBefore + velocity);
 
 	angle += angularVelocity;
+	std::cout << angle << std::endl;
 	position += meanVelocity;
 
 	shape->setAttribs(position, angle, com);
@@ -125,11 +126,9 @@ double RigidBody2D::getPotentialEnergy() {
 void RigidBody2D::impulse(glm::vec2 anchor, glm::vec2 j) {
 	glm::vec2 r = anchor - position,
 		      perp;
-	
-	glm::perp(r, perp);
+	perp = glm::vec2(-r.y,r.x);
 
 	velocity += j / (float)mass;
-
 	angularVelocity += glm::dot(perp, j) / inertia;
 }
 
@@ -139,4 +138,27 @@ glm::vec2 RigidBody2D::getPosition() {
 
 Shape2D* RigidBody2D::getShape(){
 	return this->shape;
+}
+
+double RigidBody2D::getMass(){
+	return this->mass;
+}
+double RigidBody2D::getInertia(){
+	return this->inertia;
+}
+
+void RigidBody2D::teleport(glm::vec2 transVect){
+	position -= transVect;
+	/*double vMagnitude = sqrt(glm::length2(velocity) - 2*abs(engine->getGravity().y) * transVect.y);
+	if(velocity.x > 0 && velocity.y > 0){
+		velocity /= (float)(glm::length(velocity) * vMagnitude);
+	}*/
+}
+
+double RigidBody2D::getAngularVelocity(){
+	return angularVelocity;
+}
+
+glm::vec2 RigidBody2D::getVelocity(){
+	return velocity;
 }

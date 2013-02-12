@@ -81,9 +81,9 @@ Shape2D* s1 = new Shape2D(&g1);
 	RigidBody2D* rb1 = new RigidBody2D(s1, p1, v); 
 	RigidBody2D* rb2 = new RigidBody2D(s2, p2, -v); 
 	RigidBody2D* rb3 = new RigidBody2D(s3, p2*-3.0f, -v); 
-	RigidBody2D* rb4 = new RigidBody2D(s4, p2*3.0f, -v); 
-	RigidBody2D* rb5 = new RigidBody2D(s5, p2*6.0f, -v); 
-	RigidBody2D* rb6 = new RigidBody2D(s6, p2*-6.0f, -v); 
+	RigidBody2D* rb4 = new RigidBody2D(s4, p2*3.0f, v); 
+	RigidBody2D* rb5 = new RigidBody2D(s5, p2*4.0f, -v); 
+	RigidBody2D* rb6 = new RigidBody2D(s6, p2*-4.0f, v); 
 
 	pe.add(rb1);
 	pe.add(rb2);
@@ -94,8 +94,6 @@ Shape2D* s1 = new Shape2D(&g1);
 	
 	ge.bindBuffers();
 	
-	ge.render();
-	
 	do{
 		pe.step();
 		ge.render();
@@ -103,8 +101,6 @@ Shape2D* s1 = new Shape2D(&g1);
 	while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
 		   glfwGetWindowParam( GLFW_OPENED ) );
 		   
-	system("pause");
-	cin.get();
 	ge.deleteBuffers();
 	glfwTerminate();
 	

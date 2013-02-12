@@ -6,11 +6,11 @@
 #include <vector>
 #include "geometry2D.h"
 #include "material2D.h"
-#define GLM_FORCE_RADIANS
 class Shape2D{
 public:
 	Shape2D(Geometry2D* g = new Geometry2D, Material2D* m = new Material2D):geometry(g), material(m){};
-	void setAttribs(glm::vec2 pos, double theta, glm::vec2 pivot);
+	~Shape2D();
+	void setAttribs(glm::vec2 pos, double theta, glm::vec2 pivot = glm::vec2(0));
 	void setGeo(Geometry2D geo); //Not implemented
 	void setMat(Material2D mat); //Not implemented
 	std::vector<glm::vec2> getLocalVertices();

@@ -23,6 +23,7 @@ class RigidBody2D {
 
 		void step();
 		void impulse(glm::vec2 anchor, glm::vec2 j);
+		void teleport(glm::vec2 transVect);
 
 		glm::vec2 getPosition();
 
@@ -34,6 +35,9 @@ class RigidBody2D {
 		double getKineticEnergy();
 		double getPotentialEnergy();
 		
+		double getAngularVelocity();
+		glm::vec2 getVelocity();
+
 	private:
 		// position and velocity (linear and angular)
 		glm::vec2 position;
