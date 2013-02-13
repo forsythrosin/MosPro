@@ -1,5 +1,5 @@
 #include "rigidBody2D.h"
-#include <iostream>
+
 
 RigidBody2D::RigidBody2D(Shape2D *s, glm::vec2 p, glm::vec2 v, double a, double w) {
 	shape = s;
@@ -8,11 +8,14 @@ RigidBody2D::RigidBody2D(Shape2D *s, glm::vec2 p, glm::vec2 v, double a, double 
 	velocity = v;
 	angularVelocity = w;
 
-	glm::vec2 com = getCenterOfMass();
-	position += com;
+	com = getCenterOfMass();
 
 	calculateMass();
 	calculateInertia();
+
+	//std::cout << "com: " << com;
+
+	shape->setAttribs(position, angle, com);
 
 }
 
@@ -24,25 +27,25 @@ void RigidBody2D::step() {
 	glm::vec2 meanVelocity = 0.5f * (vBefore + velocity);
 
 	angle += angularVelocity;
+	std::cout << angle << std::endl;
 	position += meanVelocity;
 
-	shape->setAttribs(position, angle, 1.0);
+	shape->setAttribs(position, angle, com);
 
 
 	// naive collision response with walls
 
-	if (position.y < -1 || position.y > 1) {
+	if (position.y < -10 || position.y > 10) {
 		velocity.y *= -1;
 	}
 
-	if (position.x < -1 || position.x > 1) {
+	if (position.x < -10 || position.x > 10) {
 		velocity.x *= -1;
 	}
 }
 
 
 
-// Private methods
 
 glm::vec2 RigidBody2D::getCenterOfMass() {
 	std::vector<glm::vec2> v = shape->getLocalVertices();
@@ -123,11 +126,39 @@ double RigidBody2D::getPotentialEnergy() {
 void RigidBody2D::impulse(glm::vec2 anchor, glm::vec2 j) {
 	glm::vec2 r = anchor - position,
 		      perp;
-	
-	glm::perp(r, perp);
+	perp = glm::vec2(-r.y,r.x);
 
-	velocity.x += j.x / mass;
-	velocity.y += j.y / mass;
-
+	velocity += j / (float)mass;
 	angularVelocity += glm::dot(perp, j) / inertia;
+}
+
+glm::vec2 RigidBody2D::getPosition() {
+	return position;
+}
+
+Shape2D* RigidBody2D::getShape(){
+	return this->shape;
+}
+
+double RigidBody2D::getMass(){
+	return this->mass;
+}
+double RigidBody2D::getInertia(){
+	return this->inertia;
+}
+
+void RigidBody2D::teleport(glm::vec2 transVect){
+	position -= transVect;
+	/*double vMagnitude = sqrt(glm::length2(velocity) - 2*abs(engine->getGravity().y) * transVect.y);
+	if(velocity.x > 0 && velocity.y > 0){
+		velocity /= (float)(glm::length(velocity) * vMagnitude);
+	}*/
+}
+
+double RigidBody2D::getAngularVelocity(){
+	return angularVelocity;
+}
+
+glm::vec2 RigidBody2D::getVelocity(){
+	return velocity;
 }

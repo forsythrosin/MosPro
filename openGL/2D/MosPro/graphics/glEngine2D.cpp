@@ -1,7 +1,5 @@
 #include "glEngine2D.h"
-#include <common/shader.hpp>
-#include <common/shader.cpp>
-#include <iostream>
+
 glEngine2D::glEngine2D(glm::vec3 camera){
 	programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
 	modelID = glGetUniformLocation(programID, "MM");
@@ -48,11 +46,8 @@ void glEngine2D::bindBuffers(){
 		GLfloat* colorL = new GLfloat[shapeList[i]->getLocalVertices().size()*3];
 		for(unsigned int j = 0; j < shapeList[i]->getLocalVertices().size(); j++){
 			colorL[j*3+0] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].x;
-			std::cout << " " << colorL[j*3+0];
 			colorL[j*3+1] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].y;
-			std::cout << " " << colorL[j*3+1];
 			colorL[j*3+2] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].z;
-			std::cout << " " << colorL[j*3+2] << std::endl;
 		}
 		glGenBuffers(1, &colorBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
@@ -70,8 +65,8 @@ void glEngine2D::render(){
 
 		glUseProgram(programID);
 
-		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &shapeList[i]->getModel()[0][0]);
-
+		glUniformMatrix4fv(modelID, 1, GL_FALSE, &shapeList[i]->getModel()[0][0]);
+		glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 

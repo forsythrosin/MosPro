@@ -6,12 +6,14 @@
 #include <vector>
 #include "shape2D.h"
 #include "bufferObject.h"
-
+#include "../lib/shader.hpp"
+#include <iostream>
 
 
 
 class glEngine2D{
 public:
+
 	glEngine2D(glm::vec3 camera = glm::vec3(0.1f));
 	void add(Shape2D* s = new Shape2D);
 	Shape2D*& get(int i);
@@ -20,6 +22,7 @@ public:
 	void bindBuffers();
 	void render();
 	void deleteBuffers();
+
 private:
 	GLuint programID;
 	GLuint modelID;
