@@ -46,12 +46,12 @@ classdef shape < handle
             obj.airResistance = 0.0;
         end
         
-        function teleport(obj, transVect)
+        function teleport(obj, transVect, rotation)
             obj.p = obj.p + transVect;
-
-            vMagnitude = sqrt(abs(norm(obj.v)^2 - 2*abs(obj.gravity(2))*transVect(2)));
+            obj.theta = obj.theta + rotation;
             
-            if (obj.v > 0)
+            if (norm(obj.v) > 0)
+                vMagnitude = sqrt(abs(norm(obj.v)^2 - 2*abs(obj.gravity(2))*transVect(2)));
                 obj.v = obj.v / norm(obj.v) * vMagnitude;
             end
         end
@@ -79,9 +79,9 @@ classdef shape < handle
                 if (abs(obj.p(2)) > size)
                     obj.v(2) = -obj.v(2);
                     if sign(obj.p(2)) > 0
-                        obj.teleport([0 (size - obj.p(2))]');
+                        obj.teleport([0 (size - obj.p(2))]', 0);
                     else
-                        obj.teleport([0 (-size - obj.p(2))]');
+                        obj.teleport([0 (-size - obj.p(2))]', 0);
                     end
                 end
             end
