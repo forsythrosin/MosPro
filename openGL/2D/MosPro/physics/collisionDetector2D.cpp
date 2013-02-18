@@ -21,11 +21,10 @@ bool CollisionDetector2D::gjk(RigidBody2D* a, RigidBody2D* b, simplex2D &sOut) {
 		glm::vec2 p = s[s.size()-1].getP();
 		if(glm::dot(p, d) < 0){
 			return false;
-		} else {
-			if(containsOrigin(s,d)){
-				sOut = s;
-				return true;
-			}
+		} 
+		else if(containsOrigin(s,d)){
+			sOut = s;
+			return true;
 		}
 	}
 }
@@ -33,7 +32,7 @@ bool CollisionDetector2D::gjk(RigidBody2D* a, RigidBody2D* b, simplex2D &sOut) {
 
 bool CollisionDetector2D::containsOrigin(simplex2D &s, glm::vec2 &d) {
 	glm::vec2 a = s[s.size()-1].getP();
-	glm::vec2 ao = -1.0f*a;
+	glm::vec2 ao = a * -1.0f;
 
 	if (s.size() == 3) {
 
@@ -64,22 +63,14 @@ bool CollisionDetector2D::containsOrigin(simplex2D &s, glm::vec2 &d) {
 		glm::vec2 b = s[0].getP();
 		glm::vec2 ab = b - a;
 		glm::vec2 abPerp = glm::vec2(-ab.y, ab.x);
-		//glm::mat2 m(abPerp.x*ao.x, abPerp.y*ao.x, abPerp.x*ao.y, abPerp.y*ao.y);
 		d = glm::dot(abPerp, ao)*abPerp;
-		/*std::cout << "ab: " << ab << std::endl;
-		std::cout << "b: " << b << std::endl;
-		std::cout << "abPerp: " << abPerp << std::endl;
-		std::cout << "d: " << d << std::endl;
-		std::cout << "ao: " << ao << std::endl;*/
 	}
 	return false;
 }
 
 Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &s){
 	while(true){
-
 		Edge e = findClosestEdge(s);
-
 		MinkowskiPoint2D p(a->getShape(),b->getShape(),e.getN());
 		
 		double d = glm::dot(p.getP(), glm::normalize(e.getN()));
@@ -95,7 +86,7 @@ Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &
 			}
 			else{
 				point = e.getMp1().getP2();
-				return Collision2D(a, b, point, penetrationVector);
+				return Collision2D(b, a, point, penetrationVector);
 			}
 		}
 		else{
@@ -109,11 +100,10 @@ Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &
 Edge CollisionDetector2D::findClosestEdge(simplex2D &s){
 	double big = std::numeric_limits<int>::max();
 	Edge closest = Edge(s[0],s[0] , 0, glm::vec2(big));
-	for(int i = 0; i < s.size(); i++){
-		int j = (i + 1) == s.size() ? 0 : i + 1;
+	for(int i = 0; i < s.size()-1; i++){
+		int j = i + 1;
 		glm::vec2 a = s[i].getP();
 		glm::vec2 b = s[j].getP();
-
 		glm::vec2 e = b - a;
 
 		e = glm::normalize(e);
@@ -136,6 +126,7 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBod
 	for(int i = 0; i < bodies.size(); i++) {
 		for(int j = i + 1; j < bodies.size(); j++) {
 			simplex2D s;
+			std::cout << "Checking " << i << " against " << j << std::endl;
 			if (gjk(bodies[i], bodies[j], s)) {
 				collisions.push_back(epa(bodies[i], bodies[j], s));
 			}	

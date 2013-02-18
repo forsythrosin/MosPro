@@ -21,7 +21,7 @@ class PhysicsEngine2D
 		void step();
 		glm::vec2 getGravity();
 		void collisionResponse(std::vector<Collision2D> collisions);
-
+		double getTotalKineticEnergy();
 
 	private:
 

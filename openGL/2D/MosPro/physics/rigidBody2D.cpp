@@ -27,7 +27,6 @@ void RigidBody2D::step() {
 	glm::vec2 meanVelocity = 0.5f * (vBefore + velocity);
 
 	angle += angularVelocity;
-	std::cout << angle << std::endl;
 	position += meanVelocity;
 
 	shape->setAttribs(position, angle, com);
@@ -148,11 +147,13 @@ double RigidBody2D::getInertia(){
 }
 
 void RigidBody2D::teleport(glm::vec2 transVect){
-	position -= transVect;
-	/*double vMagnitude = sqrt(glm::length2(velocity) - 2*abs(engine->getGravity().y) * transVect.y);
-	if(velocity.x > 0 && velocity.y > 0){
+	position += transVect;
+	double vMagnitude = sqrt( abs(pow(glm::length(velocity),2) - 2*engine->getGravity().y * transVect.y));
+	std::cout << vMagnitude << " " << glm::length(velocity) << std::endl;
+	std::cin.get();
+	if(glm::length(velocity) > 0 ){
 		velocity /= (float)(glm::length(velocity) * vMagnitude);
-	}*/
+	}
 }
 
 double RigidBody2D::getAngularVelocity(){

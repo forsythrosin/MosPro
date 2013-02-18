@@ -18,7 +18,7 @@ glm::vec2 MinkowskiPoint2D::getFarthestPointInDirection(Shape2D* s1, glm::vec2 d
 	std::vector<glm::vec2> vert = s1->getGlobalVertices();
 	double dist = glm::dot(vert[0], d);
 	int index = 0;
-	for(int i = 1; i < vert.size(); i++){
+	for(unsigned int i = 1; i < vert.size(); i++){
 		double curr = glm::dot(vert[i], d);
 		//std::cout << "vert[" << i << "] = "<< vert[i] << std::endl;
 		if (curr > dist){

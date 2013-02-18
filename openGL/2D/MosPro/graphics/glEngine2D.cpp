@@ -9,6 +9,7 @@ glEngine2D::glEngine2D(glm::vec3 camera){
 
 void glEngine2D::add(Shape2D* s){
 	shapeList.push_back(s);
+	s->engine = this;
 }
 
 Shape2D*& glEngine2D::get(int i){
@@ -26,6 +27,24 @@ void glEngine2D::setCamera(glm::vec3 camera){
 	));
 }
 
+void glEngine2D::drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color){
+	GLfloat glBuffer[6] = {start.x, start.y, 0, end.x, end.y, 0};
+	GLuint vertexBuffer;
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glBuffer), glBuffer, GL_STATIC_DRAW);
+	
+	GLfloat colorL[6] = {color.r, color.g, color.b, color.r, color.g, color.b};
+	GLuint colorBuffer;
+	glGenBuffers(1, &colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(colorL), colorL, GL_STATIC_DRAW);
+	temporaryLines.push_back(new BufferObject(colorBuffer, vertexBuffer));
+}
+
+void glEngine2D::drawVector(glm::vec2 orig, glm::vec2 direc, glm::vec3 color){
+	drawLine(orig, orig+direc, color);
+}
 
 void glEngine2D::bindBuffers(){
 	for(unsigned int i = 0; i < shapeList.size();i++){
@@ -96,11 +115,38 @@ void glEngine2D::render(){
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 	}
+	for(int i = 0; i < temporaryLines.size(); i++){
+		glm::mat4 model = glm::mat4(1.0f);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glUniformMatrix4fv(modelID, 1, GL_FALSE, &model[0][0]);
+		glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
+
+		glBindBuffer(GL_ARRAY_BUFFER, temporaryLines.at(i)->getVertexBuffer());
+		glVertexAttribPointer(
+			0,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			0,
+			(void*)0
+		);
+
+
+		glBindBuffer(GL_ARRAY_BUFFER, temporaryLines.at(i)->getColorBuffer());
+		glVertexAttribPointer(
+			1,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			0,
+			(void*)0
+		);
+	}
 	glfwSwapBuffers();
 }
 
 void glEngine2D::deleteBuffers(){
-	for(int i = 0; i < buffers.size(); i++){
-		delete buffers[i];
-	}
+	buffers.clear();
 }
