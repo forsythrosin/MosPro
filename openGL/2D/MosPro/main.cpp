@@ -50,8 +50,6 @@ int main( void )
 	geo.push_back(vec2(1,1));
 	geo.push_back(vec2(0,1));
 
-
-
 	Geometry2D g1(geo);
 	Geometry2D g2(geo);
 
@@ -81,8 +79,8 @@ int main( void )
 
 /*	RigidBody2D* rb1 = new RigidBody2D(s1, vec2(0,1.5), v); 
 	RigidBody2D* rb2 = new RigidBody2D(s2, vec2(0,-1.5), -v); */
-	RigidBody2D* rb3 = new RigidBody2D(s3, vec2(1.6,0), v); 
-	RigidBody2D* rb4 = new RigidBody2D(s4, vec2(-1.5,0), -v); 
+	RigidBody2D* rb3 = new RigidBody2D(s3, vec2(1.6,0.6), v, 0.1); 
+	RigidBody2D* rb4 = new RigidBody2D(s4, vec2(-1.5,0), -v, -0.1); 
 /*	RigidBody2D* rb5 = new RigidBody2D(s5, vec2(3,3), v);
 	RigidBody2D* rb6 = new RigidBody2D(s6, vec2(-3,-3), -v);*/
 
