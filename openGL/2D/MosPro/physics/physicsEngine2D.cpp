@@ -27,7 +27,7 @@ void PhysicsEngine2D::step() {
 }
 
 glm::vec2 PhysicsEngine2D::getGravity() {
-	return glm::vec2(0, -0.0001);
+	return glm::vec2(0, 0);
 }
 
 void PhysicsEngine2D::collisionResponse(std::vector<Collision2D> collisions){
