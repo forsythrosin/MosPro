@@ -180,13 +180,17 @@ double RigidBody2D::getInertia(){
 }
 
 void RigidBody2D::teleport(glm::vec2 transVect){
+
 	setPosition(position + transVect);
-	double vMagnitude = sqrt( abs(pow(glm::length(velocity),2) - 2*engine->getGravity().y * transVect.y));
-	std::cout << vMagnitude << " " << glm::length(velocity) << std::endl;
-	//std::cin.get();
-	/*if(glm::length(velocity) > 0 ){
-		velocity /= (float)(glm::length(velocity) * vMagnitude);
-	}*/
+	double vMagnitude = sqrt( pow(glm::length(velocity),2 - 2*engine->getGravity().y * transVect.y));
+	//std::cout << vMagnitude << " " << glm::length(velocity) << std::endl;
+
+	if(glm::length(velocity) > 0 ){
+		velocity = glm::normalize(velocity)*(float)vMagnitude;
+		//std::cout <<  (float)(glm::length(velocity) * vMagnitude) << std::endl;
+		//std::cin.get();
+	}
+
 }
 
 double RigidBody2D::getAngularVelocity(){

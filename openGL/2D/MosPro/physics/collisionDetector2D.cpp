@@ -19,7 +19,7 @@ bool CollisionDetector2D::gjk(RigidBody2D* a, RigidBody2D* b, simplex2D &sOut) {
 		MinkowskiPoint2D mp = MinkowskiPoint2D(a->getShape(), b->getShape(), d);
 		s.push_back(mp);
 		glm::vec2 p = s[s.size()-1].getP();
-		if(glm::dot(p, d) < 0){
+		if(glm::dot(p, d) <= 0){
 			return false;
 		} 
 		else if(containsOrigin(s,d)){
@@ -42,23 +42,19 @@ bool CollisionDetector2D::containsOrigin(simplex2D &s, glm::vec2 &d) {
 		glm::vec2 ab = b - a;
 		glm::vec2 ac = c - a;
 
-		/*std::cout << "a: " << a << std::endl;
-		std::cout << "b: " << b << std::endl;
-		std::cout << "c: " << c << std::endl;*/
-
-
 		glm::vec2 abPerp = ab*glm::dot(ac,ab) - ac*glm::dot(ab,ab);
 		glm::vec2 acPerp = ac*glm::dot(ab,ac) - ab*glm::dot(ac,ac);
 
-		if (glm::dot(abPerp,ao) > 0) {
+		if (glm::dot(abPerp, ao) >= 0) {
 			s.erase(s.begin());
 			d = abPerp;
-		} else if (glm::dot(acPerp, ao) > 0) {
+		} else if (glm::dot(acPerp, ao) >= 0) {
 			s.erase(s.begin()+1);
 			d = acPerp;
 		} else {
 			return true;
 		}
+
 	} else {
 		glm::vec2 b = s[0].getP();
 		glm::vec2 ab = b - a;
