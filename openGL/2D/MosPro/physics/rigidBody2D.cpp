@@ -84,10 +84,7 @@ void RigidBody2D::calculateBoundingBox() {
 		}
 	}
 	
-	std::cout << "LOCAL BOUDNINGBOX" << std::endl;
 	localBoundingBox = Box2D(-distance, -distance, distance, distance);
-	std::cout << localBoundingBox;
-
 }
 
 const Box2D RigidBody2D::getBoundingBox() const {
