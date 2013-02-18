@@ -22,8 +22,8 @@ classdef collisionChecker < handle
                 else
                     if obj.containsOrigin()
                         collision = true;
-                        [t1, t2, point, penetrationVector] = obj.epa(s1, s2);
-                        obj.collisionRespond(t1, t2, point, penetrationVector);
+                        [t1, t2, point, penetrationVector, a, b] = obj.epa(s1, s2);
+                        obj.collisionRespond(t1, t2, point, penetrationVector, a, b);
                         break;
                     end
                 end
@@ -68,7 +68,7 @@ classdef collisionChecker < handle
         end
         
         
-        function [t1, t2, point, penetrationVector] = epa(obj, s1, s2)
+        function [t1, t2, point, penetrationVector, a, b] = epa(obj, s1, s2)
             tolerance = 0.00001;
             
             while true
@@ -80,6 +80,15 @@ classdef collisionChecker < handle
                     
                     if norm(e.su1.p1 - e.su2.p1) < tolerance
                         point = e.su1.p1; %( = e.su2.p1)
+                        a = e.su1.p2;
+                        b = e.su2.p2;
+                        c = (b - a);
+                        cOrt = [-c(2) c(1)]';
+                        if (dot(cOrt,penetrationVector) < 0)
+                           temp = a;
+                           a = b;
+                           b = temp;
+                        end
                         penetrationVector = -penetrationVector;
                         t1 = s1;
                         t2 = s2;
@@ -87,6 +96,15 @@ classdef collisionChecker < handle
                         point = e.su1.p2; %( = e.su2.p2)
                         t1 = s2;
                         t2 = s1;
+                        a = e.su1.p1;
+                        b = e.su2.p1;
+                        c = (b - a);
+                        cOrt = [-c(2) c(1)]';
+                        if (dot(cOrt,penetrationVector) < 0)
+                           temp = a;
+                           a = b;
+                           b = temp;
+                        end
                     end
                     %plot([point(1) point(1)+penetrationVector(1)], [point(2) point(2)+penetrationVector(2)], 'k');
                     break;
@@ -124,7 +142,7 @@ classdef collisionChecker < handle
         end
         
         
-        function collisionRespond(obj, s1, s2, point, penetrationVector)
+        function collisionRespond(obj, s1, s2, point, penetrationVector, a, b)
             e = 0.5;
             m1 = s1.getMass();
             i1 = s1.getInertia();
@@ -138,43 +156,76 @@ classdef collisionChecker < handle
             penetrationVector = penetrationVector * 1.0001;
             
             if (~s1.movable)
-                ps1 = 0;
-                ps2 = 1;
+                inverseInertia = 1 / (1/m2 + 1/i2);
+                lm1 = 0;
+                lm2 = 1/m2 * inverseInertia;
+                am1 = 0;
+                am2 = 1/i2 * inverseInertia;
             elseif (~s2.movable)
-                ps2 = 0;
-                ps1 = 1;
+                inverseInertia = 1 / (1/m1 + 1/i1);
+                lm1 = 1/m1 * inverseInertia;
+                lm2 = 0;
+                am1 = 1/i1 * inverseInertia;
+                am2 = 0;
+                
             else
-                ps1 = m1*m2/(m1+m2)/m1;
-                ps2 = m1*m2/(m1+m2)/m2;
+                inverseInertia = 1 / (1/m1 + 1/m2 + 1/i1 + 1/i2);
+                lm1 = 1/m1 * inverseInertia;
+                lm2 = 1/m2 * inverseInertia;
+                am1 = 1/i1 * inverseInertia;
+                am2 = 1/i2 * inverseInertia;
             end
             
-            pv1 = penetrationVector * ps1;
-            pv2 = - penetrationVector * ps2;
+            %lm1 + lm2
             
-            if (s1.movable)
-                s1.teleport(pv1);
-            end
-            if (s2.movable)
-                s2.teleport(pv2);
-            end
-
             r1 = point - s1.p;
             r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
-            v1 = s1.v + s1.w * r1Ort;
-
             r2 = point - s2.p;
             r2Ort = [-r2(2) r2(1)]';
+            
+            rotDir = sign(r1Ort' * penetrationVector);
+            lm1 = penetrationVector * lm1;
+            lm2 = - penetrationVector * lm2;
+            
+            am = am1 + am2;
+            a = a + lm2;
+            b = b + lm2;
+            
+            %plotVector(point, lm1, 'r');
+            %plotVector(point, lm2, 'm');
+            
+            %plotVector(a, b-a, 'r');
+            
+            %fprintf('%s ligger i %s\n', s1.color, s2.color);
+            [theta1 point] = findClosestRotationAngle(a, b, penetrationVector, s1.p + lm1, r1);
+            %pause();
+            theta2 = 0;
+            %theta1
+            
+            if (s1.movable)
+                s1.teleport(lm1, theta1);
+            end
+            if (s2.movable)
+                s2.teleport(lm2, theta2);
+            end
+            %s1.plot();
+            %s2.plot();
+            %plot(point(1), point(2), 'r*');
+            if (abs(theta1) > 1)
+                pause();
+            end
+            
+            v1 = s1.v + s1.w * r1Ort;
             v2 = s2.v + s2.w * r2Ort;
             
             n = penetrationVector/norm(penetrationVector);
             vr = v2 - v1;
             
-            if (abs(vr' * n) < 0.15)
+            if (norm(vr) < 0.1)
                 e = 0;
             end
             
             if ((penetrationVector' * vr) > 0)
-                
                 if (~s1.movable)
                     jr = -(1 + e)*vr' * n / (1/m2 + 1/i2 * (n' * r2Ort)^2);
                     j = abs(jr)*n;
