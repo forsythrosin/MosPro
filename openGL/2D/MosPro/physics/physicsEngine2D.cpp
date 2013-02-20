@@ -47,7 +47,7 @@ double PhysicsEngine2D::getTotalKineticEnergy() {
 	return e;
 }
 
-<<<<<<< HEAD
+
 double PhysicsEngine2D::getTotalPotentialEnergy(){
 	double e = 0.0;
 	for(unsigned int i = 0; i < bodies.size(); i++){
@@ -61,8 +61,8 @@ void PhysicsEngine2D::setDebug(DebugInterface* debug){
 
 DebugInterface* PhysicsEngine2D::getDebug(){
 	return debug;
-=======
+}
+
 void PhysicsEngine2D::updatePosition(RigidBody2D *rb) {
 	bsp->updatePosition(rb);
->>>>>>> 655d2db90a9523a46ceff7c434c13f7dd4b85cc2
 }

@@ -6,11 +6,8 @@
 #include <glm/glm.hpp>
 #include "collision2D.h"
 #include <cmath>
-<<<<<<< HEAD
 #include "../lib/debugInterface.h"
-=======
 #include "BSPNode2D.h"
->>>>>>> 655d2db90a9523a46ceff7c434c13f7dd4b85cc2
 
 class RigidBody2D;
 class CollisionDetector2D;
@@ -32,9 +29,10 @@ class PhysicsEngine2D
 
 		void setDebug(DebugInterface*);
 		DebugInterface* getDebug();
+		void updatePosition(RigidBody2D*);
 	private:
 		DebugInterface *debug;
-		void updatePosition(RigidBody2D*);
+		
 	
 		CollisionDetector2D* collisionDetector;
 		std::vector<RigidBody2D*> bodies;

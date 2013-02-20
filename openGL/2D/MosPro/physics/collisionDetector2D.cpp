@@ -68,15 +68,16 @@ Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &
 	while(true){
 		Edge e = findClosestEdge(s);
 		MinkowskiPoint2D p(a->getShape(),b->getShape(),e.getN());
-		
+		//a->getEngine()->getDebug()->debugLine(p.getP1(),p.getP2());
 		double d = glm::dot(p.getP(), glm::normalize(e.getN()));
 		
 		if(d - glm::length(e.getN()) < CollisionDetector2D::tolerance){
 
 			glm::vec2 penetrationVector = e.getN();
 			glm::vec2 point;
-			if(glm::length((e.getMp1().getP() - e.getMp2().getP())) < CollisionDetector2D::tolerance){
+			if(glm::length((e.getMp1().getP1() - e.getMp2().getP1())) < CollisionDetector2D::tolerance){
 				point = e.getMp1().getP1();
+
 				penetrationVector *= -1;
 				return Collision2D(a, b, point, penetrationVector);
 			}
@@ -96,8 +97,8 @@ Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &
 Edge CollisionDetector2D::findClosestEdge(simplex2D &s){
 	double big = std::numeric_limits<int>::max();
 	Edge closest = Edge(s[0],s[0] , 0, glm::vec2(big));
-	for(int i = 0; i < s.size()-1; i++){
-		int j = i + 1;
+	for(int i = 0; i < s.size(); i++){
+		int j = (i + 1) % s.size();
 		glm::vec2 a = s[i].getP();
 		glm::vec2 b = s[j].getP();
 		glm::vec2 e = b - a;
