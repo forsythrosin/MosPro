@@ -1,8 +1,12 @@
 #pragma once
+#ifndef __COLLISION2D__
+#define __COLLISION2D__
 #include "rigidBody2D.h"
+#include "collision2D.h"
 #include <glm/glm.hpp>
 #include "../glmIO.h"
 #include <iomanip>
+
 class RigidBody2D;
 
 class Collision2D{
@@ -19,4 +23,6 @@ private:
 	RigidBody2D* rb2;
 	glm::vec2 point, penetrationVector;
 };
+
+#endif
 

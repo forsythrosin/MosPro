@@ -57,7 +57,7 @@ void glEngine2D::drawVector(glm::vec2 orig, glm::vec2 direc, glm::vec3 color, do
 
 void glEngine2D::bindBuffers(){
 	for(unsigned int i = 0; i < shapeList.size();i++){
-		buffers.push_back(new BufferObject(shapeList[i]));
+		buffers.push_front(new BufferObject(shapeList[i]));
 	}
 }
 
@@ -65,15 +65,16 @@ void glEngine2D::bindBuffers(){
 void glEngine2D::render(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
-	for(unsigned int i = 0; i < buffers.size(); i++){
+	std::list<BufferObject*>::iterator i;
+	for(i = buffers.begin(); i != buffers.end(); ++i){
 
 		glUseProgram(programID);
-		glUniformMatrix4fv(modelID, 1, GL_FALSE, &buffers[i]->getShape()->getModel()[0][0]);
-		glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
+		glUniformMatrix4fv(modelID, 1, GL_FALSE, &(*i)->getShape()->getModel()[0][0]);
+
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 
-		glBindBuffer(GL_ARRAY_BUFFER, buffers.at(i)->getVertexBuffer());
+		glBindBuffer(GL_ARRAY_BUFFER, (*i)->getVertexBuffer());
 		glVertexAttribPointer(
 			0,
 			3,
@@ -84,7 +85,7 @@ void glEngine2D::render(){
 		);
 
 
-		glBindBuffer(GL_ARRAY_BUFFER, buffers.at(i)->getColorBuffer());
+		glBindBuffer(GL_ARRAY_BUFFER, (*i)->getColorBuffer());
 		glVertexAttribPointer(
 			1,
 			3,
@@ -93,24 +94,28 @@ void glEngine2D::render(){
 			0,
 			(void*)0
 		);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, buffers.at(i)->getShape()->getLocalVertices().size());
+		glDrawArrays(GL_TRIANGLE_FAN, 0, (*i)->getShape()->getLocalVertices().size());
 
 
 
 	}
-	for(unsigned int i = 0; i < temporaryLines.size(); i++){
-		if(temporaryLines[i]->frameStep()){
-			temporaryLines.erase(temporaryLines.begin()+i);
+	std::list<TemporaryBufferObject*>::iterator it;
+	for(it = temporaryLines.begin(); it != temporaryLines.end(); it++){
+		if((*it)->frameStep()){
+			it = temporaryLines.erase(it);
+			if(it == temporaryLines.end()){
+				break;
+			}
 			continue;
 		}
 		glm::mat4 model = glm::mat4(1.0f);
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 
-		glUniformMatrix4fv(modelID, 1, GL_FALSE, &temporaryLines[i]->getShape()->getModel()[0][0]);
+		glUniformMatrix4fv(modelID, 1, GL_FALSE, &(*it)->getShape()->getModel()[0][0]);
 		glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
 
-		glBindBuffer(GL_ARRAY_BUFFER, temporaryLines.at(i)->getVertexBuffer());
+		glBindBuffer(GL_ARRAY_BUFFER, (*it)->getVertexBuffer());
 		glVertexAttribPointer(
 			0,
 			3,
@@ -121,7 +126,7 @@ void glEngine2D::render(){
 		);
 
 
-		glBindBuffer(GL_ARRAY_BUFFER, temporaryLines.at(i)->getColorBuffer());
+		glBindBuffer(GL_ARRAY_BUFFER, (*it)->getColorBuffer());
 		glVertexAttribPointer(
 			1,
 			3,
@@ -130,7 +135,7 @@ void glEngine2D::render(){
 			0,
 			(void*)0
 		);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, temporaryLines[i]->getShape()->getLocalVertices().size());
+		glDrawArrays(GL_TRIANGLE_FAN, 0, (*it)->getShape()->getLocalVertices().size());
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 	}
@@ -139,4 +144,5 @@ void glEngine2D::render(){
 
 void glEngine2D::deleteBuffers(){
 	buffers.clear();
+	temporaryLines.clear();
 }

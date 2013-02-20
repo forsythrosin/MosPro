@@ -22,5 +22,6 @@ private:
 	Geometry2D* geometry;
 	Material2D* material;
 	glm::mat4 modelMatrix;
+	std::vector<glm::vec2> globalVertices;
 };
 #endif
