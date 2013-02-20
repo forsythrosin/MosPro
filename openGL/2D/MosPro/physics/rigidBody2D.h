@@ -10,6 +10,7 @@
 #include <math.h>
 #include "../graphics/shape2D.h"
 #include "physicsEngine2D.h"
+#include "../box2D.h"
 #include <iostream>
 #include <glm\glm.hpp>
 #include "../glmIO.h"
@@ -26,9 +27,11 @@ class RigidBody2D {
 		void teleport(glm::vec2 transVect);
 
 		glm::vec2 getPosition();
+		void setPosition(glm::vec2 pos);
 
 		double getMass();
 		double getInertia();
+		const Box2D getBoundingBox() const;
 		
 		Shape2D* getShape();
 		PhysicsEngine2D* getEngine();
@@ -52,6 +55,7 @@ class RigidBody2D {
 		// mass and inertia
 		double mass;
 		double inertia;
+		Box2D localBoundingBox;
 		glm::vec2 com;
 
 
@@ -59,10 +63,11 @@ class RigidBody2D {
 		PhysicsEngine2D* engine;
 
 
-
-
 		void calculateMass();
 		void calculateInertia();
+		void calculateBoundingBox();
+
+
 		glm::vec2 getFarthestPointInDirection(glm::vec2);
 		glm::vec2 getCenterOfMass();
 
