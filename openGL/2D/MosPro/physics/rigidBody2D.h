@@ -31,12 +31,16 @@ class RigidBody2D {
 		double getInertia();
 		
 		Shape2D* getShape();
+		PhysicsEngine2D* getEngine();
+
 
 		double getKineticEnergy();
 		double getPotentialEnergy();
 		
 		double getAngularVelocity();
 		glm::vec2 getVelocity();
+
+
 
 	private:
 		// position and velocity (linear and angular)

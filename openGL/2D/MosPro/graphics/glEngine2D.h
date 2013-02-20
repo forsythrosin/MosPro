@@ -9,7 +9,14 @@
 #include "../lib/shader.hpp"
 #include <iostream>
 #include <utility>
+#include "geometry2D.h"
+#include "material2D.h"
+#include "temporaryBufferObject.h"
+#include <cassert>
+
 class Shape2D;
+class BufferObject;
+class TemporaryBufferObject;
 
 class glEngine2D{
 public:
@@ -21,13 +28,13 @@ public:
 	void bindBuffers();
 	void render();
 	void deleteBuffers();
-	void drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color = glm::vec3(1,0,0));
-	void drawVector(glm::vec2 orig, glm::vec2 direc, glm::vec3 color = glm::vec3(1,0,0));
+	void drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color = glm::vec3(1,0,0), double width = 2, unsigned int frames = 5);
+	void drawVector(glm::vec2 orig, glm::vec2 direc, glm::vec3 color = glm::vec3(1,0,0), double width = 2, unsigned int frames = 5);
 private:
 	GLuint programID;
 	GLuint modelID;
 	GLuint viewID;
-	std::vector<BufferObject*> temporaryLines;
+	std::vector<TemporaryBufferObject*> temporaryLines;
 	std::vector<Shape2D*> shapeList;
 	std::vector<BufferObject*> buffers;
 	glm::mat4 viewMatrix;

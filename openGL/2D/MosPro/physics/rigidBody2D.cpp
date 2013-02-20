@@ -119,7 +119,7 @@ double RigidBody2D::getKineticEnergy() {
 }
 
 double RigidBody2D::getPotentialEnergy() {
-	return 0.0; //mass * glm::dot(engine->getGravity(), position);
+	return mass * glm::dot(-engine->getGravity(), position);
 }
 
 void RigidBody2D::impulse(glm::vec2 anchor, glm::vec2 j) {
@@ -148,13 +148,10 @@ double RigidBody2D::getInertia(){
 
 void RigidBody2D::teleport(glm::vec2 transVect){
 	position += transVect;
-	double vMagnitude = sqrt( pow(glm::length(velocity),2 - 2*engine->getGravity().y * transVect.y));
-	//std::cout << vMagnitude << " " << glm::length(velocity) << std::endl;
-
+	double vMagnitude = sqrt( abs(pow(glm::length(velocity),2 ) - 2*engine->getGravity().y * transVect.y));
 	if(glm::length(velocity) > 0 ){
 		velocity = glm::normalize(velocity)*(float)vMagnitude;
 		//std::cout <<  (float)(glm::length(velocity) * vMagnitude) << std::endl;
-		//std::cin.get();
 	}
 }
 
@@ -164,4 +161,8 @@ double RigidBody2D::getAngularVelocity(){
 
 glm::vec2 RigidBody2D::getVelocity(){
 	return velocity;
+}
+
+PhysicsEngine2D* RigidBody2D::getEngine(){
+	return engine;
 }

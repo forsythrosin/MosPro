@@ -46,7 +46,3 @@ glm::mat4 Shape2D::getModel(){
 std::vector<glm::vec3> Shape2D::getMaterial(){
 	return material->getColors();
 }
-
-glEngine2D* Shape2D::getEngine(){
-	return engine;
-}

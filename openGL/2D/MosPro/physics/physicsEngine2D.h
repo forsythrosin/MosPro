@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "collision2D.h"
 #include <cmath>
+#include "../lib/debugInterface.h"
 
 class RigidBody2D;
 class CollisionDetector2D;
@@ -22,9 +23,11 @@ class PhysicsEngine2D
 		glm::vec2 getGravity();
 		void collisionResponse(std::vector<Collision2D> collisions);
 		double getTotalKineticEnergy();
-
+		double getTotalPotentialEnergy();
+		void setDebug(DebugInterface*);
+		DebugInterface* getDebug();
 	private:
-
+		DebugInterface *debug;
 		CollisionDetector2D* collisionDetector;
 		std::vector<RigidBody2D*> bodies;
 

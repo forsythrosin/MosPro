@@ -27,7 +27,7 @@ void PhysicsEngine2D::step() {
 }
 
 glm::vec2 PhysicsEngine2D::getGravity() {
-	return glm::vec2(0, 0);
+	return glm::vec2(0, -0);
 }
 
 void PhysicsEngine2D::collisionResponse(std::vector<Collision2D> collisions){
@@ -42,4 +42,19 @@ double PhysicsEngine2D::getTotalKineticEnergy() {
 		e += bodies[i]->getKineticEnergy();
 	}
 	return e;
+}
+
+double PhysicsEngine2D::getTotalPotentialEnergy(){
+	double e = 0.0;
+	for(unsigned int i = 0; i < bodies.size(); i++){
+		e += bodies[i]->getPotentialEnergy();
+	}
+	return e;
+}
+void PhysicsEngine2D::setDebug(DebugInterface* debug){
+	this->debug = debug;
+}
+
+DebugInterface* PhysicsEngine2D::getDebug(){
+	return debug;
 }
