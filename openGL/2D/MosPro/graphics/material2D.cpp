@@ -1,6 +1,5 @@
 #include "material2D.h"
 Material2D::Material2D(){
-	srand(time(0));
 	colors.push_back(
 		glm::vec3(
 			(double)rand()/RAND_MAX,

@@ -14,7 +14,7 @@ glm::vec2 Collision2D::getPenVector(){
 	return penetrationVector;
 }
 void Collision2D::resolve(){
-	double e = 0.5;
+	double e = 0;
 	double m1, m2, i1, i2, ps1, ps2;
 	glm::vec2 pv1, pv2;
 	m1 = getRb1()->getMass();

@@ -6,7 +6,8 @@
 #include <glm/glm.hpp>
 #include "collision2D.h"
 #include <cmath>
-#include "BSPNode2D.h"
+#include "bspNode2D.h"
+#include "../box2D.h"
 
 class RigidBody2D;
 class CollisionDetector2D;
@@ -16,7 +17,7 @@ class BSPNode2D;
 class PhysicsEngine2D
 {
 	public:
-		PhysicsEngine2D(void);
+		PhysicsEngine2D(Box2D bounds);
 		~PhysicsEngine2D(void);
 		void add(RigidBody2D* rb);
 		void step();
@@ -29,6 +30,7 @@ class PhysicsEngine2D
 		CollisionDetector2D* collisionDetector;
 		std::vector<RigidBody2D*> bodies;
 		BSPNode2D *bsp;
+		Box2D bounds;
 };
 
 #endif

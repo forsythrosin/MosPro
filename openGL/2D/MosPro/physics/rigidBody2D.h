@@ -40,6 +40,10 @@ class RigidBody2D {
 		
 		double getAngularVelocity();
 		glm::vec2 getVelocity();
+		double getAngle();
+
+		void setVelocity(glm::vec2 velocity);
+		void setAngularVelocity(double w);
 
 	private:
 		// position and velocity (linear and angular)

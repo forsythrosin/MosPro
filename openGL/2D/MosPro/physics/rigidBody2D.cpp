@@ -35,14 +35,6 @@ void RigidBody2D::step() {
 
 
 	// naive collision response with walls
-
-	if (position.y < -10 || position.y > 10) {
-		velocity.y *= -1;
-	}
-
-	if (position.x < -10 || position.x > 10) {
-		velocity.x *= -1;
-	}
 }
 
 
@@ -196,4 +188,17 @@ double RigidBody2D::getAngularVelocity(){
 
 glm::vec2 RigidBody2D::getVelocity(){
 	return velocity;
+}
+
+double RigidBody2D::getAngle(){
+	return angle;
+}
+
+
+void RigidBody2D::setVelocity(glm::vec2 velocity) {
+	this->velocity = velocity;
+}
+
+void RigidBody2D::setAngularVelocity(double w) {
+	this->angularVelocity = w;
 }

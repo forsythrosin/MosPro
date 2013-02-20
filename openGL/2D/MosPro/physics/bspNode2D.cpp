@@ -84,6 +84,7 @@ void BSPNode2D::updateChildren(RigidBody2D *rb) {
 
 std::set<PotentialCollision2D> BSPNode2D::getPotentialCollisions() {
 	std::set<PotentialCollision2D> pc;
+	
 	if (bodies.size() > 1) {
 		if (hasChildren()) {
 			std::set<PotentialCollision2D> pc1, pc2, pc3, pc4;
@@ -106,9 +107,9 @@ std::set<PotentialCollision2D> BSPNode2D::getPotentialCollisions() {
 					RigidBody2D *a = *i;
 					RigidBody2D *b = *j;
 
-					//std::cin.get();
-
 					PotentialCollision2D pair(a, b);
+					std::cout << "potential collision" << a << " and " << b << std::endl;
+					std::cin.get();
 					pc.insert(pair);
 				}
 			}
