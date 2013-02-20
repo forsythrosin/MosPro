@@ -7,27 +7,30 @@ classdef collisionChecker < handle
         function collision = checkCollision(obj, s1, s2)
             collision = false;
             
-            obj.simplex = [];
-            
-            obj.d = s2.p - s1.p;
-            obj.simplex = [obj.simplex support(s1, s2, obj.d)];
-            obj.d = -obj.d;
+            if( s1.movable || s2.movable )
+                obj.simplex = [];
 
-            while true
+                obj.d = s2.p - s1.p;
                 obj.simplex = [obj.simplex support(s1, s2, obj.d)];
-                obj.d = obj.d / norm(obj.d);
-                if obj.simplex(end).p3' * obj.d < 0
-                    collision = false;
-                    break;
-                else
-                    if obj.containsOrigin()
-                        collision = true;
-                        [t1, t2, point, penetrationVector, a, b] = obj.epa(s1, s2);
-                        obj.collisionRespond(t1, t2, point, penetrationVector, a, b);
+                obj.d = -obj.d;
+
+                while true
+                    obj.simplex = [obj.simplex support(s1, s2, obj.d)];
+                    obj.d = obj.d / norm(obj.d);
+                    if obj.simplex(end).p3' * obj.d < 0
+                        collision = false;
                         break;
+                    else
+                        if obj.containsOrigin()
+                            collision = true;
+                            [t1, t2, point, penetrationVector, a, b] = obj.epa(s1, s2);
+                            obj.collisionRespond(t1, t2, point, penetrationVector, a, b);
+                            break;
+                        end
                     end
-                end
-            end %end of while
+                end %end of while
+            end
+            
         end %end of checkCollision
         
         function contains = containsOrigin(obj) 
@@ -153,7 +156,7 @@ classdef collisionChecker < handle
             %plot(point(1), point(2), 'k*');
             %plot(s1.p(1), s1.p(2), 'k*');
             
-            penetrationVector = penetrationVector * 1.0001;
+            penetrationVector = penetrationVector * 1;
             
             if (~s1.movable)
                 inverseInertia = 1 / (1/m2 + 1/i2);
@@ -191,12 +194,12 @@ classdef collisionChecker < handle
             a = a + lm2;
             b = b + lm2;
             
-            %plotVector(point, lm1, 'r');
-            %plotVector(point, lm2, 'm');
+            plotVector(point, lm1, 'r');
+            plotVector(point, lm2, 'm');
             
-            %plotVector(a, b-a, 'r');
+%             plotVector(a, b-a, 'r');
             
-            %fprintf('%s ligger i %s\n', s1.color, s2.color);
+%             fprintf('%s ligger i %s\n', s1.color, s2.color);
             [theta1 point] = findClosestRotationAngle(a, b, penetrationVector, s1.p + lm1, r1);
             %pause();
             theta2 = 0;
@@ -211,9 +214,14 @@ classdef collisionChecker < handle
             %s1.plot();
             %s2.plot();
             %plot(point(1), point(2), 'r*');
-            if (abs(theta1) > 1)
+            if (abs(theta1) > (pi/2))
                 pause();
             end
+            
+            r1 = point - s1.p;
+            r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
+            r2 = point - s2.p;
+            r2Ort = [-r2(2) r2(1)]';
             
             v1 = s1.v + s1.w * r1Ort;
             v2 = s2.v + s2.w * r2Ort;
@@ -231,9 +239,24 @@ classdef collisionChecker < handle
                     j = abs(jr)*n;
                     s2.impulse(point, -j);
                 elseif (~s2.movable)
+%                     before = v1
                     jr = -(1 + e)*vr' * n / (1/m1 + 1/i1 * (n' * r1Ort)^2);
                     j = abs(jr)*n;
                     s1.impulse(point, j);
+                    
+                    %friction
+                    mu = 1;
+                    nOrt =[-n(2) n(1)]';
+                    if v1' * nOrt > 0
+                        nOrt = -nOrt;
+                    end
+%                     before = v1' * nOrt
+%                     afterNormalImpulse = (s1.v + s1.w * r1Ort)' * nOrt
+                    jr = abs(v1' * nOrt)/ (1/m1 + 1/i1 * (nOrt' * r1Ort)^2);
+                    j = mu * jr*nOrt;
+                    s1.impulse(point, j);
+%                     after = (s1.v + s1.w * r1Ort)' * nOrt
+%                     pause();
                 else
                     jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
                     j = abs(jr)*n;
@@ -242,8 +265,6 @@ classdef collisionChecker < handle
                 end
             end
         end
-        
-        
         
     end %end of methods  
 end %end of classdef
