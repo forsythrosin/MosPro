@@ -2,8 +2,8 @@
 
 glEngine2D::glEngine2D(glm::vec3 camera){
 	programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
-	modelID = glGetUniformLocation(programID, "MM");
-	viewID = glGetUniformLocation(programID, "VM");
+	modelID = glGetUniformLocation(programID, "MVP");
+	colorID = glGetUniformLocation(programID, "vertexColor");
 	setCamera(camera);
 }
 
@@ -64,15 +64,14 @@ void glEngine2D::bindBuffers(){
 
 void glEngine2D::render(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
 	std::list<BufferObject*>::iterator i;
+
 	for(i = buffers.begin(); i != buffers.end(); ++i){
 
 		glUseProgram(programID);
-		glUniformMatrix4fv(modelID, 1, GL_FALSE, &(*i)->getShape()->getModel()[0][0]);
-
+		glUniformMatrix4fv(modelID, 1, GL_FALSE, &(viewMatrix*(*i)->getShape()->getModel())[0][0]);
+		glUniform3fv(colorID, 1, &((*i)->getShape()->getMaterial()->getColor())[0]);
 		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
 
 		glBindBuffer(GL_ARRAY_BUFFER, (*i)->getVertexBuffer());
 		glVertexAttribPointer(
@@ -84,20 +83,8 @@ void glEngine2D::render(){
 			(void*)0
 		);
 
-
-		glBindBuffer(GL_ARRAY_BUFFER, (*i)->getColorBuffer());
-		glVertexAttribPointer(
-			1,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-		);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, (*i)->getShape()->getLocalVertices().size());
-
-
-
+		glDisableVertexAttribArray(0);
 	}
 	std::list<TemporaryBufferObject*>::iterator it;
 	for(it = temporaryLines.begin(); it != temporaryLines.end(); it++){
@@ -108,12 +95,10 @@ void glEngine2D::render(){
 			}
 			continue;
 		}
-		glm::mat4 model = glm::mat4(1.0f);
 		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
 
-		glUniformMatrix4fv(modelID, 1, GL_FALSE, &(*it)->getShape()->getModel()[0][0]);
-		glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
+		glUniformMatrix4fv(modelID, 1, GL_FALSE, &(viewMatrix*(*it)->getShape()->getModel())[0][0]);
+		glUniform3fv(colorID, 1, &((*it)->getShape()->getMaterial()->getColor())[0]);
 
 		glBindBuffer(GL_ARRAY_BUFFER, (*it)->getVertexBuffer());
 		glVertexAttribPointer(
@@ -125,19 +110,8 @@ void glEngine2D::render(){
 			(void*)0
 		);
 
-
-		glBindBuffer(GL_ARRAY_BUFFER, (*it)->getColorBuffer());
-		glVertexAttribPointer(
-			1,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-		);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, (*it)->getShape()->getLocalVertices().size());
 		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
 	}
 	glfwSwapBuffers();
 }

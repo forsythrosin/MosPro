@@ -18,7 +18,6 @@ public:
 	Shape2D* getShape();
 protected:
 	Shape2D* shape;
-	GLuint colorBuffer;
 	GLuint vertexBuffer;
 };
 
