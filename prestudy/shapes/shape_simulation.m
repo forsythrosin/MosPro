@@ -1,27 +1,34 @@
 clear all;
 close all;
 
-figure('units','normalized','outerposition',[0 0.5 1 0.5]);
+figure('units','normalized','outerposition',[0 0.25 0.5 0.75]);
 hold on;
 
 shapes = [
-    shape(5*[-1 -1 -1.2 1.2 0.1],2*[-1 1 0 0 1.1],'c', true)
-    shape(2*[-0.3 -0.6 -1.2 1.5 0.3],2*[-1 1 0 0 1.3],'g', true)
-    shape(3*[-5.5 -5.5 5.5 5.5],2*[1 -1 -1 1],'k', false)
-    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'y', true)
-    shape(3*[-0.5 -0.5 0.5 0.5],2*[1 -1 -1 1],'w', true)
+    shape(3*[-5.5 -5.5 3 ],2*[16 5 5 ],'k', false)
+    shape(1*[1 -1 -1 1],2*[-5.5 -5.5 5.5 5.5],'k', false)
+    shape(2*[-5.5 -5.5 5.5 5.5],1*[1 -1 -1 1],'k', false)
+    shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'c', true)
+%     shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'m', true)
+%     shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'y', true)
+%     shape(1*[-0.5 -0.5 0.5 0.5],1*[1 -1 -1 1],'w', true)
 ];
 
-shapes(1).p = [-3 4]';
-shapes(2).p = [3 8]';
-shapes(2).theta = 10;
-
+shapes(1).p = [-3 -7]';
+shapes(2).p = [11 0]';
 shapes(3).p = [0 -11]';
+
+% shapes(4).v = [0 -1]';
+
+% shapes(3).p = [3 8]';
+% shapes(3).theta = 10;
+
 %shapes(2).p = [0 -11]';
-shapes(4).p = [-3 8]';
-shapes(5).p = [6 10]';
-%shapes(6).p = [7 10]';
-%shapes(7).p = [-7.5 -5]';
+% shapes(4).p = [-3 8]';
+shapes(4).p = [-10 10]';
+% shapes(5).p = [-0.1 -2]';
+% shapes(6).p = [0 0]';
+% shapes(7).p = [-7.5 -5]';
 %shapes(8).p = [-7 -8]';
 %shapes(9).p = [-1 -8.5]';
 %shapes(10).p = [10.5 10.5]';
@@ -43,7 +50,6 @@ prevCollisions = 0;
 currentCollisions = 0;
 
 for t = 1:200000
-    subplot(1, 2, 1);
     prevCollisions = currentCollisions;
     currentCollisions = 0;
     
@@ -84,13 +90,5 @@ for t = 1:200000
           end
        end
     end
-    
-    hold off;
-    subplot(1, 2, 2);
-    %plot (totalKineticEnergy, 'b');
-    hold on;
-    %plot (totalPotentialEnergy, 'g');
-    %plot ((totalKineticEnergy + totalPotentialEnergy), 'm');
-    
-    pause(0.001);
+    pause(0.01);
 end

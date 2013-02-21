@@ -16,11 +16,12 @@ public:
 	void setMat(Material2D mat); //Not implemented
 	std::vector<glm::vec2> getLocalVertices();
 	std::vector<glm::vec2> getGlobalVertices();
-	std::vector<glm::vec3> getMaterial();
+	Material2D* getMaterial();
 	glm::mat4 getModel();
 private:
 	Geometry2D* geometry;
 	Material2D* material;
 	glm::mat4 modelMatrix;
+	std::vector<glm::vec2> globalVertices;
 };
 #endif

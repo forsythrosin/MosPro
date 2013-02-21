@@ -6,11 +6,10 @@
 class Material2D{
 public:
 	Material2D(); //Random color
-	Material2D(std::vector<glm::vec3> color):colors(color){}; //Interpolated Colors
 	Material2D(glm::vec3 color); //Full color
-	std::vector<glm::vec3> getColors(); //get a vector with all colors in class
-	int getNumColors();
+	glm::vec3 getColor(); //get a vector with all colors in class
+	void setColor(glm::vec3 color);
 private:
-	std::vector<glm::vec3> colors;
+	glm::vec3 color;
 };
 #endif

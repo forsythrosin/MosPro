@@ -90,7 +90,7 @@ classdef shape < handle
         
         function impulse(obj, anchor, force)
             r = anchor - obj.p;
-            perp = [-r(2), r(1)]'; %perp must not be normalized!
+            perp = [-r(2), r(1)]';
 
             obj.v = obj.v + force / obj.mass;
             obj.w = obj.w + perp' * force / obj.inertia;

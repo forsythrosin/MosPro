@@ -14,23 +14,24 @@ glm::vec2 Collision2D::getPenVector(){
 	return penetrationVector;
 }
 void Collision2D::resolve(){
-	double e = 0;
+	double e = 1;
+
 	double m1, m2, i1, i2, ps1, ps2;
 	glm::vec2 pv1, pv2;
+
 	m1 = getRb1()->getMass();
 	m2 = getRb2()->getMass();
 	i1 = getRb1()->getInertia();
 	i2 = getRb2()->getInertia();
 
-	ps1 = m1*m2/(m1+m2)/m1;
-	ps2 = m1*m2/(m1+m2)/m2;
+	ps1 = m2/(m1+m2);
+	ps2 = m1/(m1+m2);
 
 	pv1 = getPenVector() * (float)ps1;
 	pv2 = -1.0f * getPenVector() * (float)ps2;
 
 
-	getRb1()->teleport(pv1);
-	getRb2()->teleport(pv2);
+
 	
 	glm::vec2 r1 = getPoint() - getRb1()->getPosition();
 	glm::vec2 r1Ort = glm::vec2(-r1.y, r1.x);
@@ -42,18 +43,20 @@ void Collision2D::resolve(){
 
 	glm::vec2 n = glm::normalize(getPenVector());
 
-
+	getRb1()->teleport(pv1);
+	getRb2()->teleport(pv2);
 		
 	glm::vec2 vr = v2 - v1;
 
-	if (abs(glm::dot(n,vr)) < 0.15){
+	/*if (glm::length(vr) < 0.15){
 		e = 0;
-	}
+		std::cout << "e = 0" << std::endl;
+	}*/
 
 	if(glm::dot(getPenVector(),vr) > 0){
-		double jr = (-(1 + e) * glm::dot(vr, n))/(1.0/m1 + 1.0/m2 + (1.0/i1) * pow(glm::dot(n,r1Ort),2) + (1.0/i2) * pow(glm::dot(n,r2Ort),2));
+		double jr = -(1 + e) * glm::dot(vr, n)/(1.0/m1 + 1.0/m2 + (1.0/i1) * pow(glm::dot(n,r1Ort),2) + (1.0/i2) * pow(glm::dot(n,r2Ort),2));
 		glm::vec2 j = (float)abs(jr)*n;
-		getRb1()->impulse(getPoint(),2.0f*j);
-		getRb2()->impulse(getPoint(),2.0f*-j);
+		getRb1()->impulse(getPoint(),j);
+		getRb2()->impulse(getPoint(),-j);
 	}
 }

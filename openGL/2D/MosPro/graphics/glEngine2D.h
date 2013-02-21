@@ -4,6 +4,7 @@
 #include <GL/glfw.h>
 #include <glm/glm.hpp>
 #include <vector>
+#include <list>
 #include "shape2D.h"
 #include "bufferObject.h"
 #include "../lib/shader.hpp"
@@ -33,10 +34,10 @@ public:
 private:
 	GLuint programID;
 	GLuint modelID;
-	GLuint viewID;
-	std::vector<TemporaryBufferObject*> temporaryLines;
+	GLuint colorID;
+	std::list<TemporaryBufferObject*> temporaryLines;
 	std::vector<Shape2D*> shapeList;
-	std::vector<BufferObject*> buffers;
+	std::list<BufferObject*> buffers;
 	glm::mat4 viewMatrix;
 };
 #endif
