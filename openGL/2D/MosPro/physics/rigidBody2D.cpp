@@ -33,6 +33,7 @@ void RigidBody2D::step() {
 
 	shape->setAttribs(position, angle, com);
 
+	getEngine()->getDebug()->debugBox(getBoundingBox());
 
 	// naive collision response with walls
 }
@@ -67,16 +68,16 @@ void RigidBody2D::calculateBoundingBox() {
 	std::vector<glm::vec2> v = shape->getLocalVertices();
 	int n = v.size();
 	
-	double distance, max = sqrt(glm::length(v[0] - com));
+	double distance, max = glm::length(v[0] - com);
 
-	for (int i = 0; i < n - 1; i++) {
-		distance = sqrt(glm::length(v[0] - com));
+	for (int i = 0; i < n; i++) {
+		distance = glm::length(v[i] - com);
 		if (distance > max) {
 			max = distance;
 		}
 	}
 	
-	localBoundingBox = Box2D(-distance, -distance, distance, distance);
+	localBoundingBox = Box2D(-max, -max, max, max);
 }
 
 const Box2D RigidBody2D::getBoundingBox() const {
@@ -134,7 +135,7 @@ double RigidBody2D::getKineticEnergy() {
 }
 
 double RigidBody2D::getPotentialEnergy() {
-	return 0.0; //mass * glm::dot(engine->getGravity(), position);
+	return mass * glm::dot(-engine->getGravity(), position);
 }
 
 void RigidBody2D::impulse(glm::vec2 anchor, glm::vec2 j) {
@@ -170,14 +171,12 @@ double RigidBody2D::getInertia(){
 
 void RigidBody2D::teleport(glm::vec2 transVect){
 
+	double vMagnitude = sqrt( abs(pow(glm::length(velocity),2 ) - 2*engine->getGravity().y * transVect.y));
 	setPosition(position + transVect);
-	double vMagnitude = sqrt( pow(glm::length(velocity),2 - 2*engine->getGravity().y * transVect.y));
-	//std::cout << vMagnitude << " " << glm::length(velocity) << std::endl;
 
 	if(glm::length(velocity) > 0 ){
 		velocity = glm::normalize(velocity)*(float)vMagnitude;
 		//std::cout <<  (float)(glm::length(velocity) * vMagnitude) << std::endl;
-		//std::cin.get();
 	}
 
 }
@@ -201,4 +200,7 @@ void RigidBody2D::setVelocity(glm::vec2 velocity) {
 
 void RigidBody2D::setAngularVelocity(double w) {
 	this->angularVelocity = w;
+}
+PhysicsEngine2D* RigidBody2D::getEngine(){
+	return engine;
 }

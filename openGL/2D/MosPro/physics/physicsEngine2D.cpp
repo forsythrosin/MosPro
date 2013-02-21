@@ -40,7 +40,7 @@ void PhysicsEngine2D::step() {
 
 
 	}
-	collisionResponse(collisionDetector->getCollisions(bodies));
+	collisionResponse(collisionDetector->getCollisions(bsp));
 	
 	
 	
@@ -65,6 +65,22 @@ double PhysicsEngine2D::getTotalKineticEnergy() {
 		e += bodies[i]->getKineticEnergy();
 	}
 	return e;
+}
+
+
+double PhysicsEngine2D::getTotalPotentialEnergy(){
+	double e = 0.0;
+	for(unsigned int i = 0; i < bodies.size(); i++){
+		e += bodies[i]->getPotentialEnergy();
+	}
+	return e;
+}
+void PhysicsEngine2D::setDebug(DebugInterface* debug){
+	this->debug = debug;
+}
+
+DebugInterface* PhysicsEngine2D::getDebug(){
+	return debug;
 }
 
 void PhysicsEngine2D::updatePosition(RigidBody2D *rb) {

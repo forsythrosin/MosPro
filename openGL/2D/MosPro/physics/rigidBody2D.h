@@ -34,6 +34,8 @@ class RigidBody2D {
 		const Box2D getBoundingBox() const;
 		
 		Shape2D* getShape();
+		PhysicsEngine2D* getEngine();
+
 
 		double getKineticEnergy();
 		double getPotentialEnergy();
@@ -44,6 +46,8 @@ class RigidBody2D {
 
 		void setVelocity(glm::vec2 velocity);
 		void setAngularVelocity(double w);
+
+
 
 	private:
 		// position and velocity (linear and angular)

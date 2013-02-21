@@ -8,6 +8,7 @@
 #include <cmath>
 #include "bspNode2D.h"
 #include "../box2D.h"
+#include "../lib/debugInterface.h"
 
 class RigidBody2D;
 class CollisionDetector2D;
@@ -23,10 +24,17 @@ class PhysicsEngine2D
 		void step();
 		glm::vec2 getGravity();
 		void collisionResponse(std::vector<Collision2D> collisions);
-		double getTotalKineticEnergy();
-		void updatePosition(RigidBody2D*);
 
+		double getTotalKineticEnergy();
+		double getTotalPotentialEnergy();
+
+		void setDebug(DebugInterface*);
+		DebugInterface* getDebug();
+		void updatePosition(RigidBody2D*);
 	private:
+		DebugInterface *debug;
+		
+	
 		CollisionDetector2D* collisionDetector;
 		std::vector<RigidBody2D*> bodies;
 		BSPNode2D *bsp;

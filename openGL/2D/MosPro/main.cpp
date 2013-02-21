@@ -11,6 +11,7 @@
 #include "physics/rigidBody2D.h"
 #include "graphics/glEngine2D.h"
 #include "physics/collisionDetector2D.h"
+#include "lib/debugGL.h"
 
 using namespace glm;
 using namespace std;
@@ -85,18 +86,21 @@ int main( void )
 	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS); 
-	glEngine2D ge(glm::vec3(0.01f));
-	PhysicsEngine2D pe(Box2D(-100, -100, 100, 100));
 
+	glEngine2D ge(glm::vec3(0.1f));
+	PhysicsEngine2D pe(Box2D(-10, -10, 10, 10));
 
+	DebugGL debug(&ge);
 
-	int nBodies = 40;
+	pe.setDebug(&debug);
+
+	int nBodies = 10;
 
 
 
 	for (int i = 0; i < nBodies; ++i) {
 
-		cout << rand() << endl;
+		//cout << rand() << endl;
 
 		vector<vec2> geo;
 		geo.push_back(vec2(0,0));
@@ -104,10 +108,12 @@ int main( void )
 		geo.push_back(vec2(0.8,0.8));
 		geo.push_back(vec2(0,0.8));
 
+
+
 		Geometry2D *g = new Geometry2D(geo);
 		Shape2D* s = new Shape2D(g);
 		ge.add(s);
-		glm::vec2 p(floatRand()*200 - 100, floatRand()*200 - 100);
+		glm::vec2 p(floatRand()*20 - 10, floatRand()*20 - 10);
 		glm::vec2 v(floatRand()*0.01, floatRand()*0.01);
 		double w = floatRand()*0.002 - 0.1;
 
@@ -123,10 +129,10 @@ int main( void )
 	{
 		vector<vec2> geo2;
 		geo2.push_back(vec2(0,0));
-		geo2.push_back(vec2(3.2,0));
-		geo2.push_back(vec2(4.8,1.6));
-		geo2.push_back(vec2(3.2,3.2));
-		geo2.push_back(vec2(0,3.2));
+		geo2.push_back(vec2(1.2,0));
+		geo2.push_back(vec2(2.8,0.6));
+		geo2.push_back(vec2(1.2,1.2));
+		geo2.push_back(vec2(0,1.2));
 
 		Geometry2D *g = new Geometry2D(geo2);
 		Shape2D* s = new Shape2D(g);
