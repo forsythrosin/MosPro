@@ -15,6 +15,7 @@ public:
 		this->frames = frames;
 	}
 	bool frameStep();
+	virtual ~TemporaryBufferObject(){}
 private:
 	unsigned int frames;
 };

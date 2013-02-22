@@ -17,6 +17,7 @@ public:
 	std::vector<glm::vec2> getLocalVertices();
 	std::vector<glm::vec2> getGlobalVertices();
 	Material2D* getMaterial();
+	Geometry2D* getGeometry();
 	glm::mat4 getModel();
 private:
 	Geometry2D* geometry;

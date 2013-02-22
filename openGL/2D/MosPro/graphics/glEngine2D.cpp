@@ -89,6 +89,9 @@ void glEngine2D::render(){
 	std::list<TemporaryBufferObject*>::iterator it;
 	for(it = temporaryLines.begin(); it != temporaryLines.end(); it++){
 		if((*it)->frameStep()){
+			delete (*it)->getShape()->getMaterial();
+			delete (*it)->getShape()->getGeometry();
+			delete (*it)->getShape();
 			it = temporaryLines.erase(it);
 			if(it == temporaryLines.end()){
 				break;
