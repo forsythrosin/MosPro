@@ -47,7 +47,7 @@ void glEngine2D::drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color, doubl
 	Shape2D* s = new Shape2D(geo, mat);
 	s->setAttribs(pos, angle);
 
-	temporaryLines.push_back(new TemporaryBufferObject(s, frames));
+	temporaryBuffers.push_back(new TemporaryBufferObject(s, frames));
 
 }
 
@@ -87,13 +87,12 @@ void glEngine2D::render(){
 		glDisableVertexAttribArray(0);
 	}
 	std::list<TemporaryBufferObject*>::iterator it;
-	for(it = temporaryLines.begin(); it != temporaryLines.end(); it++){
+	for(it = temporaryBuffers.begin(); it != temporaryBuffers.end(); it++){
 		if((*it)->frameStep()){
-			delete (*it)->getShape()->getMaterial();
-			delete (*it)->getShape()->getGeometry();
-			delete (*it)->getShape();
-			it = temporaryLines.erase(it);
-			if(it == temporaryLines.end()){
+
+			delete (*it);
+			it = temporaryBuffers.erase(it);
+			if(it == temporaryBuffers.end()){
 				break;
 			}
 			continue;
@@ -120,6 +119,12 @@ void glEngine2D::render(){
 }
 
 void glEngine2D::deleteBuffers(){
+	for(std::list<BufferObject*>::iterator it = buffers.begin();it!=buffers.end(); it++){
+		delete (*it);
+	}
 	buffers.clear();
-	temporaryLines.clear();
+	for(std::list<TemporaryBufferObject*>::iterator it = temporaryBuffers.begin();it!=temporaryBuffers.end(); it++){
+		delete (*it);
+	}
+	temporaryBuffers.clear();
 }

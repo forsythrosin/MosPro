@@ -5,7 +5,7 @@ PhysicsEngine2D::PhysicsEngine2D(Box2D bounds)
 {
 	this->bounds = bounds;
 	bodies = std::vector<RigidBody2D*>();
-	bsp = new BSPNode2D(glm::vec2(20, 20), 4);
+	bsp = new BSPNode2D(glm::vec2(bounds.p1.x-bounds.p0.x, bounds.p1.y-bounds.p0.y), 3);
 	
 }
 

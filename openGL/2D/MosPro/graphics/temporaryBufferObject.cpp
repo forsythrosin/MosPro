@@ -6,4 +6,8 @@ bool TemporaryBufferObject::frameStep(){
 	}
 	return false;
 }
-
+TemporaryBufferObject::~TemporaryBufferObject(){
+	delete shape->getMaterial();
+	delete shape->getGeometry();
+	delete shape;
+}

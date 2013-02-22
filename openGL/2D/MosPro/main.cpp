@@ -87,14 +87,14 @@ int main( void )
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS); 
 
-	glEngine2D ge(glm::vec3(0.1f));
-	PhysicsEngine2D pe(Box2D(-10, -10, 10, 10));
+	glEngine2D ge(glm::vec3(0.01f));
+	PhysicsEngine2D pe(Box2D(-100, -100, 100, 100));
 
 	DebugGL debug(&ge);
 
 	pe.setDebug(&debug);
 
-	int nBodies = 10;
+	int nBodies = 1000;
 
 
 
@@ -113,7 +113,7 @@ int main( void )
 		Geometry2D *g = new Geometry2D(geo);
 		Shape2D* s = new Shape2D(g);
 		ge.add(s);
-		glm::vec2 p(floatRand()*20 - 10, floatRand()*20 - 10);
+		glm::vec2 p(floatRand()*200 - 100, floatRand()*200 - 100);
 		glm::vec2 v(floatRand()*0.01, floatRand()*0.01);
 		double w = floatRand()*0.002 - 0.1;
 
@@ -172,8 +172,6 @@ int main( void )
 			w -= 0.001;
 			rb->setAngularVelocity(w);
 		}
-
-
 
 
 	} // Check if the ESC key was pressed or the window was closed

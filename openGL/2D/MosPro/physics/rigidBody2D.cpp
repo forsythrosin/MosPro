@@ -35,7 +35,9 @@ void RigidBody2D::step() {
 
 	getEngine()->getDebug()->debugBox(getBoundingBox());
 
+
 	// naive collision response with walls
+
 }
 
 
