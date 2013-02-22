@@ -14,8 +14,8 @@ public:
 	TemporaryBufferObject(Shape2D* s, unsigned int frames):BufferObject(s){
 		this->frames = frames;
 	}
-	~TemporaryBufferObject();
 	bool frameStep();
+	virtual ~TemporaryBufferObject();
 private:
 	unsigned int frames;
 };

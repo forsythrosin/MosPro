@@ -123,10 +123,15 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBod
 	for(int i = 0; i < bodies.size(); i++) {
 		for(int j = i + 1; j < bodies.size(); j++) {
 			simplex2D s;
-			//std::cout << "Checking " << i << " against " << j << std::endl;
-			if (gjk(bodies[i], bodies[j], s)) {
-				collisions.push_back(epa(bodies[i], bodies[j], s));
-			}	
+
+			RigidBody2D* a = bodies[i];
+			RigidBody2D* b = bodies[j];
+
+			if (a->getBoundingBox().intersects(b->getBoundingBox())) {
+				if (gjk(bodies[i], bodies[j], s)) {
+					collisions.push_back(epa(a, b, s));
+				}
+			}
 		}
 	}
 	return collisions;
@@ -145,8 +150,10 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(BSPNode2D *rootNode)
 		RigidBody2D *b = (RigidBody2D*) i->second;
 
 		simplex2D s;
-		if (gjk(a, b, s)) {
-			collisions.push_back(epa(a, b, s));
+		if (a->getBoundingBox().intersects(b->getBoundingBox())) {
+			if (gjk(a, b, s)) {
+				collisions.push_back(epa(a, b, s));
+			}
 		}
 	}
 	return collisions;

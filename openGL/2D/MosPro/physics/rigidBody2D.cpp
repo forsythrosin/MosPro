@@ -33,16 +33,11 @@ void RigidBody2D::step() {
 
 	shape->setAttribs(position, angle, com);
 
+	getEngine()->getDebug()->debugBox(getBoundingBox());
+
 
 	// naive collision response with walls
 
-	if (position.y < -10 || position.y > 10) {
-		velocity.y *= -1;
-	}
-
-	if (position.x < -10 || position.x > 10) {
-		velocity.x *= -1;
-	}
 }
 
 
@@ -75,16 +70,16 @@ void RigidBody2D::calculateBoundingBox() {
 	std::vector<glm::vec2> v = shape->getLocalVertices();
 	int n = v.size();
 	
-	double distance, max = sqrt(glm::length(v[0] - com));
+	double distance, max = glm::length(v[0] - com);
 
-	for (int i = 0; i < n - 1; i++) {
-		distance = sqrt(glm::length(v[0] - com));
+	for (int i = 0; i < n; i++) {
+		distance = glm::length(v[i] - com);
 		if (distance > max) {
 			max = distance;
 		}
 	}
 	
-	localBoundingBox = Box2D(-distance, -distance, distance, distance);
+	localBoundingBox = Box2D(-max, -max, max, max);
 }
 
 const Box2D RigidBody2D::getBoundingBox() const {
@@ -196,6 +191,18 @@ glm::vec2 RigidBody2D::getVelocity(){
 	return velocity;
 }
 
+double RigidBody2D::getAngle(){
+	return angle;
+}
+
+
+void RigidBody2D::setVelocity(glm::vec2 velocity) {
+	this->velocity = velocity;
+}
+
+void RigidBody2D::setAngularVelocity(double w) {
+	this->angularVelocity = w;
+}
 PhysicsEngine2D* RigidBody2D::getEngine(){
 	return engine;
 }

@@ -4,6 +4,8 @@
 
 #include "debugInterface.h"
 #include "../graphics/glEngine2D.h"
+#include "../box2D.h"
+
 class glEngine2D;
 class DebugInterface;
 
@@ -13,6 +15,7 @@ public:
 	virtual ~DebugGL(){};
 	virtual void debugVector(glm::vec2 startPoint, glm::vec2 vector);
 	virtual void debugLine(glm::vec2 startPoint, glm::vec2 endPoint);
+	virtual void debugBox(Box2D b);
 	void setEngine(glEngine2D *ge);
 
 private:

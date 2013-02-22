@@ -1,10 +1,12 @@
 #include "physicsEngine2D.h"
 
 
-PhysicsEngine2D::PhysicsEngine2D(void)
+PhysicsEngine2D::PhysicsEngine2D(Box2D bounds)
 {
+	this->bounds = bounds;
 	bodies = std::vector<RigidBody2D*>();
-	bsp = new BSPNode2D(glm::vec2(20, 20), 2);
+	bsp = new BSPNode2D(glm::vec2(bounds.p1.x-bounds.p0.x, bounds.p1.y-bounds.p0.y), 3);
+	
 }
 
 
@@ -22,9 +24,27 @@ void PhysicsEngine2D::add(RigidBody2D* rb) {
 
 void PhysicsEngine2D::step() {
 	for(unsigned int i = 0; i < bodies.size(); i++) {
-		bodies[i]->step();
+		RigidBody2D *rb = bodies[i];
+		
+		rb->step();
+		glm::vec2 v = rb->getVelocity();
+
+		if (rb->position.x < bounds.p0.x || rb->position.x > bounds.p1.x) {
+			v.x *= -1;
+			rb->setVelocity(v);
+		}
+		if (rb->position.y < bounds.p0.y || rb->position.y > bounds.p1.y) {
+			v.y *= -1;
+			rb->setVelocity(v);
+		}
+
+
 	}
 	collisionResponse(collisionDetector->getCollisions(bsp));
+	
+	
+	
+	//collisionResponse(collisionDetector->getCollisions(bodies));
 }
 
 glm::vec2 PhysicsEngine2D::getGravity() {

@@ -4,18 +4,53 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "physics/physicsEngine2D.h"
 #include "physics/rigidBody2D.h"
 #include "graphics/glEngine2D.h"
 #include "physics/collisionDetector2D.h"
+#include "lib/debugGL.h"
 
 using namespace glm;
 using namespace std;
 
 
+double t0 = 0.0;
+int frames = 0;
+char titlestring[200];
+
+
+void showFPS() {
+
+    double t, fps;
+    
+    // Get current time
+    t = glfwGetTime();  // Get number of seconds since glfwInit()
+    // Calculate and display FPS (frames per second) in title bar.
+    if( (t-t0) > 1.0 || frames == 0 )
+    {
+        fps = (double)frames / (t-t0);
+        sprintf(titlestring, "Planet system (%.1f FPS)", fps);
+        glfwSetWindowTitle(titlestring);
+        t0 = t;
+        frames = 0;
+    }
+    frames ++;
+}
+
+
+double floatRand() {
+	
+	 return rand() / (double)RAND_MAX;
+}
+
 
 int main( void )
 {
+	srand(std::time(NULL));
+
 	// Initialise GLFW
 	if( !glfwInit() )
 	{
@@ -44,64 +79,101 @@ int main( void )
 	}
 
 
-	vector<vec2> geo;
-	geo.push_back(vec2(0,0));
-	geo.push_back(vec2(1,0));
-	geo.push_back(vec2(1,1));
-	geo.push_back(vec2(0,1));
 
-	Geometry2D g1(geo);
-	Geometry2D g2(geo);
-
-	glfwSetWindowTitle( "Tutorial 04" );
+	//glfwSetWindowTitle( "Tutorial 04" );
+	
 	glfwEnable( GLFW_STICKY_KEYS );
-	glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS); 
-	glEngine2D ge;
-	PhysicsEngine2D pe;
-/*	Shape2D* s1 = new Shape2D(&g1);
-	Shape2D* s2 = new Shape2D(&g2);*/
-	Shape2D* s3 = new Shape2D(&g1);
-	Shape2D* s4 = new Shape2D(&g2);
-/*	Shape2D* s5 = new Shape2D(&g1);
-	Shape2D* s6 = new Shape2D(&g2);*/
 
-/*	ge.add(s1);
-	ge.add(s2);*/
-	ge.add(s3);
-	ge.add(s4);
-/*	ge.add(s5);
-	ge.add(s6);*/
+	glEngine2D ge(glm::vec3(0.01f));
+	PhysicsEngine2D pe(Box2D(-100, -100, 100, 100));
 
-	glm::vec2 p1(-1.0, 0.0);
-	glm::vec2 v(0.04, 0);
+	DebugGL debug(&ge);
 
-/*	RigidBody2D* rb1 = new RigidBody2D(s1, vec2(0,1.5), v); 
-	RigidBody2D* rb2 = new RigidBody2D(s2, vec2(0,-1.5), -v); */
-	RigidBody2D* rb3 = new RigidBody2D(s3, vec2(1.6,0.6), v, 0.1); 
-	RigidBody2D* rb4 = new RigidBody2D(s4, vec2(-1.5,0), -v, -0.1); 
-/*	RigidBody2D* rb5 = new RigidBody2D(s5, vec2(3,3), v);
-	RigidBody2D* rb6 = new RigidBody2D(s6, vec2(-3,-3), -v);*/
+	pe.setDebug(&debug);
 
-	/*pe.add(rb1);
-	pe.add(rb2);*/
-	pe.add(rb3);
-	pe.add(rb4);
-	/*pe.add(rb5);
-	pe.add(rb6);*/
+	int nBodies = 1000;
+
+
+
+	for (int i = 0; i < nBodies; ++i) {
+
+		//cout << rand() << endl;
+
+		vector<vec2> geo;
+		geo.push_back(vec2(0,0));
+		geo.push_back(vec2(0.8,0));
+		geo.push_back(vec2(0.8,0.8));
+		geo.push_back(vec2(0,0.8));
+
+
+
+		Geometry2D *g = new Geometry2D(geo);
+		Shape2D* s = new Shape2D(g);
+		ge.add(s);
+		glm::vec2 p(floatRand()*200 - 100, floatRand()*200 - 100);
+		glm::vec2 v(floatRand()*0.01, floatRand()*0.01);
+		double w = floatRand()*0.002 - 0.1;
+
+		//std::cout << p << v << w;
+
+
+		RigidBody2D* rb = new RigidBody2D(s, p, v, w); 
+		pe.add(rb);
+	}
+
+	RigidBody2D* rb;
+
+	{
+		vector<vec2> geo2;
+		geo2.push_back(vec2(0,0));
+		geo2.push_back(vec2(1.2,0));
+		geo2.push_back(vec2(2.8,0.6));
+		geo2.push_back(vec2(1.2,1.2));
+		geo2.push_back(vec2(0,1.2));
+
+		Geometry2D *g = new Geometry2D(geo2);
+		Shape2D* s = new Shape2D(g);
+		ge.add(s);
+
+		rb = new RigidBody2D(s, glm::vec2(0), glm::vec2(0), 0, 0); 
+		pe.add(rb);
+	}
 
 	ge.bindBuffers();
 	double oldE = 0, e;
 	do{
-
+		showFPS();
 		ge.render();
 		pe.step();
 		e = pe.getTotalKineticEnergy();
 		if(e != oldE){
-			std::cout << "we have " << e << " frikikin kJoules in this sistem.\n";
+			//std::cout << "we have " << e << " frikikin kJoules in this sistem.\n";
 			oldE = e;
 		}
+
+		if (glfwGetKey(GLFW_KEY_UP) == GLFW_PRESS) {
+			glm::vec2 v = rb->getVelocity();
+			double angle = rb->getAngle();
+			v += 0.008f*glm::vec2(glm::cos(angle), glm::sin(angle));
+			rb->setVelocity(v);
+		}
+
+		if (glfwGetKey(GLFW_KEY_LEFT) == GLFW_PRESS) {
+			double w = rb->getAngularVelocity();
+			w += 0.001;
+			rb->setAngularVelocity(w);
+		}
+
+		if (glfwGetKey(GLFW_KEY_RIGHT) == GLFW_PRESS) {
+			double w = rb->getAngularVelocity();
+			w -= 0.001;
+			rb->setAngularVelocity(w);
+		}
+
+
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
 		   glfwGetWindowParam( GLFW_OPENED ) );

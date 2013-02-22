@@ -89,6 +89,7 @@ void glEngine2D::render(){
 	std::list<TemporaryBufferObject*>::iterator it;
 	for(it = temporaryBuffers.begin(); it != temporaryBuffers.end(); it++){
 		if((*it)->frameStep()){
+
 			delete (*it);
 			it = temporaryBuffers.erase(it);
 			if(it == temporaryBuffers.end()){
