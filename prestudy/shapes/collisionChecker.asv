@@ -199,11 +199,9 @@ classdef collisionChecker < handle
             
 %             plotVector(a, b-a, 'r');
             
-%             fprintf('%s ligger i %s\n', s1.color, s2.color);
+            fprintf('%s ligger i %s\n', s1.color, s2.color);
             [theta1 point] = findClosestRotationAngle(a, b, penetrationVector, s1.p + lm1, r1);
-            %pause();
             theta2 = 0;
-            %theta1
             
             if (s1.movable)
                 s1.teleport(lm1, theta1);
@@ -214,7 +212,7 @@ classdef collisionChecker < handle
             %s1.plot();
             %s2.plot();
             %plot(point(1), point(2), 'r*');
-            if (abs(theta1) > 1)
+            if (abs(theta1) > (pi/2))
                 pause();
             end
             
@@ -227,39 +225,43 @@ classdef collisionChecker < handle
             v2 = s2.v + s2.w * r2Ort;
             
             n = penetrationVector/norm(penetrationVector);
-            vr = v2 - v1;
+            vr = v1 - v2;
             
             if (norm(vr) < 0.1)
                 e = 0;
             end
             
-            if ((penetrationVector' * vr) > 0)
+            if ((penetrationVector' * vr) < 0)
+                %friction
+                mu = 0;
+                nOrt =[-n(2) n(1)]';
+                nOrt = -sign(vr' * nOrt) * nOrt;
+                
                 if (~s1.movable)
                     jr = -(1 + e)*vr' * n / (1/m2 + 1/i2 * (n' * r2Ort)^2);
-                    j = abs(jr)*n;
-                    s2.impulse(point, -j);
-                elseif (~s2.movable)
-%                     before = v1
-                    jr = -(1 + e)*vr' * n / (1/m1 + 1/i1 * (n' * r1Ort)^2);
-                    j = abs(jr)*n;
-                    s1.impulse(point, j);
+                    j = abs(jr) *n ;
                     
-                    %friction
-%                     mu = 1;
-%                     nOrt =[-n(2) n(1)]';
-%                     if v1' * nOrt > 0
-%                         nOrt = -nOrt;
-%                     end
-%                     jr = abs(v1' * nOrt);
-%                     j = mu * abs(jr)*nOrt;
-%                     s1.impulse(point, j);
-%                     after = s1.v + s1.w * r1Ort
-%                     pause();
+                    fjr = abs(vr' * nOrt)/ (1/m2 + 1/i2 * (nOrt' * r2Ort)^2);
+                    fj = mu * fjr * nOrt;
+                    
+                    s2.impulse(point, -fj-j);
+                elseif (~s2.movable)
+                    jr = -(1 + e)*vr' * n / (1/m1 + 1/i1 * (n' * r1Ort)^2);
+                    j = abs(jr) * n;
+                    
+                    fjr = abs(vr' * nOrt)/ (1/m1 + 1/i1 * (nOrt' * r1Ort)^2);
+                    fj = mu * fjr * nOrt;
+                    
+                    s1.impulse(point, fj + j);
                 else
                     jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
-                    j = abs(jr)*n;
-                    s1.impulse(point, j);
-                    s2.impulse(point, -j);
+                    j = abs(jr) * n;
+                    
+                    fjr = abs(vr' * nOrt)/ (1/m1 + 1/m2 + 1/i1 * (nOrt' * r1Ort)^2 + 1/i2 * (nOrt' * r2Ort)^2);
+                    fj = mu * fjr * nOrt;
+                    
+                    s1.impulse(point, fj+j);
+                    s2.impulse(point, -fj-j);
                 end
             end
         end
