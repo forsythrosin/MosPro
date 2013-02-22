@@ -25,8 +25,6 @@ void Shape2D::setAttribs(glm::vec2 pos, double theta, glm::vec2 pivot){
 }
 
 Shape2D::~Shape2D(){
-	delete geometry;
-	delete material;
 }
 
 std::vector<glm::vec2> Shape2D::getLocalVertices(){
@@ -46,4 +44,8 @@ glm::mat4 Shape2D::getModel(){
 
 Material2D* Shape2D::getMaterial(){
 	return material;
+}
+
+Geometry2D* Shape2D::getGeometry(){
+	return geometry;
 }
