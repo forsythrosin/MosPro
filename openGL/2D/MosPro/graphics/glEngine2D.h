@@ -35,7 +35,7 @@ private:
 	GLuint programID;
 	GLuint modelID;
 	GLuint colorID;
-	std::list<TemporaryBufferObject*> temporaryLines;
+	std::list<TemporaryBufferObject*> temporaryBuffers;
 	std::vector<Shape2D*> shapeList;
 	std::list<BufferObject*> buffers;
 	glm::mat4 viewMatrix;
