@@ -1,11 +1,12 @@
-#ifndef __MINKOWSKIPOINT2D__
-#define __MINKOWSKIPOINT2D__
+#pragma once
+//#ifndef __MINKOWSKIPOINT2D__
+//#define __MINKOWSKIPOINT2D__
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
-#include "../glmIO.h"
-#include "../graphics/shape2D.h"
 #include <vector>
 #include <iostream>
+
+class Shape2D;
 
 class MinkowskiPoint2D
 {
@@ -20,4 +21,4 @@ private:
 	Shape2D* s2;
 	glm::vec2 getFarthestPointInDirection(Shape2D* s1, glm::vec2 d);
 };
-#endif
+//#endif

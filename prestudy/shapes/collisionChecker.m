@@ -7,27 +7,30 @@ classdef collisionChecker < handle
         function collision = checkCollision(obj, s1, s2)
             collision = false;
             
-            obj.simplex = [];
-            
-            obj.d = s2.p - s1.p;
-            obj.simplex = [obj.simplex support(s1, s2, obj.d)];
-            obj.d = -obj.d;
+            if( s1.movable || s2.movable )
+                obj.simplex = [];
 
-            while true
+                obj.d = s2.p - s1.p;
                 obj.simplex = [obj.simplex support(s1, s2, obj.d)];
-                obj.d = obj.d / norm(obj.d);
-                if obj.simplex(end).p3' * obj.d < 0
-                    collision = false;
-                    break;
-                else
-                    if obj.containsOrigin()
-                        collision = true;
-                        [t1, t2, point, penetrationVector, a, b] = obj.epa(s1, s2);
-                        obj.collisionRespond(t1, t2, point, penetrationVector, a, b);
+                obj.d = -obj.d;
+
+                while true
+                    obj.simplex = [obj.simplex support(s1, s2, obj.d)];
+                    obj.d = obj.d / norm(obj.d);
+                    if obj.simplex(end).p3' * obj.d < 0
+                        collision = false;
                         break;
+                    else
+                        if obj.containsOrigin()
+                            collision = true;
+                            [t1, t2, point, penetrationVector, a, b] = obj.epa(s1, s2);
+                            obj.collisionRespond(t1, t2, point, penetrationVector, a, b);
+                            break;
+                        end
                     end
-                end
-            end %end of while
+                end %end of while
+            end
+            
         end %end of checkCollision
         
         function contains = containsOrigin(obj) 
@@ -149,34 +152,42 @@ classdef collisionChecker < handle
 
             m2 = s2.getMass();
             i2 = s2.getInertia();
+            
+             
+            
 
             %plot(point(1), point(2), 'k*');
             %plot(s1.p(1), s1.p(2), 'k*');
             
-            penetrationVector = penetrationVector * 1.0001;
+%             penetrationVector = penetrationVector * 1;
             
             if (~s1.movable)
                 inverseInertia = 1 / (1/m2 + 1/i2);
                 lm1 = 0;
                 lm2 = 1/m2 * inverseInertia;
-                am1 = 0;
-                am2 = 1/i2 * inverseInertia;
+%                 am1 = 0;
+%                 am2 = 1/i2 * inverseInertia;
             elseif (~s2.movable)
                 inverseInertia = 1 / (1/m1 + 1/i1);
                 lm1 = 1/m1 * inverseInertia;
                 lm2 = 0;
-                am1 = 1/i1 * inverseInertia;
-                am2 = 0;
+%                 am1 = 1/i1 * inverseInertia;
+%                 am2 = 0;
                 
             else
                 inverseInertia = 1 / (1/m1 + 1/m2 + 1/i1 + 1/i2);
                 lm1 = 1/m1 * inverseInertia;
                 lm2 = 1/m2 * inverseInertia;
-                am1 = 1/i1 * inverseInertia;
-                am2 = 1/i2 * inverseInertia;
+%                 am1 = 1/i1 * inverseInertia;
+%                 am2 = 1/i2 * inverseInertia;
             end
             
-            %lm1 + lm2
+            %this is ett jävligt dåligt hack
+%             while abs(lm1 + lm2) < 0.8
+%                 xlabel('needed elongation');
+%                 lm1 = lm1 * 1.01;
+%                 lm2 = lm2 * 1.01;
+%             end
             
             r1 = point - s1.p;
             r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
@@ -187,20 +198,23 @@ classdef collisionChecker < handle
             lm1 = penetrationVector * lm1;
             lm2 = - penetrationVector * lm2;
             
-            am = am1 + am2;
+%             am = am1 + am2;
             a = a + lm2;
             b = b + lm2;
             
-            %plotVector(point, lm1, 'r');
-            %plotVector(point, lm2, 'm');
+%             plotVector(point, lm1, 'r');
+%             plotVector(point, lm2, 'b');
             
-            %plotVector(a, b-a, 'r');
+%             plotVector(a, b-a, 'r');
             
-            %fprintf('%s ligger i %s\n', s1.color, s2.color);
+%             fprintf('%s ligger i %s\n', s1.color, s2.color);
+%             s1.plot();
+%             hold on;
+%             s2.plot();
+%             plotVector(point, penetrationVector, 'b');
+
             [theta1 point] = findClosestRotationAngle(a, b, penetrationVector, s1.p + lm1, r1);
-            %pause();
             theta2 = 0;
-            %theta1
             
             if (s1.movable)
                 s1.teleport(lm1, theta1);
@@ -208,42 +222,74 @@ classdef collisionChecker < handle
             if (s2.movable)
                 s2.teleport(lm2, theta2);
             end
-            %s1.plot();
-            %s2.plot();
+%             pause();
+%             s1.plot();
+%             s2.plot();
+            
             %plot(point(1), point(2), 'r*');
-            if (abs(theta1) > 1)
+            if (abs(theta1) > (pi/2))
+                fprintf('wrong rotation angle!\n');
                 pause();
             end
+            
+            r1 = point - s1.p;
+            r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
+            r2 = point - s2.p;
+            r2Ort = [-r2(2) r2(1)]';
             
             v1 = s1.v + s1.w * r1Ort;
             v2 = s2.v + s2.w * r2Ort;
             
-            n = penetrationVector/norm(penetrationVector);
-            vr = v2 - v1;
+%             plotVector(point, v1*100, 'b');
+%             plotVector(point, v2*100, 'r');            
             
+            n = penetrationVector/norm(penetrationVector);
+            vr = v1 - v2;
+            
+                        
             if (norm(vr) < 0.1)
                 e = 0;
             end
             
-            if ((penetrationVector' * vr) > 0)
+            % remove accelerated velocity
+%             velocityFromAcc = s1.gravity' * n;
+%             velocityFromAcc = velocityFromAcc - s2.gravity' * n;
+%             deltaVelocity = norm(vr) - e * (-norm(vr) - velocityFromAcc);
+            
+            if ((penetrationVector' * vr) < 0)
+                %friction
+                mu = 1;
+                t =[-n(2) n(1)]';
+                t = -sign(vr' * t) * t;
+                
                 if (~s1.movable)
                     jr = -(1 + e)*vr' * n / (1/m2 + 1/i2 * (n' * r2Ort)^2);
-                    j = abs(jr)*n;
-                    s2.impulse(point, -j);
+                    j = abs(jr) *n ;
+                    
+                    fjr = abs(vr' * t)/ (1/m2 + 1/i2 * (t' * r2Ort)^2);
+                    fj = mu * fjr * t;
+                    
+                    s2.impulse(point, -fj-j);
                 elseif (~s2.movable)
                     jr = -(1 + e)*vr' * n / (1/m1 + 1/i1 * (n' * r1Ort)^2);
-                    j = abs(jr)*n;
-                    s1.impulse(point, j);
+                    j = abs(jr) * n;
+                    
+                    fjr = abs(vr' * t)/ (1/m1 + 1/i1 * (t' * r1Ort)^2);
+                    fj = mu * fjr * t;
+                   
+                    s1.impulse(point, fj + j);
                 else
                     jr = -(1 + e)*vr' * n / (1/m1 + 1/m2 + 1/i1 * (n' * r1Ort)^2 + 1/i2 * (n' * r2Ort)^2);
-                    j = abs(jr)*n;
-                    s1.impulse(point, j);
-                    s2.impulse(point, -j);
+                    j = abs(jr) * n;
+                    
+                    fjr = abs(vr' * t)/ (1/m1 + 1/m2 + 1/i1 * (t' * r1Ort)^2 + 1/i2 * (t' * r2Ort)^2);
+                    fj = mu * fjr * t;
+                    
+                    s1.impulse(point, fj+j);
+                    s2.impulse(point, -fj-j);
                 end
             end
         end
-        
-        
         
     end %end of methods  
 end %end of classdef

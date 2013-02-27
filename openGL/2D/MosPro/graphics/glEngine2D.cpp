@@ -1,9 +1,15 @@
 #include "glEngine2D.h"
+#include "../lib/shader.hpp"
+#include "geometry2D.h"
+#include "material2D.h"
+#include "shape2D.h"
+#include "bufferObject.h"
+#include "temporaryBufferObject.h"
 
 glEngine2D::glEngine2D(glm::vec3 camera){
 	programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
-	modelID = glGetUniformLocation(programID, "MM");
-	viewID = glGetUniformLocation(programID, "VM");
+	modelID = glGetUniformLocation(programID, "MVP");
+	colorID = glGetUniformLocation(programID, "vertexColor");
 	setCamera(camera);
 }
 
@@ -26,51 +32,54 @@ void glEngine2D::setCamera(glm::vec3 camera){
 	));
 }
 
+void glEngine2D::drawLine(glm::vec2 start, glm::vec2 end, glm::vec3 color, double width, unsigned int frames){
+//	assert(width == 1);
+
+	std::vector<glm::vec2> geoVec;
+	double length = glm::length(end-start);
+	geoVec.push_back(glm::vec2(-length/2, width/2));
+	geoVec.push_back(glm::vec2(-length/2, -width/2));
+	geoVec.push_back(glm::vec2(length/2, -width/2));
+	geoVec.push_back(glm::vec2(length/2, width/2));
+
+	Geometry2D* geo = new Geometry2D(geoVec);
+	Material2D* mat = new Material2D(color);
+	glm::vec2 delta = end - start;
+	double angle = std::atan2(delta.y, delta.x);
+
+	glm::vec2 pos = (start + end) / 2.0f;
+
+
+	Shape2D* s = new Shape2D(geo, mat);
+	s->setAttribs(pos, angle);
+
+	temporaryBuffers.push_back(new TemporaryBufferObject(s, frames));
+
+}
+
+void glEngine2D::drawVector(glm::vec2 orig, glm::vec2 direc, glm::vec3 color, double width, unsigned int frames){
+	drawLine(orig, orig+glm::normalize(direc), color, width, frames);
+}
 
 void glEngine2D::bindBuffers(){
 	for(unsigned int i = 0; i < shapeList.size();i++){
-		GLfloat* glBuffer = new GLfloat[shapeList[i]->getLocalVertices().size()*3];
-		for(unsigned int j = 0; j < shapeList[i]->getLocalVertices().size(); j++){
-		glBuffer[j*3+0] = shapeList[i]->getLocalVertices()[j].x;
-		glBuffer[j*3+1] = shapeList[i]->getLocalVertices()[j].y;
-		glBuffer[j*3+2] = 0;
+		buffers.push_front(new BufferObject(shapeList[i]));
 	}
-		GLuint vertexBuffer;
-		glGenBuffers(1, &vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glBuffer)*shapeList[i]->getLocalVertices().size()*3, glBuffer, GL_STATIC_DRAW);
-		delete[] glBuffer;
-
-
-		GLuint colorBuffer;
-		GLfloat* colorL = new GLfloat[shapeList[i]->getLocalVertices().size()*3];
-		for(unsigned int j = 0; j < shapeList[i]->getLocalVertices().size(); j++){
-			colorL[j*3+0] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].x;
-			colorL[j*3+1] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].y;
-			colorL[j*3+2] = shapeList[i]->getMaterial()[j%shapeList[i]->getMaterial().size()].z;
-		}
-		glGenBuffers(1, &colorBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glBuffer)*shapeList[i]->getLocalVertices().size()*3, colorL, GL_STATIC_DRAW);
-		buffers.push_back(new BufferObject(colorBuffer, vertexBuffer));
-		delete[] colorL;
-}
 }
 
 
 void glEngine2D::render(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
-	for(unsigned int i = 0; i < buffers.size(); i++){
+	std::list<BufferObject*>::iterator i;
+
+	for(i = buffers.begin(); i != buffers.end(); ++i){
 
 		glUseProgram(programID);
-
-		glUniformMatrix4fv(modelID, 1, GL_FALSE, &shapeList[i]->getModel()[0][0]);
-		glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
+		glUniformMatrix4fv(modelID, 1, GL_FALSE, &(viewMatrix*(*i)->getShape()->getModel())[0][0]);
+		glUniform3fv(colorID, 1, &((*i)->getShape()->getMaterial()->getColor())[0]);
 		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
 
-		glBindBuffer(GL_ARRAY_BUFFER, buffers.at(i)->getVertexBuffer());
+		glBindBuffer(GL_ARRAY_BUFFER, (*i)->getVertexBuffer());
 		glVertexAttribPointer(
 			0,
 			3,
@@ -80,27 +89,48 @@ void glEngine2D::render(){
 			(void*)0
 		);
 
-
-		glBindBuffer(GL_ARRAY_BUFFER, buffers.at(i)->getColorBuffer());
-		glVertexAttribPointer(
-			1,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-		);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, shapeList.at(i)->getLocalVertices().size());
-
-
+		glDrawArrays(GL_TRIANGLE_FAN, 0, (*i)->getShape()->getLocalVertices().size());
 		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
+	}
+	std::list<TemporaryBufferObject*>::iterator it;
+	for(it = temporaryBuffers.begin(); it != temporaryBuffers.end(); it++){
+		if((*it)->frameStep()){
+
+			delete (*it);
+			it = temporaryBuffers.erase(it);
+			if(it == temporaryBuffers.end()){
+				break;
+			}
+			continue;
+		}
+		glEnableVertexAttribArray(0);
+
+		glUniformMatrix4fv(modelID, 1, GL_FALSE, &(viewMatrix*(*it)->getShape()->getModel())[0][0]);
+		glUniform3fv(colorID, 1, &((*it)->getShape()->getMaterial()->getColor())[0]);
+
+		glBindBuffer(GL_ARRAY_BUFFER, (*it)->getVertexBuffer());
+		glVertexAttribPointer(
+			0,
+			3,
+			GL_FLOAT,
+			GL_FALSE,
+			0,
+			(void*)0
+		);
+
+		glDrawArrays(GL_TRIANGLE_FAN, 0, (*it)->getShape()->getLocalVertices().size());
+		glDisableVertexAttribArray(0);
 	}
 	glfwSwapBuffers();
 }
 
 void glEngine2D::deleteBuffers(){
-	for(int i = 0; i < buffers.size(); i++){
-		delete buffers[i];
+	for(std::list<BufferObject*>::iterator it = buffers.begin();it!=buffers.end(); it++){
+		delete (*it);
 	}
+	buffers.clear();
+	for(std::list<TemporaryBufferObject*>::iterator it = temporaryBuffers.begin();it!=temporaryBuffers.end(); it++){
+		delete (*it);
+	}
+	temporaryBuffers.clear();
 }
