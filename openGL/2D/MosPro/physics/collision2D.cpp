@@ -1,6 +1,8 @@
 #include "collision2D.h"
 #include "movableBody2D.h"
 #include "immovableBody2D.h"
+#include "physicsEngine2D.h"
+#include "../lib/debugGL.h"
 RigidBody2D* Collision2D::getRb1(){
 	return rb1;
 }
@@ -21,8 +23,8 @@ void Collision2D::resolve(MovableBody2D *a, MovableBody2D *b) {
 	glm::vec2 pv1, pv2;
 
 	m1 = a->getMass();
-	m2 = a->getMass();
-	i1 = b->getInertia();
+	m2 = b->getMass();
+	i1 = a->getInertia();
 	i2 = b->getInertia();
 
 	ps1 = m2/(m1+m2);
@@ -55,7 +57,7 @@ void Collision2D::resolve(MovableBody2D *a, MovableBody2D *b) {
 }
 
 void Collision2D::resolve(MovableBody2D *a) {
-	double e = 1;
+	double e = 0.2;
 
 	double m, i;
 	glm::vec2 pv;
@@ -72,7 +74,7 @@ void Collision2D::resolve(MovableBody2D *a) {
 	glm::vec2 n = glm::normalize(getPenVector());
 	a->teleport(pv);
 		
-	if(glm::dot(getPenVector(),v) > 0){
+	if(glm::dot(getPenVector(),v) < 0){
 		double jr = -(1 + e) * glm::dot(v, n)/(1.0/m + (1.0/i) * pow(glm::dot(n,rOrt),2));
 		glm::vec2 j = (float)abs(jr)*n;
 		a->impulse(getPoint(),j);

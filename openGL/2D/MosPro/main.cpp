@@ -11,7 +11,9 @@
 #include "physics/rigidBody2D.h"
 #include "physics/movableBody2D.h"
 #include "graphics/glEngine2D.h"
+#include "graphics/wallGeometry2D.h"
 #include "physics/collisionDetector2D.h"
+#include "physics/immovableBody2D.h"
 #include "lib/debugGL.h"
 
 #include "graphics/shape2D.h"
@@ -92,7 +94,29 @@ int main( void )
 	glDepthFunc(GL_LESS); 
 
 	glEngine2D ge(glm::vec3(0.1f));
+
 	PhysicsEngine2D pe(Box2D(-10, -10, 10, 10));
+
+	Geometry2D wall = WallGeometry2D(20,0.5);
+	Shape2D *wall1 = new Shape2D(&wall);
+	Shape2D *wall2 = new Shape2D(&wall);
+	Shape2D *wall3 = new Shape2D(&wall);
+	Shape2D *wall4 = new Shape2D(&wall);
+
+	ImmovableBody2D* rb1 = new ImmovableBody2D(wall1,vec2(-10,0),glm::pi<double>()/2);
+	ImmovableBody2D* rb2 = new ImmovableBody2D(wall2,vec2(10,0),glm::pi<double>()/2);
+	ImmovableBody2D* rb3 = new ImmovableBody2D(wall3,vec2(0,10),0);
+	ImmovableBody2D* rb4 = new ImmovableBody2D(wall4,vec2(0,-10),0);
+
+	pe.add(rb1);
+	pe.add(rb2);
+	pe.add(rb3);
+	pe.add(rb4);
+
+	ge.add(wall1);
+	ge.add(wall2);
+	ge.add(wall3);
+	ge.add(wall4);
 
 	DebugGL debug(&ge);
 
@@ -156,7 +180,7 @@ int main( void )
 		pe.step();
 		e = pe.getTotalKineticEnergy();
 		if(e != oldE){
-			//std::cout << "we have " << e << " frikikin kJoules in this sistem.\n";
+			std::cout << "we have " << e << " frikikin kJoules in this sistem.\n";
 			oldE = e;
 		}
 

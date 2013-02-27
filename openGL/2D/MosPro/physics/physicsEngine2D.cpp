@@ -40,27 +40,14 @@ void PhysicsEngine2D::step() {
 		
 		rb->step();
 		glm::vec2 v = rb->getVelocity();
-
-		if (rb->getPosition().x < bounds.p0.x || rb->getPosition().x > bounds.p1.x) {
-			v.x *= -1;
-			rb->setVelocity(v);
-		}
-		if (rb->getPosition().y < bounds.p0.y || rb->getPosition().y > bounds.p1.y) {
-			v.y *= -1;
-			rb->setVelocity(v);
-		}
-
-
 	}
 	collisionResponse(collisionDetector->getCollisions(bsp));
-	
-	
 	
 	//collisionResponse(collisionDetector->getCollisions(bodies));
 }
 
 glm::vec2 PhysicsEngine2D::getGravity() {
-	return glm::vec2(0, 0.0); //-0.0001);
+	return glm::vec2(0, -0.005); //-0.0001);
 }
 
 void PhysicsEngine2D::collisionResponse(std::vector<Collision2D> collisions){
