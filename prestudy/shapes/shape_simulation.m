@@ -8,45 +8,39 @@ shapes = [
 %     shape(3*[-5.5 -5.5 3 ],2*[16 5 5 ],'k', false)
 %     shape(1*[1 -1 -1 1],2*[-5.5 -5.5 5.5 5.5],'k', false)
     shape(3*[-5.5 -5.5 5.5 5.5],1*[1 -1 -1 1],'k', false)
+    
     shape(1*[1 cos(pi/6) cos(pi/3) 0 -cos(pi/3) -cos(pi/6) -1 -cos(pi/6) -cos(pi/3)  0  cos(pi/3)   cos(pi/6)], ...
           1*[0 sin(pi/6) sin(pi/3) 1  sin(pi/3)  sin(pi/6)  0 -sin(pi/6) -sin(pi/3) -1 -sin(pi/3)  -sin(pi/6)],'c', true)
+    shape(1*[1 cos(pi/6) cos(pi/3) 0 -cos(pi/3) -cos(pi/6) -1 -cos(pi/6) -cos(pi/3)  0  cos(pi/3)   cos(pi/6)], ...
+          1*[0 sin(pi/6) sin(pi/3) 1  sin(pi/3)  sin(pi/6)  0 -sin(pi/6) -sin(pi/3) -1 -sin(pi/3)  -sin(pi/6)],'c', true)
+%     shape(3*[-1 -1 1 1],1*[1 -1 -1 1],'b', true)
 %     shape(3*[-1 -1 1 1],1*[-1 1 1 -1],'m', true)
+    
+    shape(3*[-5.5 -5.5 5.5 5.5],1*[1 -1 -1 1],'k', true)
 %     shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'y', true)
 %     shape(1*[-0.5 -0.5 0.5 0.5],1*[1 -1 -1 1],'w', true)
 ];
 
-shapes(1).p = [0 -7]';
-shapes(2).p = [7 -5]';
-% shapes(3).p = [0 -3]';
+shapes(1).p = [0 10]';
+shapes(2).p = [-2 -8]';
+shapes(3).p = [2 -7]';
+% shapes(4).p = [0 -5]';
+shapes(4).p = [0.1 -10]';
 % shapes(4).p = [-1 -5]';
 
-% shapes(5).p = [-0.1 -2]';
-% shapes(6).p = [0 0]';
-% shapes(7).p = [-7.5 -5]';
-%shapes(8).p = [-7 -8]';
-%shapes(9).p = [-1 -8.5]';
-%shapes(10).p = [10.5 10.5]';
+spring = springForceGenerator(0.1, 1);
+spring2 = springForceGenerator(0.05, 2);
 
 size = 11;
 
-% totalKineticEnergy = 0;
-% totalPotentialEnergy = 0;
-% for i = 1:length(shapes)
-%     totalKineticEnergy = totalKineticEnergy + shapes(i).getKineticEnergy();
-%     totalPotentialEnergy = totalPotentialEnergy + shapes(i).getPotentialEnergy(size);
-% end
-
-% thermalEnergy = 0;
-% totalThermalEnergy = [thermalEnergy];
-% totalEnergy = (totalThermalEnergy(end) + totalKineticEnergy + totalPotentialEnergy);
-
-prevCollisions = 0;
-currentCollisions = 0;
-
 for t = 1:200000
-%     prevCollisions = currentCollisions;
-%     currentCollisions = 0;
+    
     shapes(2).w = 0.1;
+    spring2.applyForces(shapes(2), shapes(1));
+%     spring.applyForces(shapes(3), shapes(4));
+
+    [c11 c12] = spring.applyForcesToPoint(shapes(1), shapes(4), shapes(1).vertices(:, 2), shapes(4).vertices(:, 1));
+    [c21 c22] = spring.applyForcesToPoint(shapes(1), shapes(4), shapes(1).vertices(:, 3), shapes(4).vertices(:, 4));
     
     hold off;
     plot(size*[-1 -1 1 1 -1],size*[-1 1 1 -1 -1]);
@@ -89,5 +83,10 @@ for t = 1:200000
           end
        end
     end
+    
+%     plotVector(shapes(2).p, shapes(3).p - shapes(2).p, 'r');
+    plotVector(shapes(2).p, shapes(1).p-shapes(2).p, 'r');
+    plotVector(c11, c12-c11, 'r');
+    plotVector(c21, c22-c21, 'r');
     pause(0.01);
 end
