@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __BUFFEROBJ__
-#define __BUFFEROBJ__
+//#ifndef __BUFFEROBJ__
+//#define __BUFFEROBJ__
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <glm/glm.hpp>
@@ -22,4 +22,4 @@ protected:
 };
 
 
-#endif
+//#endif

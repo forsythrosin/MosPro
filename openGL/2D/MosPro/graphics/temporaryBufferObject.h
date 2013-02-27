@@ -1,5 +1,6 @@
-#ifndef __TEMPBUFFEROBJ__
-#define __TEMPBUFFEROBJ__
+#pragma once
+//#ifndef __TEMPBUFFEROBJ__
+//#define __TEMPBUFFEROBJ__
 #include "bufferObject.h"
 #include <GL/glew.h>
 #include <GL/glfw.h>
@@ -19,4 +20,4 @@ public:
 private:
 	unsigned int frames;
 };
-#endif
+//#endif

@@ -1,5 +1,6 @@
-#ifndef __SHAPE2D__
-#define __SHAPE2D__
+#pragma once
+//#ifndef __SHAPE2D__
+//#define __SHAPE2D__
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
@@ -25,4 +26,4 @@ private:
 	glm::mat4 modelMatrix;
 	std::vector<glm::vec2> globalVertices;
 };
-#endif
+//#endif

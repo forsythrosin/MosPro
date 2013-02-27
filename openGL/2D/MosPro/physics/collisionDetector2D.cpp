@@ -142,8 +142,6 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(BSPNode2D *rootNode)
 	std::vector<Collision2D> collisions;
 	
 	std::set<PotentialCollision2D> pc = rootNode->getPotentialCollisions();
-	//std::cout << "HAS POTENTIAL COLLISIONS: " << pc.size() << std::endl;
-	
 
 	for(std::set<PotentialCollision2D>::iterator i = pc.begin(); i != pc.end(); i++) {
 		RigidBody2D *a = (RigidBody2D*) i->first;

@@ -9,6 +9,7 @@
 
 #include "physics/physicsEngine2D.h"
 #include "physics/rigidBody2D.h"
+#include "physics/movableBody2D.h"
 #include "graphics/glEngine2D.h"
 #include "physics/collisionDetector2D.h"
 #include "lib/debugGL.h"
@@ -120,11 +121,11 @@ int main( void )
 		//std::cout << p << v << w;
 
 
-		RigidBody2D* rb = new RigidBody2D(s, p, v, w); 
+		MovableBody2D* rb = new MovableBody2D(s, p, 0, v, w); 
 		pe.add(rb);
 	}
 
-	RigidBody2D* rb;
+	MovableBody2D* rb;
 
 	{
 		vector<vec2> geo2;
@@ -138,7 +139,7 @@ int main( void )
 		Shape2D* s = new Shape2D(g);
 		ge.add(s);
 
-		rb = new RigidBody2D(s, glm::vec2(0), glm::vec2(0), 0, 0); 
+		rb = new MovableBody2D(s, glm::vec2(0), 0, glm::vec2(0), 0); 
 		pe.add(rb);
 	}
 

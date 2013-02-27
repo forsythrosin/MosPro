@@ -1,5 +1,6 @@
-#ifndef __GLENGINE2D__
-#define __GLENGINE2D__
+#pragma once
+//#ifndef __GLENGINE2D__
+//#define __GLENGINE2D__
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <glm/glm.hpp>
@@ -40,4 +41,6 @@ private:
 	std::list<BufferObject*> buffers;
 	glm::mat4 viewMatrix;
 };
-#endif
+//#endif
+
+

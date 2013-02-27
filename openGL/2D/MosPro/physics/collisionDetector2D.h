@@ -1,17 +1,20 @@
-#ifndef __COLLISIONDETECTOR2D__
-#define __COLLISIONDETECTOR2D__
+#pragma once
+//#ifndef __COLLISIONDETECTOR2D__
+//#define __COLLISIONDETECTOR2D__
 #include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
 #include "../glmIO.h"
 #include "collision2D.h"
-#include "rigidBody2D.h"
+//#include "rigidBody2D.h"
 #include "minkowskiPoint2D.h"
 #include "edge.h"
 #include <iostream>
 #include <limits>
 #include "collision2D.h"
 #include "bspNode2D.h"
+
+
 
 
 typedef std::vector<MinkowskiPoint2D> simplex2D;
@@ -34,4 +37,6 @@ class CollisionDetector2D
 		const static double tolerance;
 };
 
-#endif
+//#endif
+
+

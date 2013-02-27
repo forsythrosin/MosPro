@@ -1,5 +1,6 @@
-#ifndef __EDGEH__
-#define __EDGEH__
+#pragma once
+//#ifndef __EDGEH__
+//#define __EDGEH__
 #include <glm/glm.hpp>
 #include "minkowskiPoint2D.h"
 class Edge{
@@ -14,4 +15,6 @@ private:
 	glm::vec2 n;
 	int index;
 };
-#endif
+//#endif
+
+

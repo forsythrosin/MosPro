@@ -1,5 +1,6 @@
-#ifndef __BSPNODE2D__
-#define __BSPNODE2D__
+#pragma once
+//#ifndef __BSPNODE2D__
+//#define __BSPNODE2D__
 
 #include <GL/glew.h>
 #include <GL/glfw.h>
@@ -7,7 +8,7 @@
 #include <iostream>
 #include "../glmIO.h"
 #include <cassert>
-#include "rigidBody2D.h"
+//#include "rigidBody2D.h"
 #include "../box2D.h"
 #include <set>
 #include <string>
@@ -63,4 +64,4 @@ std::ostream &operator<< (std::ostream &out, const BSPNode2D& node);
 
 
 
-#endif
+//#endif

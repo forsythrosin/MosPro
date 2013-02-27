@@ -1,5 +1,6 @@
-#ifndef __GEOMETRY2D__
-#define __GEOMETRY2D__
+#pragma once
+//#ifndef __GEOMETRY2D__
+//#define __GEOMETRY2D__
 #include <glm/glm.hpp>
 #include <vector>
 class Geometry2D{
@@ -11,4 +12,6 @@ public:
 private:
 	std::vector<glm::vec2> vecList;
 };
-#endif
+//#endif
+
+
