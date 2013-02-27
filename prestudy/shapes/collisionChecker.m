@@ -258,7 +258,7 @@ classdef collisionChecker < handle
             
             if ((penetrationVector' * vr) < 0)
                 %friction
-                mu = 0;
+                mu = 1;
                 t =[-n(2) n(1)]';
                 t = -sign(vr' * t) * t;
                 
