@@ -1,29 +1,25 @@
 clear all;
 close all;
 
-figure('units','normalized','outerposition',[0 0.25 0.5 0.75]);
+figure('units','normalized','outerposition',[0 0.25 0.5 0.60]);
 hold on;
 
 shapes = [
 %     shape(3*[-5.5 -5.5 3 ],2*[16 5 5 ],'k', false)
 %     shape(1*[1 -1 -1 1],2*[-5.5 -5.5 5.5 5.5],'k', false)
     shape(3*[-5.5 -5.5 5.5 5.5],1*[1 -1 -1 1],'k', false)
-    shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'c', true)
-%     shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'m', true)
+    shape(1*[1 cos(pi/6) cos(pi/3) 0 -cos(pi/3) -cos(pi/6) -1 -cos(pi/6) -cos(pi/3)  0  cos(pi/3)   cos(pi/6)], ...
+          1*[0 sin(pi/6) sin(pi/3) 1  sin(pi/3)  sin(pi/6)  0 -sin(pi/6) -sin(pi/3) -1 -sin(pi/3)  -sin(pi/6)],'c', true)
+%     shape(3*[-1 -1 1 1],1*[-1 1 1 -1],'m', true)
 %     shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'y', true)
 %     shape(1*[-0.5 -0.5 0.5 0.5],1*[1 -1 -1 1],'w', true)
 ];
 
 shapes(1).p = [0 -7]';
-% shapes(2).p = [11 0]';
-% shapes(3).p = [0 5]';
+shapes(2).p = [7 -5]';
+% shapes(3).p = [0 -3]';
+% shapes(4).p = [-1 -5]';
 
-% shapes(3).p = [3 8]';
-% shapes(3).theta = 10;
-
-%shapes(2).p = [0 -11]';
-% shapes(4).p = [-3 8]';
-shapes(2).p = [0 10]';
 % shapes(5).p = [-0.1 -2]';
 % shapes(6).p = [0 0]';
 % shapes(7).p = [-7.5 -5]';
@@ -50,6 +46,7 @@ currentCollisions = 0;
 for t = 1:200000
 %     prevCollisions = currentCollisions;
 %     currentCollisions = 0;
+    shapes(2).w = 0.1;
     
     hold off;
     plot(size*[-1 -1 1 1 -1],size*[-1 1 1 -1 -1]);
@@ -84,8 +81,11 @@ for t = 1:200000
        for j = i+1:length(shapes)
           collision = cc.checkCollision(shapes(i), shapes(j));
           if collision
-              pause();
-              xlabel('COLLISION!');
+%               hold off;
+%               if t>5
+%               pause();
+%               end
+%               xlabel('COLLISION!');
           end
        end
     end

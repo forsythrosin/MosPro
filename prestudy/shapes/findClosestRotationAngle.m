@@ -61,5 +61,4 @@ function [theta point] = findClosestRotationAngle(a, b, n, p, r)
        end
     end
     point = p + q;
-    plotVector(point, n, 'm');
 end
