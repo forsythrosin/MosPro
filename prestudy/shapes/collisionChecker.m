@@ -259,6 +259,9 @@ classdef collisionChecker < handle
             if ((penetrationVector' * vr) < 0)
                 %friction
                 mu = 1;
+                if s1.color == 'b'
+                    mu = 0;
+                end
                 t =[-n(2) n(1)]';
                 t = -sign(vr' * t) * t;
                 
