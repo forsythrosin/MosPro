@@ -1,12 +1,15 @@
 #include "rigidBody2D.h"
+#include "physicsEngine2D.h"
+#include "../box2D.h"
+#include <math.h>
 
+#include "../graphics/shape2D.h"
 
 RigidBody2D::RigidBody2D(Shape2D *s, glm::vec2 p, double a) {
 	shape = s;
 	position = p;
 	angle = a;
 	calculateBoundingBox();
-
 	
 	shape->setAttribs(position, angle, com);
 }

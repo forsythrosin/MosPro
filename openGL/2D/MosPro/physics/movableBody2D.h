@@ -1,21 +1,7 @@
 #pragma once
-//#ifndef __MOVABLEBODY2D__
-//#define __MOVABLEBODY2D__
 
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtx/perpendicular.hpp>
-//#include <glm/gtx/norm.hpp>
-//#include <vector>
-//#include <iostream>
-//#include <math.h>
-//#include "../graphics/shape2D.h"
-//#include "physicsEngine2D.h"
-//#include "../box2D.h"
-//#include "../glmIO.h"
-//#include "rigidBody2D.h"
-
-class RigidBody2D;
+#include "rigidBody2D.h"
+class Shape2D;
 
 class MovableBody2D : public RigidBody2D
 {
@@ -58,8 +44,6 @@ class MovableBody2D : public RigidBody2D
 		double inertia;
 
 		glm::vec2 getCenterOfMass();
+
+	friend PhysicsEngine2D;
 };
-
-
-
-//#endif

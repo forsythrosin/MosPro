@@ -1,17 +1,12 @@
 #pragma once
-//#ifndef __COLLISION2D__
-//#define __COLLISION2D__
-//#include "rigidBody2D.h"
-#include "movableBody2D.h"
-#include "collision2D.h"
+
 #include <glm/glm.hpp>
 #include "../glmIO.h"
 #include <iomanip>
 #include <exception>
 
-class RigidBody2D;
 class MovableBody2D;
-
+class RigidBody2D;
 
 class Collision2D{
 public:

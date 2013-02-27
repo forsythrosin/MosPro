@@ -1,13 +1,8 @@
 #pragma once
-//#ifndef __BUFFEROBJ__
-//#define __BUFFEROBJ__
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <glm/glm.hpp>
 #include "shape2D.h"
-
-class Shape2D;
-
 
 class BufferObject{
 public:
@@ -20,6 +15,3 @@ protected:
 	Shape2D* shape;
 	GLuint vertexBuffer;
 };
-
-
-//#endif

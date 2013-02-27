@@ -6,17 +6,15 @@
 #include <GL/glfw.h>
 #include <glm/glm.hpp>
 #include <iostream>
-#include "../glmIO.h"
 #include <cassert>
-//#include "rigidBody2D.h"
-#include "../box2D.h"
 #include <set>
 #include <string>
 #include <sstream>
 
-class RigidBody2D;
+class PotentialCollision2D;
+class Box2D;
 
-typedef std::pair<RigidBody2D*, RigidBody2D*> PotentialCollision2D;
+//typedef std::pair<RigidBody2D*, RigidBody2D*> PotentialCollision2D;
 
 enum BSPLocation2D {
 	rightUpper,

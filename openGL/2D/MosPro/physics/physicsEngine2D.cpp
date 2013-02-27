@@ -1,5 +1,10 @@
 #include "physicsEngine2D.h"
-
+#include "bspNode2D.h"
+#include "rigidBody2D.h"
+#include "movableBody2D.h"
+#include "immovableBody2D.h"
+#include "collision2D.h"
+#include "collisionDetector2D.h"
 
 PhysicsEngine2D::PhysicsEngine2D(Box2D bounds)
 {
@@ -25,7 +30,7 @@ void PhysicsEngine2D::add(MovableBody2D* rb) {
 
 void PhysicsEngine2D::add(ImmovableBody2D* rb) {
 	immovableBodies.push_back(rb);
-	bsp->updatePosition(rb);
+	bsp->updatePosition((RigidBody2D*)rb);
 	rb->engine = this;
 }
 

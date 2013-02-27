@@ -1,5 +1,6 @@
 #include "collision2D.h"
-
+#include "movableBody2D.h"
+#include "immovableBody2D.h"
 RigidBody2D* Collision2D::getRb1(){
 	return rb1;
 }

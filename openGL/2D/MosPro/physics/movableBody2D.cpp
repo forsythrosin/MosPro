@@ -1,5 +1,7 @@
 #include "movableBody2D.h"
-
+#include "physicsEngine2D.h"
+#include "../graphics/shape2D.h"
+#include "../lib/debugInterface.h"
 
 MovableBody2D::MovableBody2D(Shape2D *s, glm::vec2 p, double a, glm::vec2 v, double w) : RigidBody2D(s, p, a) {
 	velocity = v;
@@ -24,7 +26,7 @@ void MovableBody2D::step() {
 
 	shape->setAttribs(position, angle, com);
 
-	getEngine()->getDebug()->debugBox(getBoundingBox());
+	//getEngine()->getDebug()->debugBox(getBoundingBox());
 
 
 	// naive collision response with walls

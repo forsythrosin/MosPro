@@ -3,9 +3,10 @@
 //#define __MINKOWSKIPOINT2D__
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
-#include "../glmIO.h"
-#include "../graphics/shape2D.h"
 #include <vector>
+#include <iostream>
+
+class Shape2D;
 
 class MinkowskiPoint2D
 {

@@ -1,4 +1,9 @@
 #include "BSPNode2D.h"
+#include "rigidBody2D.h"
+#include "potentialCollision2D.h"
+#include "physicsEngine2D.h"
+#include "../lib/debugInterface.h"
+
 
 BSPNode2D::BSPNode2D(BSPNode2D *parent, BSPLocation2D location, double granularity) {
 	assert(parent);
@@ -107,10 +112,10 @@ std::set<PotentialCollision2D> BSPNode2D::getPotentialCollisions() {
 					RigidBody2D *a = *i;
 					RigidBody2D *b = *j;
 
-					PotentialCollision2D pair(a, b);
+					PotentialCollision2D p(a, b);
 					//std::cout << "potential collision" << a << " and " << b << std::endl;
-					a->getEngine()->getDebug()->debugBox(getBox());
-					pc.insert(pair);
+					//a->getEngine()->getDebug()->debugBox(getBox());
+					pc.insert(p);
 				}
 			}
 		}

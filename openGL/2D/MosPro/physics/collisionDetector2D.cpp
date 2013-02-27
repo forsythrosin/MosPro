@@ -1,4 +1,11 @@
 #include "collisionDetector2D.h"
+#include "rigidBody2D.h"
+#include "minkowskiPoint2D.h"
+#include "collision2D.h"
+#include "edge.h"
+#include <set>
+#include "potentialCollision2D.h"
+#include "BSPNode2D.h"
 
 const double CollisionDetector2D::tolerance = 0.0001;
 CollisionDetector2D::CollisionDetector2D(void){

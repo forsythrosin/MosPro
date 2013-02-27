@@ -1,5 +1,6 @@
 #include "minkowskiPoint2D.h"
-
+#include "../graphics/shape2D.h"
+#include "../glmIO.h"
 
 MinkowskiPoint2D::MinkowskiPoint2D(Shape2D* s1, Shape2D* s2, glm::vec2 d, bool debug){
 	this->s1 = s1;

@@ -1,19 +1,17 @@
 #pragma once
-//#ifndef __PHYSICSENGINE2D__
-//#define __PHYSICSENGINE2D__
-#include "collisionDetector2D.h"
+
 #include <vector>
 #include <glm/glm.hpp>
-#include "collision2D.h"
 #include <cmath>
-#include "bspNode2D.h"
 #include "../box2D.h"
-#include "../lib/debugInterface.h"
 
+class DebugInterface;
+
+class CollisionDetector2D;
 class RigidBody2D;
 class MovableBody2D;
 class ImmovableBody2D;
-class CollisionDetector2D;
+
 class Collision2D;
 class BSPNode2D;
 
@@ -44,5 +42,3 @@ class PhysicsEngine2D
 		BSPNode2D *bsp;
 		Box2D bounds;
 };
-
-//#endif

@@ -1,19 +1,15 @@
 #pragma once
-//#ifndef __RIGIDBODY2D__
-//#define __RIGIDBODY2D__
 
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/perpendicular.hpp>
 #include <glm/gtx/norm.hpp>
 #include <vector>
 #include <iostream>
-#include <math.h>
-#include "../graphics/shape2D.h"
-#include "physicsEngine2D.h"
 #include "../box2D.h"
-#include "../glmIO.h"
 
+class Box2D;
+class Shape2D;
 class PhysicsEngine2D;
 
 class RigidBody2D {
@@ -50,5 +46,3 @@ class RigidBody2D {
 
 	friend PhysicsEngine2D;
 };
-
-//#endif

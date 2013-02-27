@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <ctime>
+
 class Material2D{
 public:
 	Material2D(); //Random color
