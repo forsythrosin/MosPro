@@ -1,4 +1,10 @@
 #include "glEngine2D.h"
+#include "../lib/shader.hpp"
+#include "geometry2D.h"
+#include "material2D.h"
+#include "shape2D.h"
+#include "bufferObject.h"
+#include "temporaryBufferObject.h"
 
 glEngine2D::glEngine2D(glm::vec3 camera){
 	programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );

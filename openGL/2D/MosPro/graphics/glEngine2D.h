@@ -1,18 +1,12 @@
-#ifndef __GLENGINE2D__
-#define __GLENGINE2D__
+#pragma once
+//#ifndef __GLENGINE2D__
+//#define __GLENGINE2D__
 #include <GL/glew.h>
-#include <GL/glfw.h>
 #include <glm/glm.hpp>
 #include <vector>
 #include <list>
-#include "shape2D.h"
-#include "bufferObject.h"
-#include "../lib/shader.hpp"
 #include <iostream>
 #include <utility>
-#include "geometry2D.h"
-#include "material2D.h"
-#include "temporaryBufferObject.h"
 #include <cassert>
 
 class Shape2D;
@@ -40,4 +34,6 @@ private:
 	std::list<BufferObject*> buffers;
 	glm::mat4 viewMatrix;
 };
-#endif
+//#endif
+
+

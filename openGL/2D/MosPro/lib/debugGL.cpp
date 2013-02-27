@@ -1,4 +1,6 @@
 #include "debugGL.h"
+#include "../graphics/glEngine2D.h"
+#include "../box2D.h"
 
 DebugGL::DebugGL(glEngine2D *ge){
 		engine = ge;

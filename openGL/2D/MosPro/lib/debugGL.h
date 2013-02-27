@@ -1,13 +1,9 @@
 #pragma once
-#ifndef __DEBUGGL__
-#define __DEBUGGL__
-
+#include <glm/glm.hpp>
 #include "debugInterface.h"
-#include "../graphics/glEngine2D.h"
-#include "../box2D.h"
 
 class glEngine2D;
-class DebugInterface;
+class Box2D;
 
 class DebugGL : public DebugInterface{
 public:
@@ -21,5 +17,3 @@ public:
 private:
 	glEngine2D *engine;
 };
-
-#endif

@@ -1,13 +1,9 @@
-#ifndef __TEMPBUFFEROBJ__
-#define __TEMPBUFFEROBJ__
-#include "bufferObject.h"
+#pragma once
+
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <glm/glm.hpp>
-
-class TemporaryBufferObject; 
-class BufferObject;
-class Shape2D;
+#include "bufferObject.h"
 
 class TemporaryBufferObject : public BufferObject{
 public:
@@ -19,4 +15,3 @@ public:
 private:
 	unsigned int frames;
 };
-#endif

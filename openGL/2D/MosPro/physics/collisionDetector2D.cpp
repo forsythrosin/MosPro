@@ -1,4 +1,11 @@
 #include "collisionDetector2D.h"
+#include "rigidBody2D.h"
+#include "minkowskiPoint2D.h"
+#include "collision2D.h"
+#include "edge.h"
+#include <set>
+#include "potentialCollision2D.h"
+#include "BSPNode2D.h"
 
 const double CollisionDetector2D::tolerance = 0.0001;
 CollisionDetector2D::CollisionDetector2D(void){
@@ -142,8 +149,6 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(BSPNode2D *rootNode)
 	std::vector<Collision2D> collisions;
 	
 	std::set<PotentialCollision2D> pc = rootNode->getPotentialCollisions();
-	//std::cout << "HAS POTENTIAL COLLISIONS: " << pc.size() << std::endl;
-	
 
 	for(std::set<PotentialCollision2D>::iterator i = pc.begin(); i != pc.end(); i++) {
 		RigidBody2D *a = (RigidBody2D*) i->first;

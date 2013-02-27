@@ -1,12 +1,9 @@
-#ifndef __BOX2D__
-#define __BOX2D__
+#pragma once
 
 #include <glm/glm.hpp>
 #include <algorithm>
 #include <cassert>
-#include "glmIO.h"
 #include <iostream>
-
 
 class Box2D {
 	public:
@@ -26,7 +23,3 @@ class Box2D {
 };
 
 std::ostream &operator<< (std::ostream &out, const Box2D& b);
-
-
-
-#endif

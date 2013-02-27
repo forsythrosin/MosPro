@@ -1,6 +1,6 @@
 #include "bufferObject.h"
 
-BufferObject::BufferObject(Shape2D* s){
+BufferObject::BufferObject(Shape2D *s){
 	GLfloat* glBuffer = new GLfloat[s->getLocalVertices().size()*3];
 	for(unsigned int j = 0; j < s->getLocalVertices().size(); j++){
 		glBuffer[j*3+0] = s->getLocalVertices()[j].x;

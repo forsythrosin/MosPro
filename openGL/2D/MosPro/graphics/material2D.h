@@ -1,8 +1,10 @@
-#ifndef __MATERIAL2D__
-#define __MATERIAL2D__
+#pragma once
+//#ifndef __MATERIAL2D__
+//#define __MATERIAL2D__
 #include <glm/glm.hpp>
 #include <vector>
 #include <ctime>
+
 class Material2D{
 public:
 	Material2D(); //Random color
@@ -12,4 +14,4 @@ public:
 private:
 	glm::vec3 color;
 };
-#endif
+//#endif

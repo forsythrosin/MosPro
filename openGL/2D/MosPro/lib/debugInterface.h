@@ -1,9 +1,7 @@
 #pragma once
-#ifndef __DEBUGINTER__
-#define __DEBUGINTER__
 
 #include <glm/glm.hpp>
-#include "../box2D.h"
+class Box2D;
 
 class DebugInterface{
 public:
@@ -12,4 +10,3 @@ public:
 	virtual void debugLine(glm::vec2 startPoint, glm::vec2 endPoint) = 0;
 	virtual void debugBox(Box2D) = 0;
 };
-#endif
