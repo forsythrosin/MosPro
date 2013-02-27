@@ -9,21 +9,21 @@ shapes = [
 %     shape(1*[1 -1 -1 1],2*[-5.5 -5.5 5.5 5.5],'k', false)
     shape(3*[-5.5 -5.5 5.5 5.5],1*[1 -1 -1 1],'k', false)
     shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'c', true)
-%     shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'m', true)
-%     shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'y', true)
+    shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'m', true)
+    shape(1*[-1 -1 1 1],1*[-1 1 1 -1],'y', true)
 %     shape(1*[-0.5 -0.5 0.5 0.5],1*[1 -1 -1 1],'w', true)
 ];
 
 shapes(1).p = [0 -7]';
 % shapes(2).p = [11 0]';
-% shapes(3).p = [0 5]';
+shapes(3).p = [0 -3]';
 
 % shapes(3).p = [3 8]';
 % shapes(3).theta = 10;
 
 %shapes(2).p = [0 -11]';
-% shapes(4).p = [-3 8]';
-shapes(2).p = [0 10]';
+shapes(4).p = [-1 -5]';
+shapes(2).p = [1 -5]';
 % shapes(5).p = [-0.1 -2]';
 % shapes(6).p = [0 0]';
 % shapes(7).p = [-7.5 -5]';
@@ -84,7 +84,10 @@ for t = 1:200000
        for j = i+1:length(shapes)
           collision = cc.checkCollision(shapes(i), shapes(j));
           if collision
-              pause()
+              hold off;
+              if t>5
+              pause();
+              end
               xlabel('COLLISION!');
           end
        end
