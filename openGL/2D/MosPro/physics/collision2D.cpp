@@ -17,7 +17,7 @@ glm::vec2 Collision2D::getPenVector(){
 }
 
 void Collision2D::resolve(MovableBody2D *a, MovableBody2D *b) {
-	double e = 1;
+	double e = 0.8;
 
 	double m1, m2, i1, i2, ps1, ps2;
 	glm::vec2 pv1, pv2;
@@ -47,17 +47,34 @@ void Collision2D::resolve(MovableBody2D *a, MovableBody2D *b) {
 	b->teleport(pv2);
 		
 	glm::vec2 vr = v2 - v1;
-
+	
+	if(glm::length(vr) < 0.1){
+		e = 0;
+	}
 	if(glm::dot(getPenVector(),vr) > 0){
+		//Friction
+		double mu = 0.5;
+		glm::vec2 t = glm::vec2(-n.y,n.x);
+		double x = glm::dot(vr,t);
+		double sign = (x > 0) ? 1 : ((x < 0) ? -1 : 0); //Is there a better way for this?
+		t = (float)-sign*t;
+
+		//Impulse
 		double jr = -(1 + e) * glm::dot(vr, n)/(1.0/m1 + 1.0/m2 + (1.0/i1) * pow(glm::dot(n,r1Ort),2) + (1.0/i2) * pow(glm::dot(n,r2Ort),2));
 		glm::vec2 j = (float)abs(jr)*n;
-		a->impulse(getPoint(),j);
-		b->impulse(getPoint(),-j);
+
+		//Friction Impulse
+		double fjr = abs(glm::dot(vr,t))/((1/m1) + (1/m2) +  (1/i1) * pow(glm::dot(t,r1Ort),2) + (1/i2)*pow(glm::dot(t,r2Ort),2));
+		glm::vec2 fj = (float)(mu*fjr)*t;
+
+		a->impulse(getPoint(),j-fj);
+		a->getEngine()->getDebug()->debugVector(getPoint(),fj);
+		b->impulse(getPoint(),-j+fj);
 	}
 }
 
 void Collision2D::resolve(MovableBody2D *a) {
-	double e = 0.2;
+	double e = 0.8;
 
 	double m, i;
 	glm::vec2 pv;
@@ -73,11 +90,28 @@ void Collision2D::resolve(MovableBody2D *a) {
 
 	glm::vec2 n = glm::normalize(getPenVector());
 	a->teleport(pv);
-		
+	if(glm::length(v) < 0.1){
+		e = 0;
+	}
 	if(glm::dot(getPenVector(),v) < 0){
+
+		//Friction
+		double mu = 0.5;
+		glm::vec2 t = glm::vec2(-n.y,n.x);
+		double x = glm::dot(v,t);
+		double sign = (x > 0) ? 1 : ((x < 0) ? -1 : 0); //Is there a better way for this?
+		t = (float)-sign*t;
+
+		//Impulse
 		double jr = -(1 + e) * glm::dot(v, n)/(1.0/m + (1.0/i) * pow(glm::dot(n,rOrt),2));
 		glm::vec2 j = (float)abs(jr)*n;
-		a->impulse(getPoint(),j);
+
+		//Friction
+		double fjr = abs(glm::dot(v,t))/((1/m) + (1/i) *glm::dot(t,rOrt)*glm::dot(t,rOrt));
+		glm::vec2 fj = (float)(mu*fjr)*t;
+
+		a->impulse(getPoint(),j+fj);
+		a->getEngine()->getDebug()->debugVector(getPoint(),fj);
 	}
 
 
