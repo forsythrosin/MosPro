@@ -39,7 +39,7 @@ void PhysicsEngine2D::step() {
 		MovableBody2D *rb = movableBodies[i];
 		
 		rb->step();
-		glm::vec2 v = rb->getVelocity();
+		//glm::vec2 v = rb->getVelocity();
 	}
 	collisionResponse(collisionDetector->getCollisions(bsp));
 	

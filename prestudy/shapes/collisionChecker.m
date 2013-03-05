@@ -190,11 +190,9 @@ classdef collisionChecker < handle
 %             end
             
             r1 = point - s1.p;
-            r1Ort = [-r1(2) r1(1)]'; %r1/r2 must not be normalized!
-            r2 = point - s2.p;
-            r2Ort = [-r2(2) r2(1)]';
+%             r2 = point - s2.p;
+%             r2Ort = [-r2(2) r2(1)]';
             
-            rotDir = sign(r1Ort' * penetrationVector);
             lm1 = penetrationVector * lm1;
             lm2 = - penetrationVector * lm2;
             

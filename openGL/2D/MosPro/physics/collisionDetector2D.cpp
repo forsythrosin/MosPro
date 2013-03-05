@@ -73,6 +73,7 @@ bool CollisionDetector2D::containsOrigin(simplex2D &s, glm::vec2 &d) {
 
 Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &s){
 	while(true){
+		std::cout << "nu kör vi!" << std::endl;
 		Edge e = findClosestEdge(s);
 		MinkowskiPoint2D p(a->getShape(),b->getShape(),e.getN());
 		//a->getEngine()->getDebug()->debugLine(p.getP1(),p.getP2());
@@ -82,15 +83,34 @@ Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &
 
 			glm::vec2 penetrationVector = e.getN();
 			glm::vec2 point;
+
 			if(glm::length((e.getMp1().getP1() - e.getMp2().getP1())) < CollisionDetector2D::tolerance){
 				point = e.getMp1().getP1();
 
+				glm::vec2 lineP1 = e.getMp1().getP2();
+				glm::vec2 lineP2 = e.getMp2().getP2();
+				glm::vec2 lineTangent = lineP2 - lineP1;
+				glm::vec2 lineNormal = glm::vec2(-lineTangent.y, lineTangent.x);
+
 				penetrationVector *= -1;
-				return Collision2D(a, b, point, penetrationVector);
+				
+				if(glm::dot(lineNormal, penetrationVector) < 0){
+					return Collision2D(a, b, point, penetrationVector, lineP2, lineP1);
+				}
+				return Collision2D(a, b, point, penetrationVector, lineP1, lineP2);
 			}
 			else{
 				point = e.getMp1().getP2();
-				return Collision2D(b, a, point, penetrationVector);
+
+				glm::vec2 lineP1 = e.getMp1().getP1();
+				glm::vec2 lineP2 = e.getMp2().getP1();
+				glm::vec2 lineTangent = lineP2 - lineP1;
+				glm::vec2 lineNormal = glm::vec2(-lineTangent.y, lineTangent.x);
+
+				if(glm::dot(lineNormal, penetrationVector) < 0){
+					return Collision2D(b, a, point, penetrationVector, lineP2, lineP1);
+				}
+				return Collision2D(b, a, point, penetrationVector, lineP1, lineP2);
 			}
 		}
 		else{

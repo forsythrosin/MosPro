@@ -1,17 +1,47 @@
-﻿Build started 2013-02-05 15:49:17.
-     1>Project "H:\Programmering\TNM085\git\openGL\2D\MosPro\MosPro.vcxproj" on node 2 (build target(s)).
+﻿Build started 2013-03-05 11:43:39.
+     1>Project "H:\MosPro\openGL\2D\MosPro\MosPro.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\MosPro.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         All outputs are up-to-date.
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt physics\collisionDetector2D.cpp
+         collisionDetector2D.cpp
+     1>physics\collisionDetector2D.cpp(127): warning C4018: '<' : signed/unsigned mismatch
+     1>physics\collisionDetector2D.cpp(150): warning C4018: '<' : signed/unsigned mismatch
+     1>physics\collisionDetector2D.cpp(151): warning C4018: '<' : signed/unsigned mismatch
        Link:
-         All outputs are up-to-date.
-         MosPro.vcxproj -> H:\Programmering\TNM085\git\openGL\2D\MosPro\Debug\MosPro.exe
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"H:\MosPro\openGL\2D\MosPro\Debug\MosPro.exe" /NOLOGO opengl32.lib glfw.lib glew32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\MosPro.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"H:\MosPro\openGL\2D\MosPro\Debug\MosPro.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"H:\MosPro\openGL\2D\MosPro\Debug\MosPro.lib" /MACHINE:X86 Debug\box2D.obj
+         Debug\glmIO.obj
+         Debug\bufferObject.obj
+         Debug\circleGeometry2D.obj
+         Debug\geometry2D.obj
+         Debug\glEngine2D.obj
+         Debug\material2D.obj
+         Debug\shape2D.obj
+         Debug\temporaryBufferObject.obj
+         Debug\wallGeometry2D.obj
+         Debug\debugGL.obj
+         Debug\shader.obj
+         Debug\main.obj
+         Debug\bspNode2D.obj
+         Debug\collision2D.obj
+         Debug\collisionDetector2D.obj
+         Debug\edge.obj
+         Debug\immovableBody2D.obj
+         Debug\minkowskiPoint2D.obj
+         Debug\movableBody2D.obj
+         Debug\physicsEngine2D.obj
+         Debug\potentialCollision2D.obj
+         Debug\rigidBody2D.obj
+         LINK : H:\MosPro\openGL\2D\MosPro\Debug\MosPro.exe not found or not built by the last incremental link; performing full link
+     1>LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+         MosPro.vcxproj -> H:\MosPro\openGL\2D\MosPro\Debug\MosPro.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"H:\MosPro\openGL\2D\MosPro\Debug\MosPro.exe;#1" /manifest Debug\MosPro.exe.intermediate.manifest
        FinalizeBuildStatus:
          Deleting file "Debug\MosPro.unsuccessfulbuild".
          Touching "Debug\MosPro.lastbuildstate".
-     1>Done Building Project "H:\Programmering\TNM085\git\openGL\2D\MosPro\MosPro.vcxproj" (build target(s)).
+     1>Done Building Project "H:\MosPro\openGL\2D\MosPro\MosPro.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.38
+Time Elapsed 00:00:05.23

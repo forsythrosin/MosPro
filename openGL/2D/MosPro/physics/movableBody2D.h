@@ -12,7 +12,7 @@ class MovableBody2D : public RigidBody2D
 		void step();
 
 		void impulse(glm::vec2 anchor, glm::vec2 j);
-		void teleport(glm::vec2 transVect);
+		void teleport(glm::vec2 transVect, float rotation);
 
 		// mass and inertia
 		double getMass();

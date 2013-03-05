@@ -180,7 +180,7 @@ int main( void )
 		pe.step();
 		e = pe.getTotalKineticEnergy();
 		if(e != oldE){
-			std::cout << "we have " << e << " frikikin kJoules in this sistem.\n";
+			//std::cout << "we have " << e << " frikikin kJoules in this sistem.\n";
 			oldE = e;
 		}
 
