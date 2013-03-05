@@ -5,6 +5,7 @@
 #include "edge.h"
 #include <set>
 #include "potentialCollision2D.h"
+#include <glm/gtx/perpendicular.hpp>
 #include "BSPNode2D.h"
 
 const double CollisionDetector2D::tolerance = 0.0001;
@@ -49,8 +50,8 @@ bool CollisionDetector2D::containsOrigin(simplex2D &s, glm::vec2 &d) {
 		glm::vec2 ab = b - a;
 		glm::vec2 ac = c - a;
 
-		glm::vec2 abPerp = ab*glm::dot(ac,ab) - ac*glm::dot(ab,ab);
-		glm::vec2 acPerp = ac*glm::dot(ab,ac) - ab*glm::dot(ac,ac);
+		glm::vec2 abPerp = glm::dot(glm::vec2(-ac.y,ac.x), ab)*glm::vec2(-ab.y,ab.x); //tripleProduct(ac, ab, ab);
+		glm::vec2 acPerp = glm::dot(glm::vec2(-ab.y,ab.x), ac)*glm::vec2(-ac.y,ac.x); //tripleProduct(ab, ac, ac);
 
 		if (glm::dot(abPerp, ao) >= 0) {
 			s.erase(s.begin());

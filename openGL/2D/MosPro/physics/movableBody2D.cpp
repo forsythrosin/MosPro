@@ -22,6 +22,7 @@ void MovableBody2D::step() {
 
 	angle += angularVelocity;
 	setPosition(position + meanVelocity);
+	
 	//position += meanVelocity;
 
 	shape->setAttribs(position, angle, com);
@@ -132,15 +133,13 @@ double MovableBody2D::getInertia(){
 MovableBody2D::~MovableBody2D(void) {
 }
 
-
 void MovableBody2D::teleport(glm::vec2 transVect, float rotation){
 	setPosition(position + transVect);
 	angle += rotation;
 
 	if(glm::length(velocity) > 0 ){
-		double vMagnitude = sqrt( abs(pow(glm::length(velocity),2 ) - 2*engine->getGravity().y * transVect.y));
+		double vMagnitude = sqrt( abs(pow(glm::length(velocity),2 ) - 2*abs(engine->getGravity().y) * transVect.y));
 		velocity = glm::normalize(velocity)*(float)vMagnitude;
-		//std::cout <<  (float)(glm::length(velocity) * vMagnitude) << std::endl;
 	}
 
 }
