@@ -1,4 +1,5 @@
 \documentclass[a4paper,12pt,twocolumn,swedish]{article}
+\usepackage{amsmath,amssymb,mathrsfs}
 \usepackage[utf8]{inputenc}
 \usepackage{blindtext}
 \usepackage[swedish]{babel}
@@ -32,9 +33,30 @@ Sammanfattning av projektet.
 \setcounter{page}{1}
 \pagenumbering{arabic}
 \section{Inledning}
+Referens till bibliografin \cite{vella08} och så vidare.
 \blindtext[1]
 %----------------------------------------------------------------------------
-\section{Huvuddel}
+\section{Kollisionsdetektion}
+This is an example of a numbered equation that can be referenced:
+\begin{equation}\label{eq:cool_formula1}
+\dot{x} = Ax + Bu.
+\end{equation}
+\begin{equation}\label{eq:cool_formula2}
+\dot{x} = Ax + Bu + Cy.
+\end{equation}
+It is now easy to refer to (\ref{eq:cool_formula1}).
+\blindtext[1]
+%----------------------------------------------------------------------------
+\section{Kollisionslösning}
+\blindtext[1]
+%----------------------------------------------------------------------------
+\section{Kollisionsrespons}
+\blindtext[1]
+%----------------------------------------------------------------------------
+\section{Friktion}
+\blindtext[1]
+%----------------------------------------------------------------------------
+\section{Fjädrar}
 \blindtext[1]
 %----------------------------------------------------------------------------
 \section{Resultat}
@@ -42,5 +64,19 @@ Sammanfattning av projektet.
 %----------------------------------------------------------------------------
 \section{Diskussion}
 \blindtext[1]
+\clearpage
 %=================================================================
+\begin{thebibliography}{9}
+
+\bibitem{vella08}
+  Vella Colin,
+  \emph{Gravitas: An extensible physics engine framework using object-oriented and design pattern-driven software architecture principles}.
+  2008.
+
+\bibitem{millington07}
+  Millington Ian,
+  \emph{Game Physics Engine Development}.
+  2007.
+
+\end{thebibliography}
 \end{document} 
