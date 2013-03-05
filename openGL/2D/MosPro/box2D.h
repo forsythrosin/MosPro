@@ -15,7 +15,10 @@ class Box2D {
 		Box2D intersection(const Box2D &b) const;
 		bool operator== (const Box2D& b) const;
 		Box2D operator+ (const glm::vec2 v) const;
+		Box2D operator+ (const Box2D b) const;
+		Box2D operator+= (const Box2D b);
 		bool operator!= (const Box2D& b) const;
+		bool isEmpty() const;
 		
 		glm::vec2 p0;
 		glm::vec2 p1;
