@@ -5,6 +5,8 @@
 #include "immovableBody2D.h"
 #include "collision2D.h"
 #include "collisionDetector2D.h"
+#include "collisionGroups.h"
+#include "../lib/debugInterface.h"
 
 PhysicsEngine2D::PhysicsEngine2D(Box2D bounds)
 {
@@ -41,14 +43,24 @@ void PhysicsEngine2D::step() {
 		rb->step();
 		glm::vec2 v = rb->getVelocity();
 	}
-	collisionResponse(collisionDetector->getCollisions(bsp));
+	CollisionGroups cgs;
 	
+
+	
+	collisionDetector->getCollisions(bsp,&cgs);
+	std::vector<Box2D> boxes = cgs.getBoxes();
+	for (int i = 0; i < boxes.size(); i++) {
+		debug->debugBox(boxes[i]);
+	}
+	cgs.resolve();
+	//collisionResponse(collisionDetector->getCollisions(bsp));
 	//collisionResponse(collisionDetector->getCollisions(bodies));
 }
 
 glm::vec2 PhysicsEngine2D::getGravity() {
 	return glm::vec2(0, -0.005); //-0.0001);
 }
+
 
 void PhysicsEngine2D::collisionResponse(std::vector<Collision2D> collisions){
 	// todo

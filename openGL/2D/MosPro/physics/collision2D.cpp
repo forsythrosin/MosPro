@@ -68,7 +68,6 @@ void Collision2D::resolve(MovableBody2D *a, MovableBody2D *b) {
 		glm::vec2 fj = (float)(mu*fjr)*t;
 
 		a->impulse(getPoint(),j-fj);
-		a->getEngine()->getDebug()->debugVector(getPoint(),fj);
 		b->impulse(getPoint(),-j+fj);
 	}
 }
@@ -111,10 +110,7 @@ void Collision2D::resolve(MovableBody2D *a) {
 		glm::vec2 fj = (float)(mu*fjr)*t;
 
 		a->impulse(getPoint(),j+fj);
-		a->getEngine()->getDebug()->debugVector(getPoint(),fj);
 	}
-
-
 }
 
 
@@ -122,7 +118,6 @@ void Collision2D::resolve(){
 
 	MovableBody2D *a = NULL;
 	MovableBody2D *b = NULL;
-
 	try {
 		a = dynamic_cast<MovableBody2D*>(rb1);
 	} catch(std::exception e) {};
@@ -136,7 +131,7 @@ void Collision2D::resolve(){
 	} else if (a = a ? a : b) {
 		resolve(a);
 	} else {
-		assert(false);
+		//assert(false);
 	}
 
 }

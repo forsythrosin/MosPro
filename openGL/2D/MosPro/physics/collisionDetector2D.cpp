@@ -7,7 +7,9 @@
 #include "potentialCollision2D.h"
 #include <glm/gtx/perpendicular.hpp>
 #include "BSPNode2D.h"
-
+#include "collisionGroup.h"
+#include "../graphics/shape2D.h"
+#include "collisionGroups.h"
 const double CollisionDetector2D::tolerance = 0.0001;
 CollisionDetector2D::CollisionDetector2D(void){
 }
@@ -146,11 +148,29 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBod
 }
 
 
-std::vector<Collision2D> CollisionDetector2D::getCollisions(BSPNode2D *rootNode) {
-	std::vector<Collision2D> collisions;
-	
+
+void CollisionDetector2D::getCollisions(BSPNode2D *rootNode, CollisionGroups *cgs) {
 	std::set<PotentialCollision2D> pc = rootNode->getPotentialCollisions();
 
+	for(std::set<PotentialCollision2D>::iterator i = pc.begin(); i != pc.end(); i++) {
+		RigidBody2D *a = (RigidBody2D*) i->first;
+		RigidBody2D *b = (RigidBody2D*) i->second;
+
+		if (a->getBoundingBox().intersects(b->getBoundingBox())) {
+			simplex2D s;
+			if (gjk(a, b, s)) {
+				Collision2D c = epa(a,b,s);
+				cgs->addCollision(c);
+			}
+		}
+	}
+}
+
+
+std::vector<Collision2D> CollisionDetector2D::getCollisions(BSPNode2D *rootNode) {
+	std::vector<Collision2D> collisions;
+	std::set<PotentialCollision2D> pc = rootNode->getPotentialCollisions();
+	CollisionGroups *cg = new CollisionGroups();
 	for(std::set<PotentialCollision2D>::iterator i = pc.begin(); i != pc.end(); i++) {
 		RigidBody2D *a = (RigidBody2D*) i->first;
 		RigidBody2D *b = (RigidBody2D*) i->second;
@@ -158,10 +178,54 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(BSPNode2D *rootNode)
 		simplex2D s;
 		if (a->getBoundingBox().intersects(b->getBoundingBox())) {
 			if (gjk(a, b, s)) {
-				collisions.push_back(epa(a, b, s));
+				Collision2D c = epa(a,b,s);
+				collisions.push_back(c);
 			}
 		}
 	}
 	return collisions;
 }
 
+/*std::set<CollisionGroup*> CollisionDetector2D::groupCollisions(std::map<RigidBody2D*, std::set<CollisionGroup*>> &rbToCg, Collision2D &c){
+	std::set<CollisionGroup*>::iterator it;
+	std::set<RigidBody2D*>::iterator itr;
+	std::map<RigidBody2D*, std::set<CollisionGroup*>>::iterator itm;
+
+
+	CollisionGroup cg(&c);
+
+	rbToCg[c.getRb1()].insert(&cg);
+	rbToCg[c.getRb2()].insert(&cg);
+
+	if(rbToCg[c.getRb1()].size() > 1){
+		CollisionGroup cg1;
+		for(it = rbToCg[c.getRb1()].begin(); it != rbToCg[c.getRb1()].end(); it++){
+			std::set<RigidBody2D*> temp = (*it)->getBodies();
+			cg1.append(*it);
+
+			for(itr = temp.begin(); itr!=temp.end(); itr++){
+				rbToCg[*itr].clear();
+				rbToCg[*itr].insert(&cg1);
+			}
+			rbToCg[c.getRb1()].erase(it);
+		}
+	}
+	if(rbToCg[c.getRb2()].size() > 1){
+		CollisionGroup cg2;
+		for(it = rbToCg[c.getRb2()].begin(); it != rbToCg[c.getRb2()].end(); it++){
+			std::set<RigidBody2D*> temp = (*it)->getBodies();
+			cg2.append(*it);
+
+			for(itr = temp.begin(); itr!=temp.end(); itr++){
+				rbToCg[*itr].clear();
+				rbToCg[*itr].insert(&cg2);
+			}
+			rbToCg[c.getRb2()].erase(it);
+		}
+	}
+	std::set<CollisionGroup*> cgSet;
+	for(itm = rbToCg.begin(); itm != rbToCg.end(); itm++){
+		cgSet.insert((*itm).second.begin(),(*itm).second.end());
+	}
+	return cgSet;
+}*/
