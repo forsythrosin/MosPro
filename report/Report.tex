@@ -3,6 +3,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{blindtext}
 \usepackage[swedish]{babel}
+\usepackage[margin={1in, 1in},columnsep={0.3in}]{geometry}
+\usepackage[parfill]{parskip}
 %----------------------------------------------------------------------------
 \begin{document}
 %=================================================================
@@ -41,9 +43,11 @@ Fysiksimulering  är en vital del av många moderna datorspel. I spelsammanhang 
 %----------------------------------------------------------------------------
 \section{Kollisionsdetektion}
 
+Det första steget mot att simulera stelkroppars interaktion är att detektera alla kolliderande polygoner i scenen. Att två objekt i ett diskret system ligger dikt an varandra är sällsynt. Vanligare är att de interpenetrerar varandra, d.v.s. att ett hörn hos ett objekt ligger inuti ett annat objekt.
+
 \subsection{Detektionsmetod}
 
-Det första steget mot att simulera stelkroppars interaktion är att detektera alla kolliderande polygoner i scenen. Att två objekt i ett diskret system ligger dikt an varandra är sällsynt. Vanligare är att de interpenetrerar varandra, d.v.s. att ett hörn hos ett objekt ligger inuti ett annat objekt.
+I detta projekt diskuterades i huvudsak två metoder för kollisionsdetektion.
 
 \subsubsection{Separating Axis Test}
 För att utreda eventuell interpenetration mellan två givna objekt kan SAT \cite[s.~29]{vella08} \emph{(Separating Axis Test)} användas. Testet kan avgöra om objekten inte kolliderar genom att hitta en vektor på vilken objektens punkter projiceras på disjunkta intervall (Figur ~\ref{fig:disjoint_intervals}). Ett högre antal vektorer ökar beräkningstiden men också sannolikheten för ett korrekt resultat.
@@ -55,19 +59,29 @@ För att inte göra avkall på noggrannheten har en annan metod, GJK \cite[s.~30
 \chi_1 \ominus \chi_2 = \{x_1 - x_2|x_1 \in \chi_1, x_2 \in \chi_2\}
 \end{equation}
 
-Polygonen som Minkovskidifferensen renderar i innehåller origo om, och endast om, de två objekten korsar varandra.
+De två objekten korsar varandra om, och endast om, polygonen som Minkovskidifferensen renderar innehåller origo. GJK-algoritmen utreder detta på ett sätt som minskar antalet beräkningar från polynomiellt till linjärt beroende av antalet punkter i objekten \cite{bergen99}.
 
 \subsection{Optimering}
+
+Att undersöka kollisioner för alla par av objekt i varje bildruta medför omfattande beräkningar och sänker programmets effektivitet betydligt. För att undvika dessa beräkningsmängder görs först olika bedömningar av vilka objekt som riskerar att kollidera varefter de tyngre kollisionsdetektorerna appliceras endast på dessa par.
+
+\subsubsection{Bounding boxes}
+
+För att förenkla representationen av objekt användes Bounding Boxes. För varje punkt i objektet beräknas den maximala respektive minimala koordinaten i alla dimensioner. Av dessa värden konstrueras sedan nya punkter som bildar ett rätblock (rektangel i två dimensioner) med sidor parallella med koordinataxlarna. Alla punkter i objektet kommer att ligga i detta rätblock vilket gör att man snabbt kan utesluta förekomster av punkter i stora områden.
+
+\subsubsection{Quadtree}
+
+
 %----------------------------------------------------------------------------
 \section{Kollisionslösning}
 %----------------------------------------------------------------------------
 \section{Kollisionsrespons}
 %----------------------------------------------------------------------------
-\section{Krafter i impulsbaserade system}
+\section{Krafter i impuls-\\baserade system}
 
 \subsection{Kraftgeneratorer}
 
-Hittills har endast impulser mellan objekt diskuterats. Impulser är emellertid en förenkling av vad som egentligen sker i stötar och kontakt. En kollision mellan två objekt orsakar kompression hos materialen i respektive objekt vilket i sin tur ger upphov till statiska, motriktade, krafter (kraft/motkraft enligt Newton 3 [referens?]). Dessa krafter verkar inte momentant utan under ett tidsspann. Impulser, som antas vara momentana, kan därför relateras till krafter enligt  (\ref{eq:impulse_force_relation}).
+Hittills har endast impulser mellan objekt diskuterats. Impulser är emellertid en förenkling av vad som egentligen sker i stötar och kontakt. En kollision mellan två objekt orsakar kompression hos materialen i respektive objekt vilket i sin tur ger upphov till statiska, motriktade, krafter (kraft/motkraft enligt Newton 3 \cite{newton87}). Dessa krafter verkar inte momentant utan under ett tidsspann. Impulser, som antas vara momentana, kan därför relateras till krafter enligt  (\ref{eq:impulse_force_relation}).
 
 \begin{equation}\label{eq:impulse_force_relation}
 J = \int\limits_{\Delta t} F \,dt\
@@ -105,6 +119,17 @@ f_s = \mu_s \cdot N
   Millington Ian,
   \emph{Game Physics Engine Development}.
   2007.
+
+\bibitem{bergen99}
+  Van den Bergen Gino,
+  \emph{A Fast and Robust GJK Implementation for Collision Detection of Convex Objects, Journal of Graphics Tool}.
+  4:2, 7-25,
+  1999.
+
+\bibitem{newton87}
+  Newton, Isaac
+  \emph{Philosophiæ Naturalis Principia Mathematica}.
+  1687.
 
 \end{thebibliography}
 \end{document} 
