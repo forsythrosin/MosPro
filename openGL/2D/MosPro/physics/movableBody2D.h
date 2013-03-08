@@ -28,12 +28,9 @@ class MovableBody2D : public RigidBody2D
 
 		void setVelocity(glm::vec2 velocity);
 		void setAngularVelocity(double w);	
-
-	
-
-
+		glm::vec2 getCenterOfMass();
 	private:
-		glm::vec2 velocity;
+		glm::vec2 velocity, prevVelocity;
 		double angularVelocity;
 	
 		void calculateMass();
@@ -43,7 +40,10 @@ class MovableBody2D : public RigidBody2D
 		double mass;
 		double inertia;
 
-		glm::vec2 getCenterOfMass();
+		void calculateCenterOfMass();
+		
+
+		glm::vec2 currentForce;
 
 	friend PhysicsEngine2D;
 };

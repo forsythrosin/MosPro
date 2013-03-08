@@ -4,38 +4,32 @@
 #include "../lib/debugInterface.h"
 
 MovableBody2D::MovableBody2D(Shape2D *s, glm::vec2 p, double a, glm::vec2 v, double w) : RigidBody2D(s, p, a) {
-	velocity = v;
+	prevVelocity = velocity = v;
 	angularVelocity = w;
-	com = getCenterOfMass();
+	calculateCenterOfMass();
 
 	calculateMass();
 	calculateInertia();
 
 }
 
-void MovableBody2D::step() {
 
-	glm::vec2 vBefore = velocity;
-	velocity += engine->getGravity();
-	
-	glm::vec2 meanVelocity = 0.5f * (vBefore + velocity);
+void MovableBody2D::step() {
+	glm::vec2 meanVelocity = 0.5f * (prevVelocity + velocity);
 
 	angle += angularVelocity;
 	setPosition(position + meanVelocity);
 	
-	//position += meanVelocity;
-
 	shape->setAttribs(position, angle, com);
-
-	//getEngine()->getDebug()->debugBox(getBoundingBox());
-
-
-	// naive collision response with walls
-
+	prevVelocity = velocity;
 }
 
 
 glm::vec2 MovableBody2D::getCenterOfMass() {
+	return com;
+}
+
+void MovableBody2D::calculateCenterOfMass() {
 	std::vector<glm::vec2> v = shape->getLocalVertices();
 	int n = v.size();
 
@@ -55,7 +49,7 @@ glm::vec2 MovableBody2D::getCenterOfMass() {
 	cx /= 3 * doubleArea;
 	cy /= 3 * doubleArea;
 	
-	return glm::vec2(cx, cy);	
+	com = glm::vec2(cx, cy);	
 }
 
 

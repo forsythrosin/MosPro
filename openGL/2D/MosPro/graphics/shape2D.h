@@ -18,6 +18,7 @@ public:
 	Material2D* getMaterial();
 	Geometry2D* getGeometry();
 	glm::mat4 getModel();
+	glm::vec2 getPointInGlobalCoordinates(glm::vec2 localCoordinates);
 private:
 	Geometry2D* geometry;
 	Material2D* material;

@@ -36,6 +36,12 @@ std::vector<glm::vec2> Shape2D::getGlobalVertices(){
 	return globalVertices;
 }
 
+glm::vec2 Shape2D::getPointInGlobalCoordinates(glm::vec2 localCoordinates) {
+	glm::vec4 v(localCoordinates, 0, 1);
+	v = modelMatrix*v;
+	return glm::vec2(v.x, v.y);
+}
+
 
 glm::mat4 Shape2D::getModel(){
 	return modelMatrix;

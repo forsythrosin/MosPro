@@ -54,7 +54,31 @@ bool Box2D::operator== (const Box2D& b) const {
 bool Box2D::operator!= (const Box2D& b) const {
 	return p0 != b.p0 || p1 != b.p1;
 }
+bool Box2D::isEmpty() const {
+	return (p0.x == p1.x && p0.y == p1.y);
+}
 
+Box2D Box2D::operator+ (const Box2D b) const {
+
+	if (isEmpty()) {
+		return b;
+	} else if (b.isEmpty()) {
+		return *this;
+	}
+
+	double left = std::min(p0.x, b.p0.x);
+	double right = std::max(p1.x, b.p1.x);
+
+	double top = std::max(p1.y, b.p1.y);
+	double bottom = std::min(p0.y, b.p0.y);
+	
+	return Box2D(left, bottom, right, top);
+}
+
+Box2D Box2D::operator+= (const Box2D b) {
+	*this = *this + b;
+	return *this + b;
+}
 
 
 Box2D::~Box2D(void)

@@ -12,7 +12,8 @@ PhysicsEngine2D::PhysicsEngine2D(Box2D bounds)
 	movableBodies = std::vector<MovableBody2D*>();
 	immovableBodies = std::vector<ImmovableBody2D*>();
 	bsp = new BSPNode2D(glm::vec2(bounds.p1.x-bounds.p0.x, bounds.p1.y-bounds.p0.y), 3);
-	
+	gravity = Gravity2D();
+	forceGenerators.push_back(&gravity);
 }
 
 
@@ -22,33 +23,39 @@ PhysicsEngine2D::~PhysicsEngine2D(void)
 
 
 
-void PhysicsEngine2D::add(MovableBody2D* rb) {
+void PhysicsEngine2D::add(MovableBody2D *rb) {
 	movableBodies.push_back(rb);
+	gravity.addBody(rb);
+
 	bsp->updatePosition(rb);
 	rb->engine = this;
+	
 }
 
-void PhysicsEngine2D::add(ImmovableBody2D* rb) {
+void PhysicsEngine2D::add(ImmovableBody2D *rb) {
 	immovableBodies.push_back(rb);
 	bsp->updatePosition((RigidBody2D*)rb);
 	rb->engine = this;
 }
 
+void PhysicsEngine2D::add(ForceGenerator2D *fg) {
+	forceGenerators.push_back(fg);
+}
+
 void PhysicsEngine2D::step() {
+	for(unsigned int i = 0; i < forceGenerators.size(); i++) {
+		ForceGenerator2D *fg = forceGenerators[i];
+		fg->applyForces();
+	}
+
 	for(unsigned int i = 0; i < movableBodies.size(); i++) {
 		MovableBody2D *rb = movableBodies[i];
-		
 		rb->step();
-		glm::vec2 v = rb->getVelocity();
 	}
 	collisionResponse(collisionDetector->getCollisions(bsp));
-	
 	//collisionResponse(collisionDetector->getCollisions(bodies));
 }
 
-glm::vec2 PhysicsEngine2D::getGravity() {
-	return glm::vec2(0, -0.005); //-0.0001);
-}
 
 void PhysicsEngine2D::collisionResponse(std::vector<Collision2D> collisions){
 	// todo
@@ -56,6 +63,10 @@ void PhysicsEngine2D::collisionResponse(std::vector<Collision2D> collisions){
 	for(unsigned int i = 0; i < collisions.size(); i++){
 		collisions[i].resolve();
 	}
+}
+
+glm::vec2 PhysicsEngine2D::getGravity() {
+	return gravity.getGravityConstant();
 }
 
 double PhysicsEngine2D::getTotalKineticEnergy() {

@@ -16,7 +16,9 @@ class Box2D {
 		bool operator== (const Box2D& b) const;
 		Box2D operator+ (const glm::vec2 v) const;
 		bool operator!= (const Box2D& b) const;
-		
+		bool isEmpty() const;
+		Box2D operator+ (const Box2D b) const;		
+		Box2D operator+= (const Box2D b);
 		glm::vec2 p0;
 		glm::vec2 p1;
 		
