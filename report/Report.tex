@@ -21,7 +21,9 @@ Sammanfattning av projektet.
 \end{abstract}
 \clearpage
 %----------------------------------------------------------------------------
+\onecolumn
 \tableofcontents
+\twocolumn
 \clearpage
 %----------------------------------------------------------------------------
 \listoffigures
@@ -32,38 +34,64 @@ Sammanfattning av projektet.
 %----------------------------------------------------------------------------
 \setcounter{page}{1}
 \pagenumbering{arabic}
+
 \section{Inledning}
-Referens till bibliografin \cite{vella08} och så vidare.
-\blindtext[1]
+
+Fysiksimulering  är en vital del av många moderna datorspel. I spelsammanhang kallas detta för ett spels fysikmotor. Att implementera en fysikmotor handlar om att skapa en miljö med regler vilka en uppsättning objekt måste följa. I denna rapport undersöks stelkroppssimulering som utgör basen i de allra flesta fysikmotorer. Begreppet antyder att en fysikmotor för stelkroppssimulering gör vissa antaganden och förenklingar av den fysiken i en riktig värld. Mest påtagligt är att systemets objekt antas vara okomprimerbara, eller stela. Även med dessa förenklingar i beaktning är implementation av en fysikmotor ett komplext problem. Det finns många olika metoder för att nå likvärdiga resultat och att låsa projektet till en metod i ett tidigt skede kan försvåra senare utveckling. I denna rapport implementeras och utvärderas en impulsbaserad, iterativ, fysikmotor med stelkroppssimulering.
 %----------------------------------------------------------------------------
 \section{Kollisionsdetektion}
-This is an example of a numbered equation that can be referenced:
-\begin{equation}\label{eq:cool_formula1}
-\dot{x} = Ax + Bu.
+
+\subsection{Detektionsmetod}
+
+Det första steget mot att simulera stelkroppars interaktion är att detektera alla kolliderande polygoner i scenen. Att två objekt i ett diskret system ligger dikt an varandra är sällsynt. Vanligare är att de interpenetrerar varandra, d.v.s. att ett hörn hos ett objekt ligger inuti ett annat objekt.
+
+\subsubsection{Separating Axis Test}
+För att utreda eventuell interpenetration mellan två givna objekt kan SAT \cite[s.~29]{vella08} \emph{(Separating Axis Test)} användas. Testet kan avgöra om objekten inte kolliderar genom att hitta en vektor på vilken objektens punkter projiceras på disjunkta intervall (Figur ~\ref{fig:disjoint_intervals}). Ett högre antal vektorer ökar beräkningstiden men också sannolikheten för ett korrekt resultat.
+
+\subsubsection{Gilbert-Johnson-Keerthi}
+För att inte göra avkall på noggrannheten har en annan metod, GJK \cite[s.~30]{vella08} \emph{(Gilbert-Johnson-Keerthi)}, använts för detta projekt. Eftersom metoden kan utesluta fler möjliga kollisioner kommer senare beräkningar kräva mindre tid. GJK bygger på Minkovskidifferensen mellan de två objekten, definierad enligt (\ref{eq:minkovski_difference}).
+
+\begin{equation}\label{eq:minkovski_difference}
+\chi_1 \ominus \chi_2 = \{x_1 - x_2|x_1 \in \chi_1, x_2 \in \chi_2\}
 \end{equation}
-\begin{equation}\label{eq:cool_formula2}
-\dot{x} = Ax + Bu + Cy.
-\end{equation}
-It is now easy to refer to (\ref{eq:cool_formula1}).
-\blindtext[1]
+
+Polygonen som Minkovskidifferensen renderar i innehåller origo om, och endast om, de två objekten korsar varandra.
+
+\subsection{Optimering}
 %----------------------------------------------------------------------------
 \section{Kollisionslösning}
-\blindtext[1]
 %----------------------------------------------------------------------------
 \section{Kollisionsrespons}
-\blindtext[1]
 %----------------------------------------------------------------------------
-\section{Friktion}
-\blindtext[1]
-%----------------------------------------------------------------------------
-\section{Fjädrar}
-\blindtext[1]
+\section{Krafter i impulsbaserade system}
+
+\subsection{Kraftgeneratorer}
+
+Hittills har endast impulser mellan objekt diskuterats. Impulser är emellertid en förenkling av vad som egentligen sker i stötar och kontakt. En kollision mellan två objekt orsakar kompression hos materialen i respektive objekt vilket i sin tur ger upphov till statiska, motriktade, krafter (kraft/motkraft enligt Newton 3 [referens?]). Dessa krafter verkar inte momentant utan under ett tidsspann. Impulser, som antas vara momentana, kan därför relateras till krafter enligt  (\ref{eq:impulse_force_relation}).
+
+\begin{equation}\label{eq:impulse_force_relation}
+J = \int\limits_{\Delta t} F \,dt\
+\end{equation}
+
+Vissa fysikmotorer delar upp tiden i varje tidssteg i mindre delar och kan på så sätt erhålla en bättre approximation för vissa krafter. Dessa metoder kallas tidsderiverande. ...
+
+\subsection{Friktion}
+
+Den allra vanligaste friktionsmodellen är Coloumbs modell. Den baserar sig i att den friktionskraften som påverkar ett objekt är proportionell mot normalkraften mellan objektet och underlaget. Modellen är egentligen en sammanslagning av två modeller, statisk och dynamisk friktion. Där den statiska modellen används för objekt i vila och den dynamiska för objekt i rörelse.
+
+\begin{equation}\label{eq:static_friction}
+f_d = \mu_d \cdot N
+\end{equation}
+
+\begin{equation}\label{eq:dynamic_friction}
+f_s = \mu_s \cdot N
+\end{equation}
+
+\subsection{Fjäderkrafter}
 %----------------------------------------------------------------------------
 \section{Resultat}
-\blindtext[1]
 %----------------------------------------------------------------------------
 \section{Diskussion}
-\blindtext[1]
 \clearpage
 %=================================================================
 \begin{thebibliography}{9}
