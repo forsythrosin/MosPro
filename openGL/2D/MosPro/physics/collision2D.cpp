@@ -47,10 +47,10 @@ void Collision2D::resolve(MovableBody2D *a, MovableBody2D *b) {
 		
 	glm::vec2 vr = v2 - v1;
 	
-	if(glm::length(vr) < 0.01){
+	if(glm::length(vr) < 0.05){
 
 		//Friction
-		double mu = 0.2;
+		double mu = 0.05;
 		glm::vec2 t = glm::vec2(-n.y,n.x);
 		double x = glm::dot(vr,t);
 		double sign = (x > 0) ? 1 : ((x < 0) ? -1 : 0); //Is there a better way for this?

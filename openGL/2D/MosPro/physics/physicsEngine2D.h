@@ -25,6 +25,7 @@ class PhysicsEngine2D
 		~PhysicsEngine2D(void);
 		void add(MovableBody2D* rb);
 		void add(ImmovableBody2D* rb);
+		void add(ForceGenerator2D* fg);
 		void step();
 		glm::vec2 getGravity();
 		void collisionResponse(std::vector<Collision2D> collisions);

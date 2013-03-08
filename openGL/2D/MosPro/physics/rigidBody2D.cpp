@@ -44,7 +44,9 @@ const Box2D RigidBody2D::getBoundingBox() const {
 }
 
 
-
+glm::vec2 RigidBody2D::getPointInGlobalCoordinates(glm::vec2 localCoordinates) {
+	return shape->getPointInGlobalCoordinates(localCoordinates);
+}
 
 
 
@@ -71,4 +73,12 @@ double RigidBody2D::getAngle(){
 
 PhysicsEngine2D* RigidBody2D::getEngine(){
 	return engine;
+}
+
+glm::vec2 RigidBody2D::getVelocity() {
+	return glm::vec2(0);
+}
+
+double RigidBody2D::getAngularVelocity() {
+	return 0;
 }

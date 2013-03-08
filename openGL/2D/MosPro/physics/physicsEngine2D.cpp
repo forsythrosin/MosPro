@@ -23,7 +23,7 @@ PhysicsEngine2D::~PhysicsEngine2D(void)
 
 
 
-void PhysicsEngine2D::add(MovableBody2D* rb) {
+void PhysicsEngine2D::add(MovableBody2D *rb) {
 	movableBodies.push_back(rb);
 	gravity.addBody(rb);
 
@@ -32,10 +32,14 @@ void PhysicsEngine2D::add(MovableBody2D* rb) {
 	
 }
 
-void PhysicsEngine2D::add(ImmovableBody2D* rb) {
+void PhysicsEngine2D::add(ImmovableBody2D *rb) {
 	immovableBodies.push_back(rb);
 	bsp->updatePosition((RigidBody2D*)rb);
 	rb->engine = this;
+}
+
+void PhysicsEngine2D::add(ForceGenerator2D *fg) {
+	forceGenerators.push_back(fg);
 }
 
 void PhysicsEngine2D::step() {
@@ -43,6 +47,7 @@ void PhysicsEngine2D::step() {
 		ForceGenerator2D *fg = forceGenerators[i];
 		fg->applyForces();
 	}
+
 	for(unsigned int i = 0; i < movableBodies.size(); i++) {
 		MovableBody2D *rb = movableBodies[i];
 		rb->step();
