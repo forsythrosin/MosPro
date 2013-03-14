@@ -1,10 +1,11 @@
-\documentclass[a4paper,12pt,twocolumn,swedish]{article}
+\documentclass[a4paper,12pt,twopage,swedish]{article}
 \usepackage{amsmath,amssymb,mathrsfs}
 \usepackage[utf8]{inputenc}
 \usepackage{blindtext}
 \usepackage[swedish]{babel}
-\usepackage[margin={1in, 1in},columnsep={0.3in}]{geometry}
-\usepackage[parfill]{parskip}
+\usepackage[margin={1in, 1in}]{geometry}
+\setlength{\parindent}{0pt}
+\renewcommand{\thetable}{\Alph{table}}
 %----------------------------------------------------------------------------
 \begin{document}
 %=================================================================
@@ -23,9 +24,7 @@ Sammanfattning av projektet.
 \end{abstract}
 \clearpage
 %----------------------------------------------------------------------------
-\onecolumn
 \tableofcontents
-\twocolumn
 \clearpage
 %----------------------------------------------------------------------------
 \listoffigures
@@ -39,6 +38,47 @@ Sammanfattning av projektet.
 
 \section{Inledning}
 
+\subsection{Bakgrund}
+Fysiksimulering är en vital del av många moderna datorspel. I spelsammanhang kallas detta för ett spels \emph{fysikmotor}. Att implementera en fysikmotor handlar om att skapa en miljö med regler till vilka en uppsättning objekt måste förhålla sig. I många spel utgörs fysikmotorns bas av en \emph{stelkroppssimulering}, vilket innebär vissa antaganden och förenklingar av verkligheten. Mest påtagligt är att systemets objekt antas vara okomprimerbara, eller stela. Även med dessa förenklingar i beaktning är implementation av en fysikmotor ett komplext problem, som kan lösas på olika sätt beroende på aktuella förutsättningar och tillämpningsområden.
+
+\subsection{Syfte}
+Syftet med denna rapport är att beskriva utvecklingen av en fysikmotor, som ska kunna användas i datorspel med tvådimensionell grafik. Motorn ska ha stöd för att simulera kollisioner och friktion mellan stelkroppar modellerade som generella konvexa polygoner. Den ska också innehålla stöd för fjädrar och dämpare, som ska kunna fästas i stelkropparna. Motorn ska producera trovärdiga resultat vid såväl kollisioner som när flera stelkroppar vilar på varandra. Eftersom motorn ska kunna användas till datorspel behöver algoritmerna som används vara tillräckligt tidseffektiva för att tillåta interaktivitet. Motorn ska implementeras i C++ med hjälp av grafikbiblioteket OpenGL varpå resultatet ska utvärderas i rapporten.
+
+%----------------------------------------------------------------------------
+
+\section{Modell}
+I modellen som skulle simuleras ingick tre typer av entiteter: rörliga stelkroppar, fasta stelkroppar samt fjädrar med dämpning. Varje entitet kan ha både konstanta egenskaper och variabla tillstånd, enligt tabell \ref{table:states_and_properties}.
+
+\begin{table}[!htp]
+	\caption{Tillstånd och egenskaper hos olika entiteter}
+	\label{table:states_and_properties}
+	\renewcommand{\arraystretch}{1.5}
+	\begin{tabular}{|p{1cm}|p{1cm}|p{1cm}|p{1cm}|p{1cm}|p{1cm}|}
+		\hline
+			\multicolumn{2}{|c|}{\textbf{Rörliga stelkroppar}} & \multicolumn{2}{|c|}{\textbf{Fasta stelkroppar}} & \multicolumn{2}{|c|}{\textbf{Fjädrar med dämpare}} \\
+		\hline
+			\textbf{Tillstånd} & \textbf{Egenskaper} & \textbf{Tillstånd} & \textbf{Egenskaper} & \textbf{Tillstånd} & \textbf{Egenskaper} \\
+		\hline
+			Position & Densitet & & Position & & Infästnings\-punkter \\
+			Vinkel & Studs\-koefficient & & Vinkel & & Fjäder\-konstant \\
+			Hastighet & & & & & Dämpnings\-koefficient \\
+			Vinkel\-hastighet & & & & & {} \\
+		\hline
+	\end{tabular}
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage \clearpage
 Fysiksimulering  är en vital del av många moderna datorspel. I spelsammanhang kallas detta för ett spels fysikmotor. Att implementera en fysikmotor handlar om att skapa en miljö med regler vilka en uppsättning objekt måste följa. I denna rapport undersöks stelkroppssimulering som utgör basen i de allra flesta fysikmotorer. Begreppet antyder att en fysikmotor för stelkroppssimulering gör vissa antaganden och förenklingar av den fysiken i en riktig värld. Mest påtagligt är att systemets objekt antas vara okomprimerbara, eller stela. Även med dessa förenklingar i beaktning är implementation av en fysikmotor ett komplext problem. Det finns många olika metoder för att nå likvärdiga resultat och att låsa projektet till en metod i ett tidigt skede kan försvåra senare utveckling. I denna rapport implementeras och utvärderas en impulsbaserad, iterativ, fysikmotor med stelkroppssimulering.
 %----------------------------------------------------------------------------
 \section{Kollisionsdetektion}
