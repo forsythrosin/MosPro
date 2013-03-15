@@ -80,12 +80,14 @@
     <ClCompile Include="physics\collision2D.cpp" />
     <ClCompile Include="physics\collisionDetector2D.cpp" />
     <ClCompile Include="physics\edge.cpp" />
+    <ClCompile Include="physics\gravity2D.cpp" />
     <ClCompile Include="physics\immovableBody2D.cpp" />
     <ClCompile Include="physics\minkowskiPoint2D.cpp" />
     <ClCompile Include="physics\movableBody2D.cpp" />
     <ClCompile Include="physics\physicsEngine2D.cpp" />
     <ClCompile Include="physics\potentialCollision2D.cpp" />
     <ClCompile Include="physics\rigidBody2D.cpp" />
+    <ClCompile Include="physics\spring.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="box2D.h" />
@@ -105,12 +107,14 @@
     <ClInclude Include="physics\collision2D.h" />
     <ClInclude Include="physics\collisionDetector2D.h" />
     <ClInclude Include="physics\edge.h" />
+    <ClInclude Include="physics\gravity2D.h" />
     <ClInclude Include="physics\immovableBody2D.h" />
     <ClInclude Include="physics\minkowskiPoint2D.h" />
     <ClInclude Include="physics\movableBody2D.h" />
     <ClInclude Include="physics\physicsEngine2D.h" />
     <ClInclude Include="physics\potentialCollision2D.h" />
     <ClInclude Include="physics\rigidBody2D.h" />
+    <ClInclude Include="physics\spring.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ColorFragmentShader.fragmentshader" />
