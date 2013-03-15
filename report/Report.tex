@@ -10,6 +10,7 @@
 \renewcommand{\thetable}{\Alph{table}}
 %----------------------------------------------------------------------------
 \begin{document}
+
 %=================================================================
 \title{Stelkroppssimulering}
 %----------------------------------------------------------------------------
@@ -120,7 +121,13 @@ I (\ref{eq:runge-kutta_k1}-\ref{eq:runge-kutta_k4}) beräknar $f$ den momentana 
 \subsection{En hybrid}
 Medan den ovan beskrivna Runge-Kutta metoden lämpar sig för att lösa differentialekvationer är den svår att tillämpa på kollisioner mellan kroppar, då hastigheter och vinkelhastigheter ska ändras momentant. Metoden som implementerades var därför en hybrid mellan de två ovannämda tillvägagångssätten, där Runge-Kutta av ordning fyra användes för att simulera fjäderkrafter, gravitation och obehindrade förflyttningar, medan en Euler-metod applicerades i slutet av varje steg för att lösa och ge respons på de kollisioner som uppträtt under tidssteget.
 
+
+
+
 %----------------------------------------------------------------------------
+
+
+
 
 \section{Kollisionsdetektion}
 
@@ -253,7 +260,7 @@ För kroppar med stor massa blir den linjära komponenten liten. Djupa penetrati
 
 \section{Kollisionsrespons}
 \subsection{Impulsbaserade system}
-I det system som simuleras måste någon representation av krafter mellan kroppar finnas. En vanlig förenkling är att se krafter som momentana händelser i tidsdomänen. Detta introducerar begreppen impuls och rörelsemängd. Impulser kan relateras till krafter enligt (\ref{eq:force_to_impulse}).
+I det system som simuleras måste någon representation av krafter mellan kroppar finnas. En vanlig förenkling är att se krafter som momentana händelser i tiden. Detta introducerar begreppen impuls och rörelsemängd. Impulser kan relateras till krafter enligt (\ref{eq:force_to_impulse}).
 
 \begin{equation}\label{eq:force_to_impulse}
 \bar{J} = \int_{\Delta t}^{} \bar{F} \ dt = \int_{\Delta t}^{} m\bar{a} \ dt = m\bar{v}
@@ -287,7 +294,7 @@ Lösningen för den resulterande impulsens magnitud, $j_r$ , illustreras bäst g
 \omega_1' = \omega_1 + \frac{j_r}{I_1}(\bar{r}_1 \times \hat{n}), \ \omega_2' = \omega_2 + \frac{j_r}{I_2}(\bar{r}_2 \times \hat{n})
 \end{equation}
 
-För ekvation (\ref{eq:impulse_apply_linear}-\ref{eq:impulse_apply_angular}) är alla parametrar kända, utom $\bar{v}_i'$, $\omega_i'$ och $j_r$ . Vektorn $\bar{r}_i$ är vektorn från $i$:te kroppens masscentrum till kollisionspunkten, $P$, vilken är gemensam för båda kropparna i kollisionen. Normalvektorn, $\hat{n}$, ges som inparameter från expanding polytope algoritmen. Punktens hastighet för respektive kropp beräknas enligt (\ref{eq:collision_point_velocity}).
+För (\ref{eq:impulse_apply_linear}-\ref{eq:impulse_apply_angular}) är alla parametrar kända, utom $\bar{v}_i'$, $\omega_i'$ och $j_r$ . Vektorn $\bar{r}_i$ är vektorn från $i$:te kroppens masscentrum till kollisionspunkten, $P$, vilken är gemensam för båda kropparna i kollisionen. Normalvektorn, $\hat{n}$, ges som inparameter från EPA. Punktens hastighet för respektive kropp beräknas enligt (\ref{eq:collision_point_velocity}).
 
 \begin{equation}\label{eq:collision_point_velocity}
 \bar{v}_{i_P} = \bar{v}_i + \omega \times \bar{r}_i
@@ -322,8 +329,7 @@ Ekvation (\ref{eq:impulse_magnitude_simple}) kan likställas med att sätta den 
 Vid kollision mellan två kroppar i verkligheten är det två kontinuerliga motriktade krafter som verkar på objekten, dessa krafter är aktiva över en kort tidsperiod, något som gör att det är mer korrekt att använda än impulsbaserad kollisionslösning.
 Vid vilande kontakt är detta dock inte en lösning som ger trovärdiga resultat, vilket diskuterats ovan. Detta eftersom det sällan endast är ett hörn som är i kontakt mellan två kroppar i vila. Vid implementation ansågs därför att en penalty-baserad kollisionslösning var mer lämplig i dessa fall.
 
-\subsubsection{Tillvägagångssätt}
-Metoden medför att en utflyttning ej sker, objekt använder sig istället av mindre impulser för för att fjädra ifrån varandra. Detta kan illustreras (figur ~\ref{fig:penalty}) som dämpade fjädrar som spänns mellan kropparna längs penetrationsvaktorn.
+Metoden medför att en utflyttning ej sker, objekt använder sig istället av mindre impulser för för att fjädra ifrån varandra. Detta kan illustreras (Figur ~\ref{fig:penalty}) som dämpade fjädrar som spänns mellan kropparna längs penetrationsvektorn.
 
 \begin{figure}[H]
 	\centering
@@ -338,7 +344,7 @@ Ekvation (\ref{eq:penalty_impulse}) anger den impuls $J$ som ger fjädringen på
 \bar{J} = C \cdot \bar{P}
 \end{equation}
 
-Där $C$ är en framerate-baserad konstant och $P$ är penetrationsvektorn mellan de två objekten.
+Där $C$ är en framerate-baserad konstant och $\bar{P}$ är penetrationsvektorn mellan de två objekten.
 
 \subsubsection{Övergång}
 En övergång mellan de två lösningsmetoderna är aktuell först när objekt vilar på varandra, vilket innebär att deras relativa hastighet i kollisionspunkten är låg.
@@ -373,7 +379,7 @@ En fysikmotor som implementerar massa-fjäder-system och harmonisk rörelse krä
 f = - k \cdot \Delta l
 \end{equation}
 
-I ekvation (\ref{eq:hookes_law}) är $k$  fjäderkonstant och $\Delta l$ anger hur utdragen eller sammanpressad fjädern är. Lösningen för (\ref{eq:hookes_law}) ger endast  kraftens magnitud, för en flerdimensionell simulering utökas ekvationen till att även innehålla kraftens riktning (\ref{eq:hookes_law_2dim}).
+I (\ref{eq:hookes_law}) är $k$  fjäderkonstant och $\Delta l$ anger hur utdragen eller sammanpressad fjädern är. Lösningen för (\ref{eq:hookes_law}) ger endast  kraftens magnitud, för en flerdimensionell simulering utökas ekvationen till att även innehålla kraftens riktning (\ref{eq:hookes_law_2dim}).
 
 \begin{equation}\label{eq:hookes_law_2dim}
 f = - k (|\bar{d}| - l_0)\hat{d}
@@ -382,7 +388,6 @@ f = - k (|\bar{d}| - l_0)\hat{d}
 \begin{equation}\label{eq:hookes_extremities}
 \bar{d} = x_A - x_B
 \end{equation}
-
 Parametrar $x_A$ och $x_B$ (\ref{eq:hookes_extremities}) är infästningspunkter med avseende på position och rotation för ett tillstånd $y_t$.
 \\
 \\Ett viktigt resultat för Hookes lag är att den resulterande kraften $f$ verkar lika mycket i fjäderns båda ändar.
@@ -439,7 +444,6 @@ Friktionsimpulsen (\ref{eq:friction_impulse_final}) appliceras samtidigt som kol
 
 Ekvation (\ref{eq:friction_simple}) kan jämföras med (\ref{eq:impulse_magnitude}) som bygger på samma princip.
 
-
 %----------------------------------------------------------------------------
 
 
@@ -479,6 +483,7 @@ Exempel på detta är:
 %----------------------------------------------------------------------------
 
 
+
 \section{Diskussion}
 
 
@@ -501,11 +506,6 @@ Implementationen är dock komplex nog att utvecklingsteamet bortsåg från att i
 
 \subsection{Simuleringsmetoder}
 I många fall i rapporten har påpekats att det gjorts förenklingar av förlopp som skulle vinna på att simuleras med mer komplexa metoder. Exempel på detta är friktion och penalty-metoder.  Runge-Kuttametoden infördes sent i utvecklingsarbetet. Detta är en bidragande faktor till att en stor del av implementationen fortfarande använder Eulermetod. Att föra över ovan nämnda områden från simulering med en sekventiell metod till en simultan Runge-Kuttametod har hög prioritet för eventuellt fortsatt arbete.
-
-
-
-
-
 
 
 \clearpage
