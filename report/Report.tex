@@ -97,7 +97,7 @@ För rörliga stelkroppar betecknar $\bar{y}$ position, hastighet, rotation och 
 Ett problem med Eulers metod är att den leder till instabilitet då den används för att simulera komplexa system. För att klara av att simulera system av fjädrar i fysikmotorn användes en Runge-Kuttalösning av ordning 4. Det innebär att fyra tillståndsderivator ($k_1$-$k_4$), utgående från initialtillståndet $y_t$, beräknas och kombineras till en lösning.
 
 \begin{equation}\label{eq:runge-kutta_sum}
-\bar{y}_{t+1} = \bar{y}_t + frac{1}{6}(\bar{k}_1 + 2\bar{k}_2 + 2\bar{k}_3 + \bar{k}_4)
+\bar{y}_{t+1} = \bar{y}_t + \frac{1}{6}\left(\bar{k}_1 + 2\bar{k}_2 + 2\bar{k}_3 + \bar{k}_4\right)
 \end{equation}
 
 \begin{equation}\label{eq:runge-kutta_k1}
