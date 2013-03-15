@@ -202,6 +202,13 @@ Då en kollision detekteras ska fysikmotorn lösa vilka krafter som uppstår mel
 \item \text{Normalvektorn för kollisionsplanet/-sidan}
 \end{itemize}
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics{illustrations/impulse.pdf}
+	\caption{Impulser i kollisionspunkten}
+	\label{fig:impulse}
+\end{figure}
+
 Lösningen för den resulterande impulsens magnitud, $j_r$ , illustreras bäst genom att först förstå hur impulsen appliceras på kropparnas hastigehet och vinkelhastighet.
 
 \begin{equation}\label{eq:impulse_apply_linear}
@@ -248,11 +255,16 @@ Vid kollision mellan två kroppar i verkligheten är det två kontinuerliga motr
 Vid vilande kontakt är detta dock inte en lösning som ger trovärdiga resultat, vilket diskuterats ovan. Detta eftersom det sällan endast är ett hörn som är i kontakt mellan två kroppar i vila. Vid implementation ansågs därför att en penalty-baserad kollisionslösning var mer lämplig i dessa fall.
 
 \subsubsection{Tillvägagångssätt}
-Metoden medför att en utflyttning ej sker, objekt använder sig istället av mindre impulser för för att fjädra ifrån varandra. Detta kan illustreras (figur) som dämpade fjädrar som spänns mellan kropparna längs penetrationsvaktorn.
-\\
-\\Figur
-\\
-\\Ekvation (\ref{eq:penalty_impulse}) visar den impuls $J$ som ger fjädringen på båda objekten.
+Metoden medför att en utflyttning ej sker, objekt använder sig istället av mindre impulser för för att fjädra ifrån varandra. Detta kan illustreras (figur ~\ref{fig:penalty}) som dämpade fjädrar som spänns mellan kropparna längs penetrationsvaktorn.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics{illustrations/penalty.pdf}
+	\caption{Tillämpning av dämpade fjädrar som kontaktmodell}
+	\label{fig:penalty}
+\end{figure}
+
+Ekvation (\ref{eq:penalty_impulse}) visar den impuls $J$ som ger fjädringen på båda objekten.
 
 \begin{equation}\label{eq:penalty_impulse}
 \bar{J} = C \cdot \bar{P}
