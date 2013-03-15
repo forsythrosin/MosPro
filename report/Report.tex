@@ -116,32 +116,175 @@ För att förenkla representationen av objekt användes Bounding Boxes. För var
 \section{Kollisionslösning}
 %----------------------------------------------------------------------------
 \section{Kollisionsrespons}
+\subsection{Impulsbaserade system}
+I det system som simuleras måste någon representation av krafter mellan kroppar finnas. En vanlig förenkling är att se krafter som momentana händelser i tiden. Detta introducerar begreppen impuls och rörelsemängd. Impulser kan relateras till krafter enligt (\ref{eq:force_to_impulse}).
+
+\begin{equation}\label{eq:force_to_impulse}
+\bar{J} = \int_{\Delta t}^{} \bar{F} \ dt = \int_{\Delta t}^{} m\bar{a} \ dt = m\bar{v}
+\end{equation}
+
+Den aktuella implementationen av (\ref{eq:force_to_impulse}) innehöll inget begrepp om tid utan t representerades istället av ett simuleringssteg.
+
+\subsubsection{Praktiskt förlopp}
+Då en kollision detekteras ska fysikmotorn lösa vilka krafter som uppstår mellan kropparna. En nödvändig förenkling är att endast hantera kollisioner som sker mellan hörn och sida för kroppar. Detta är de absolut vanligast förekommande kollisionerna och det är ur optimeringssynpunkt inte värt att ta hänsyn till andra typer av kollisioner. Den data som finns tillgänglig för kollisionsrespondern är:
+
+\begin{itemize}
+\item \text{De kroppar som ingår i kollisionen}
+\item \text{I vilken punkt kollisionen sker}
+\item \text{Normalvektorn för kollisionsplanet/-sidan}
+\end{itemize}
+
+Lösningen för den resulterande impulsens magnitud, $j_r$ , illustreras bäst genom att först förstå hur impulsen appliceras på kropparnas hastigehet och vinkelhastighet.
+
+\begin{equation}\label{eq:impulse_apply_linear}
+\bar{v}_1' = \bar{v}_1 + \frac{j_r}{m_1}\hat{n}, \ \bar{v}_2' = \bar{v}_2 + \frac{j_r}{m_2}\hat{n}
+\end{equation}
+
+\begin{equation}\label{eq:impulse_apply_angular}
+\omega_1' = \omega_1 + \frac{j_r}{I_1}(\bar{r}_1 \times \hat{n}), \ \omega_2' = \omega_2 + \frac{j_r}{I_2}(\bar{r}_2 \times \hat{n})
+\end{equation}
+
+För ekvation (\ref{eq:impulse_apply_linear}-\ref{eq:impulse_apply_angular}) är alla parametrar kända, utom $\bar{v}_i'$, $\omega_i'$ och $j_r$ . Vektorn $\bar{r}_i$ är vektorn från $i$:te kroppens masscentrum till kollisionspunkten, $P$, vilken är gemensam för båda kropparna i kollisionen. Normalvektorn, $\hat{n}$, ges som inparameter från expanding polytope algoritmen. Punktens hastighet för respektive kropp beräknas enligt (\ref{eq:collision_point_velocity}).
+
+\begin{equation}\label{eq:collision_point_velocity}
+\bar{v}_{i_P} = \bar{v}_i + \omega \times \bar{r}_i
+\end{equation}
+
+\begin{equation}\label{eq:collision_restitution}
+\bar{v}_r' \cdot \hat{n} = -e\bar{v}_r \cdot \hat{n}
+\end{equation}
+\begin{equation}\label{eq:separating_velocity}
+\bar{v}_r = \bar{v}_{1_P} - \bar{v}_{2_P}, \ \bar{v}_r' = \bar{v}_{1_P}' - \bar{v}_{2_P}'
+\end{equation}
+
+Ekvation (\ref{eq:collision_restitution}) relaterar kropparnas separationshastighet (\ref{eq:separating_velocity}), före och efter kollisionen. Parametern $e$ anger materialens studskoefficient. Genom substitution av (\ref{eq:impulse_apply_linear}-\ref{eq:collision_point_velocity}) i (\ref{eq:collision_restitution}) kan kollisionsimpulsen lösas ut enligt (\ref{eq:impulse_magnitude}).
+
+\begin{equation}\label{eq:impulse_magnitude}
+j_r = \frac{-(1+e)\bar{v}_r \cdot \hat{n}}
+{\frac{1}{m_1}+\frac{1}{m_2}+(\frac{1}{I_1}(\bar{r}_1 \times \hat{n}) \times \bar{r}_1+\frac{1}{I_2}(\bar{r}_2 \times \hat{n}) \times \bar{r}_2)\cdot \hat{n}}
+\end{equation}
+
+Genom detta skapas en grundläggande teori om hur kollisioner ska bete sig i simuleringen. En impuls beräknas i (\ref{eq:impulse_magnitude}) och appliceras sedan i (\ref{eq:impulse_apply_linear}) och (\ref{eq:impulse_apply_angular}).
+\\
+\\Under implementationen introducerades ett specialfall för kollision mellan rörlig och icke-rörlig kropp. Detta resulterade i en förenklad impulsmodell enligt (\ref{eq:impulse_magnitude_simple}).
+
+\begin{equation}\label{eq:impulse_magnitude_simple}
+j_r = \frac{-(1+e)\bar{v}_r \cdot \hat{n}}
+{\frac{1}{m_1}+\frac{1}{I_1}(\bar{r}_1 \times \hat{n}) \times \bar{r}_1 \cdot \hat{n}}
+\end{equation}
+
+Ekvation (\ref{eq:impulse_magnitude_simple}) kan likställas med att sätta den stationära kroppens massa och tröghetsmoment till $\infty$.
+
+\subsection{Penalty-baserade system}
+Vid kollision mellan två kroppar i verkligheten är det två kontinuerliga motriktade krafter som verkar på objekten, dessa krafter är aktiva över en kort tidsperiod, något som gör att det är mer korrekt att använda än impulsbaserad kollisionslösning.
+Vid vilande kontakt är detta dock inte en lösning som ger trovärdiga resultat, vilket diskuterats ovan. Detta eftersom det sällan endast är ett hörn som är i kontakt mellan två kroppar i vila. Vid implementation ansågs därför att en penalty-baserad kollisionslösning var mer lämplig i dessa fall.
+
+\subsubsection{Tillvägagångssätt}
+Metoden medför att en utflyttning ej sker, objekt använder sig istället av mindre impulser för för att fjädra ifrån varandra. Detta kan illustreras (figur) som dämpade fjädrar som spänns mellan kropparna längs penetrationsvaktorn.
+\\
+\\Figur
+\\
+\\Ekvation (\ref{eq:penalty_impulse}) visar den impuls $J$ som ger fjädringen på båda objekten.
+
+\begin{equation}\label{eq:penalty_impulse}
+\bar{J} = C \cdot \bar{P}
+\end{equation}
+
+\subsubsection{Övergång}
+En övergång mellan de två lösningsmetoderna är aktuell först när objekt vilar på varandra, vilket innebär att deras relativa hastighet i kollisionspunkten är låg.
+En tröskel som varierar med de aktuella egenskaperna hos systemet kan ge mer korrekta lösningar. Vid empiriska tester så sattes emellertid en fast tröskel för övergången mellan metoderna.
+
 %----------------------------------------------------------------------------
-\section{Krafter i impuls-\\baserade system}
+\section{Krafter i impulsbaserade system}
 
 \subsection{Kraftgeneratorer}
 
-Hittills har endast impulser mellan objekt diskuterats. Impulser är emellertid en förenkling av vad som egentligen sker i stötar och kontakt. En kollision mellan två objekt orsakar kompression hos materialen i respektive objekt vilket i sin tur ger upphov till statiska, motriktade, krafter (kraft/motkraft enligt Newton 3 \cite{newton87}). Dessa krafter verkar inte momentant utan under ett tidsspann. Impulser, som antas vara momentana, kan därför relateras till krafter enligt  (\ref{eq:impulse_force_relation}).
+Hittills har endast momentana krafter mellan objekt diskuterats. Det har också poängterats att detta är en förenkling av vad som sker i stötar och kontakt. En kollision mellan två objekt orsakar kompression hos materialen i respektive objekt vilket i sin tur ger upphov till krafter mellan kropparna \cite{newton87}.
+\\
+\\Vissa fysikmotorer delar upp varje tidssteg i mindre delar och kan på så sätt erhålla en bättre approximation för vissa krafter. Dessa metoder kallas tidsderiverande. En tidsderiverande fysikmotor kan använda simuleringsmetoder, t.ex. Runge-Kutta, som kräver information om  flera olika tillstånd hos systemet.
+\\
+\\I simuleringen implementeras kraftgeneratorer för gravitation och fjäderkrafter.
 
-\begin{equation}\label{eq:impulse_force_relation}
-J = \int\limits_{\Delta t} F \,dt\
+%\begin{equation}\label{eq:impulse_force_relation}
+%J = \int\limits_{\Delta t} F \,dt\
+%\end{equation}
+
+\subsection{Fjäderkrafter}
+En fysikmotor som implementerar massa-fjäder-system och harmonisk rörelse kräver att det finns mer sofistikerade simuleringsmetoder än Euler för icke-triviala fall. Detta motiverar att låta fjäderkrafter vara kraftgeneratorer och därmed simuleras med en Runge-Kuttalösning.
+\\
+\\Hookes lag beskriver den kraft en fjäder påverkar andra objekt med. Kraften beror av hur utdragen eller sammanpressad fjädern är. Det vill säga, kraftgeneratorn behöver endast positionen av fjäderns infästningspunkter för att beräkna fjäderkraften. 
+
+\begin{equation}\label{eq:hookes_law}
+f = - k \cdot \Delta l
 \end{equation}
 
-Vissa fysikmotorer delar upp tiden i varje tidssteg i mindre delar och kan på så sätt erhålla en bättre approximation för vissa krafter. Dessa metoder kallas tidsderiverande. ...
+I ekvation (\ref{eq:hookes_law}) är k  fjäderkonstant och l anger hur utdragen eller sammanpressad fjädern är. Lösningen för (\ref{eq:hookes_law}) ger endast  kraftens magnitud, för en flerdimensionell simulering utökas ekvationen till att även innehålla kraftens riktning (\ref{eq:hookes_law_2dim}).
+\\
+\\Ett viktigt resultat för Hookes lag är att den resulterande kraften f verkar lika mycket i fjäderns båda ändar.
+
+\begin{equation}\label{eq:hookes_law_2dim}
+f = - k (|\bar{d}| - l_0)\hat{d}
+\end{equation}
+
+\begin{equation}\label{eq:hookes_extremities}
+\bar{d} = x_A - x_B
+\end{equation}
+
+Parametrar $x_A$ och $x_B$ (\ref{eq:hookes_extremities}) är infästningspunkter med avseende på position och rotation för ett tillstånd $y_t$.
+
 
 \subsection{Friktion}
 
-Den allra vanligaste friktionsmodellen är Coloumbs modell. Den baserar sig i att den friktionskraften som påverkar ett objekt är proportionell mot normalkraften mellan objektet och underlaget. Modellen är egentligen en sammanslagning av två modeller, statisk och dynamisk friktion. Där den statiska modellen används för objekt i vila och den dynamiska för objekt i rörelse.
+Den allra vanligaste friktionsmodellen är Coloumbs modell. Den baserar sig i att den friktionskraft som påverkar en kropp är proportionell mot normalkraften mellan kroppen och underlaget. Modellen är egentligen en sammanslagning av två modeller, statisk och dynamisk friktion.
 
 \begin{equation}\label{eq:static_friction}
-f_d = \mu_d \cdot N
+\bar{f_s} = \mu_s \cdot \bar{N}
 \end{equation}
 
 \begin{equation}\label{eq:dynamic_friction}
-f_s = \mu_s \cdot N
+\bar{f_s} = \mu_d \cdot \bar{N}
 \end{equation}
 
-\subsection{Fjäderkrafter}
+Där den statiska modellen (\ref{eq:static_friction}) används för kroppar i vila och den dynamiska (\ref{eq:dynamic_friction}) för kroppar i rörelse. Båda modellerna kan endast ge upphov till friktionskrafter som är proportionella mot de yttre krafter som verkar på kroppen. Friktionskrafter verkar i kontaktplanets tangentriktning, $\bar{t}$.
+
+\begin{equation}\label{eq:friction_force_final}
+f_t =\begin{cases}
+    -(\bar{f}_{ext} \cdot \hat{t})\hat{t}, & \bar{v}_r = \bar{0}, \bar{f}_{ext} \cdot \hat{t} \le \bar{f}_s \\
+    -\bar{f}_s \cdot \hat{t}, & \bar{v}_r = \bar{0}, \bar{f}_{ext} \cdot \hat{t} > \bar{f}_s \\
+    - \bar{f}_d \cdot \hat{t} , & \bar{v}_r \ne \bar{0}
+  \end{cases}
+\end{equation}
+
+Enligt (\ref{eq:friction_force_final}) kan endast en extern kraft i kontaktplanet som överstiger den maximala statiska friktionskraften sätta en kropp i rörelse. I annat fall motverkas kraften av en lika stor friktionskraft vilket medför att kroppen förblir vilande.
+\\
+\\Den friktionsmodell som används i simuleringen är ingen kraftgenerator utan tar endast hänsyn till impulser vid kontakt. En omskrivning av (\ref{eq:static_friction}-\ref{eq:friction_force_final}) ger den friktionsimpuls som motsvarar $\bar{f}_t$.
+
+\begin{equation}\label{eq:static_friction_impulse}
+\bar{j}_s = \mu_s \cdot \bar{j}_r
+\end{equation}
+
+\begin{equation}\label{eq:dynamic_friction_impulse}
+\bar{j}_d = \mu_d \cdot \bar{j}_r
+\end{equation}
+
+\begin{equation}\label{eq:friction_impulse_final}
+j_f =\begin{cases}
+    -(m\bar{v}_r \cdot \hat{t})\hat{t}, & \bar{v}_r = \bar{0}, m\bar{v}_r \cdot \hat{t} \le \bar{j}_s \\
+    -\bar{j}_s \cdot \hat{t}, & \bar{v}_r = \bar{0}, m\bar{v}_r \cdot \hat{t} \ge \bar{j}_s \\
+    - \bar{j}_d \cdot \hat{t} , & \bar{v}_r \ne \bar{0}
+  \end{cases}
+\end{equation}
+
+Friktionsimpulsen (\ref{eq:friction_impulse_final}) appliceras samtidigt som kollisionsimpulsen för respektive kropp och kollision. Ekvation (\ref{eq:static_friction_impulse}-\ref{eq:friction_impulse_final}) är en ideal [Gravitas] friktionslösning för impulsbaserade system. Det kan emellertid visas att (\ref{eq:static_friction_impulse}) och (\ref{eq:dynamic_friction_impulse}) inte ger energibevarande lösningar för höga värden på $\mu_s$ och $\mu_d$.
+\\
+\\Friktion simulerades utan hänsyn till friktionstal mellan specifika material. Istället har en naiv förenkling till de allra mest grundläggande egenskaperna implementerats enligt (\ref{eq:friction_simple}).
+
+\begin{equation}\label{eq:friction_simple}
+\bar{j}_r = \frac{|\bar{v}_r \cdot \bar{n}_{\perp}|}{\frac{1}{m_1}+\frac{1}{m_2}+\frac{1}{I_1}(\bar{r}_{1_{\perp}} \cdot \bar{n}_{\perp})^2+\frac{1}{I_2}(\bar{r}_{2_{\perp}} \cdot \bar{n}_{\perp})^2}
+\end{equation}
+
+Ekvation (\ref{eq:friction_simple}) kan jämföras med (impulsekvationen) som bygger på samma princip.
+
 %----------------------------------------------------------------------------
 \section{Resultat}
 %----------------------------------------------------------------------------

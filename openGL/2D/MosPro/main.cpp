@@ -89,7 +89,7 @@ int main( void )
 	//glfwSetWindowTitle( "Tutorial 04" );
 	
 	glfwEnable( GLFW_STICKY_KEYS );
-	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS); 
 
