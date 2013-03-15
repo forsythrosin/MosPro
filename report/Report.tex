@@ -191,7 +191,7 @@ I det system som simuleras måste någon representation av krafter mellan kroppa
 \bar{J} = \int_{\Delta t}^{} \bar{F} \ dt = \int_{\Delta t}^{} m\bar{a} \ dt = m\bar{v}
 \end{equation}
 
-Den aktuella implementationen av (\ref{eq:force_to_impulse}) innehöll inget begrepp om tid utan t representerades istället av ett simuleringssteg.
+Den aktuella implementationen av (\ref{eq:force_to_impulse}) innehöll inget begrepp om tid utan $t$ representerades istället av ett simuleringssteg.
 
 \subsubsection{Praktiskt förlopp}
 Då en kollision detekteras ska fysikmotorn lösa vilka krafter som uppstår mellan kropparna. En nödvändig förenkling är att endast hantera kollisioner som sker mellan hörn och sida för kroppar. Detta är de absolut vanligast förekommande kollisionerna och det är ur optimeringssynpunkt inte värt att ta hänsyn till andra typer av kollisioner. Den data som finns tillgänglig för kollisionsrespondern är:
@@ -264,11 +264,13 @@ Metoden medför att en utflyttning ej sker, objekt använder sig istället av mi
 	\label{fig:penalty}
 \end{figure}
 
-Ekvation (\ref{eq:penalty_impulse}) visar den impuls $J$ som ger fjädringen på båda objekten.
+Ekvation (\ref{eq:penalty_impulse}) anger den impuls $J$ som ger fjädringen på båda objekten.
 
 \begin{equation}\label{eq:penalty_impulse}
 \bar{J} = C \cdot \bar{P}
 \end{equation}
+
+Där $C$ är en framerate-baserad konstant och $P$ är penetrationsvektorn mellan de två objekten.
 
 \subsubsection{Övergång}
 En övergång mellan de två lösningsmetoderna är aktuell först när objekt vilar på varandra, vilket innebär att deras relativa hastighet i kollisionspunkten är låg.
@@ -298,9 +300,7 @@ En fysikmotor som implementerar massa-fjäder-system och harmonisk rörelse krä
 f = - k \cdot \Delta l
 \end{equation}
 
-I ekvation (\ref{eq:hookes_law}) är k  fjäderkonstant och l anger hur utdragen eller sammanpressad fjädern är. Lösningen för (\ref{eq:hookes_law}) ger endast  kraftens magnitud, för en flerdimensionell simulering utökas ekvationen till att även innehålla kraftens riktning (\ref{eq:hookes_law_2dim}).
-\\
-\\Ett viktigt resultat för Hookes lag är att den resulterande kraften f verkar lika mycket i fjäderns båda ändar.
+I ekvation (\ref{eq:hookes_law}) är $k$  fjäderkonstant och $\Delta l$ anger hur utdragen eller sammanpressad fjädern är. Lösningen för (\ref{eq:hookes_law}) ger endast  kraftens magnitud, för en flerdimensionell simulering utökas ekvationen till att även innehålla kraftens riktning (\ref{eq:hookes_law_2dim}).
 
 \begin{equation}\label{eq:hookes_law_2dim}
 f = - k (|\bar{d}| - l_0)\hat{d}
@@ -311,7 +311,8 @@ f = - k (|\bar{d}| - l_0)\hat{d}
 \end{equation}
 
 Parametrar $x_A$ och $x_B$ (\ref{eq:hookes_extremities}) är infästningspunkter med avseende på position och rotation för ett tillstånd $y_t$.
-
+\\
+\\Ett viktigt resultat för Hookes lag är att den resulterande kraften $f$ verkar lika mycket i fjäderns båda ändar.
 
 \subsection{Friktion}
 
