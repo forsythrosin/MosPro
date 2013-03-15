@@ -135,7 +135,22 @@ Medan den ovan beskrivna Runge-Kutta metoden lämpar sig för att lösa differen
 Ett första steg mot att simulera stelkroppars interaktion är att detektera alla kolliderande polygoner i scenen. Att två kroppar i ett diskret system ligger \emph{dikt an} varandra är sällsynt. Vanligare är att de \emph{interpenetrerar} varandra, d.v.s. att ett hörn hos en kropp ligger inuti en annan kropp.
 
 \subsubsection{Separating Axis Test}
-För att utreda eventuell interpenetration mellan två givna objekt kan SAT\cite[s.~29]{vella08} \emph{(Separating Axis Test)} användas. Testet kan avgöra om kropparna \emph{inte} kolliderar genom att hitta en vektor på vilken objektens punkter projiceras på disjunkta intervall (Figur \ref{fig:hejhej}). Ett högre antal vektorer ökar beräkningstiden men också sannolikheten för ett korrekt resultat.
+För att utreda eventuell interpenetration mellan två givna objekt kan SAT\cite[s.~29]{vella08} \emph{(Separating Axis Test)} användas. Testet kan avgöra om kropparna \emph{inte} kolliderar genom att hitta en vektor på vilken objektens punkter projiceras på disjunkta intervall (Figur \ref{fig:separating_axis_1}). Ett högre antal vektorer ökar beräkningstiden men också sannolikheten för ett korrekt resultat. Det finns emellertid ingen garanti för att SAT, med ett ändligt antal vektorer, med säkerhet kan avgöra om två kroppar inte skär varandra (Figur \ref{fig:separating_axis_2}).
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{illustrations/sepaxis1.pdf}
+\caption{Ett fall där SAT \emph{kan} utesluta kollision}
+\label{fig:separating_axis_1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{illustrations/sepaxis2.pdf}
+\caption{Ett fall där SAT \emph{inte kan} utesluta kollision}
+\label{fig:separating_axis_2}
+\end{figure}
 
 \subsubsection{Gilbert-Johnson-Keerthi}
 \label{sec:gjk}
@@ -159,7 +174,7 @@ De två kropparna korsar varandra om, och endast om, polygonen som Minkovskidiff
 Att i varje tidssteg använda GJK-algoritmen för att testa kollision mellan alla kroppar i en scen skulle innebära omfattande beräkningar, vilket skulle tvinga ner fysikmotorns prestanda betydligt. För att undvika dessa beräkningsmängder görs först olika bedömningar av vilka kroppar som riskerar att kollidera varefter de mer komplexa kollisionsdetektorerna appliceras endast på dessa par.
 
 \subsubsection{Bounding boxes}
-Det är mer beräkningseffektivt att kontrollera om två kvadrater överlappar varandra än att använda GJK-algoritmen. Därför implementerades en algoritm som räknar ut de minsta kvadrater som garanterat omger alla hörnpunkter hos stelkropparnas polygoner. Detta koncept kallas \emph{bounding boxes}. Naturligtvis går det inte att säkerställa kollsisioner med denna metod utan bara avfärda dem (Figur \ref{fig:bounding_boxes}).
+Det är mer beräkningseffektivt att kontrollera om två kvadrater överlappar varandra än att använda GJK-algoritmen. Därför implementerades en algoritm som räknar ut de minsta kvadrater som garanterat omger alla hörnpunkter hos stelkropparnas polygoner. Detta koncept kallas \emph{bounding boxes}. Naturligtvis går det inte att säkerställa kollisioner med denna metod utan bara avfärda dem (Figur \ref{fig:bounding_boxes}).
 
 \begin{figure}[H]
 \centering
@@ -170,7 +185,7 @@ Det är mer beräkningseffektivt att kontrollera om två kvadrater överlappar v
 
 \subsubsection{Quadträd}
 
-En ytterligare optimering som kan göras är att använda ett quadträd för att dela upp simuleringsomådet och på detta sätt avgöra vilka kroppar som potentiellt kan ge upphov till kollisioner. Ett quadträd är en datastruktur som delar in en stor område i fyra mindre likformiga områden, varpå dessa rekursivt klyvs på samma sätt tills önskad granularitet uppnås. Genom att tidigt avfärda kollisioner mellan objekt som ligger i skiljda noder i quadträdet behöver betydligt färre  par av kroppar skickas till Bounding box-testet. 
+En ytterligare optimering som kan göras är att använda ett quadträd för att dela upp simuleringsomådet och på detta sätt avgöra vilka kroppar som potentiellt kan ge upphov till kollisioner. Ett quadträd är en datastruktur som delar in ett stort område i fyra mindre likformiga områden, varpå dessa rekursivt klyvs på samma sätt tills önskad granularitet uppnås. Genom att tidigt avfärda kollisioner mellan objekt som ligger i skiljda noder i quadträdet behöver betydligt färre  par av kroppar skickas till Bounding box-testet. 
 \\
 \\Ett quadträd implementerades genom att skapa kvadratiska noder som var och en gavs ett register av vilka stelkroppar som befinner sig inuti dem. Allteftersom kroppar lämnar och äntrar noder uppdateras varje nods register. Snabba uppslagningar kan därmed göras i kollisionsdetektionsprocessen. I figur  \ref{fig:quadtree} visas hur noder som innehåller mindre än två stelkroppar helt kan uteslutas från vidare kollisionsdetektion.
 
@@ -189,7 +204,7 @@ En ytterligare optimering som kan göras är att använda ett quadträd för att
 Att två objekt interpenetrerar varandra representerar inget verkligt fysikaliskt förlopp. Det första som därför måste göras när en sådan händelse upptäckts är att flytta ut objekten från varandra. En metod för detta är att hitta det tidssteg mellan innevarande och föregående bildruta då objekten kolliderade. En analytisk lösning är emellertid komplicerad att implementera med tanke på translations- och rotationshastigheter. En enklare metod är att hitta den punkt hos polygon A som interpenetrerar längst och betrakta den sida på polygon B som ligger närmast denna punkt som en trolig kollisionssida. Hur objekten sedan separeras från varandra går att lösa på olika sätt - linjärt eller icke-linjärt.
 
 \subsection{Expanding Polytope Algorithm (EPA)}
-I denna tillämpning användes metoden EPA (Expanding Polytope Algorithm) för att hitta penetrationspunkten och en vektor mellan denna punkt och kollisionssidan, nedan kallad penetrationsvektorn. I det konvexa höljet av Minkowskidifferensen, beskriven i avsnitt \ref{sec:gjk}, kommer den linje med minst avstånd till origo att vara av intresse. De punkter som spänner upp denna linje har genererats utifrån penetrationspunkten, i  BEHÖVER FIGUR benämnd c, och de två punkter, d och e, som spänner upp kollisionssidan.
+I denna tillämpning användes metoden EPA (Expanding Polytope Algorithm) för att hitta penetrationspunkten och en vektor mellan denna punkt och kollisionssidan, nedan kallad penetrationsvektorn. I det konvexa höljet av Minkowskidifferensen, beskriven i avsnitt \ref{sec:gjk}, kommer den linje med minst avstånd till origo att vara av intresse. De punkter som spänner upp denna linje har genererats utifrån penetrationspunkten, i Figur \ref{fig:gjk} benämnd c, och de två punkter, d och e, som spänner upp kollisionssidan.
 
 
 \subsection{Linjär Kollisionslösning}
@@ -216,7 +231,7 @@ Att translatera en rörlig kropp ut från en stationär kropp utan att påverka 
 Ekvation (\ref{eq:v_magnitude}) beskriver den nya hastigheten $v$ där $t$ är kroppens utflyttningsvektor och $g$ är den aktuella gravitationen för systemet.
 
 \subsection{Icke-linjär kollisionslösning}
-Linjära lösningar för interpenetration skapar problem för kroppar i vila. Detta eftersom gravitationen påverkar kropparna vilket resulterar i interpenetration med underlaget. Detta resulterar i sin tur i en linjär utflytt med avseende på den punkt med längst penetrationsvektor. För kroppar i vila innebär detta att de kommer vibrera istället för att ligga stilla. Dessutom kan det visas att oönskad friktion introduceras i systemet. Ett förslag till förbättring är att dela upp utflyttning av en kropp till två komponenter. En linjär förflyttningskomponent med avseende på kroppens tröghet (\ref{eq:mass_mass_inertia_part}) och en rotationskomponent med avseende på kroppens tröghetsmoment (\ref{eq:inertia_mass_inertia_part}).
+Linjära lösningar för interpenetration skapar problem för kroppar i vila. Detta eftersom gravitationen påverkar kropparna vilket resulterar i interpenetration med underlaget. Detta resulterar i sin tur i en linjär utflytt med avseende på den punkt med längst penetrationsvektor. För kroppar i vila innebär detta att de kommer vibrera istället för att ligga stilla. Dessutom kan det visas att oönskad friktion introduceras i systemet. Ett förslag till förbättring är att dela upp utflyttning av en kropp till två komponenter. En linjär förflyttningskomponent med avseende på kroppens massa (\ref{eq:mass_mass_inertia_part}) och en rotationskomponent med avseende på kroppens tröghetsmoment (\ref{eq:inertia_mass_inertia_part}).
 
 \begin{equation}\label{eq:mass_mass_inertia_part}
 	lm_i = \frac{\frac{1}{m_i}}{\frac{1}{m_1} + \frac{1}{m_2} + \frac{1}{I_1} + \frac{1}{I_2}}
@@ -269,7 +284,7 @@ I det system som simuleras måste någon representation av krafter mellan kroppa
 Den aktuella implementationen av (\ref{eq:force_to_impulse}) innehöll inget begrepp om tid utan $t$ representerades istället av ett simuleringssteg.
 
 \subsubsection{Praktiskt förlopp}
-Då en kollision detekteras ska fysikmotorn lösa vilka krafter som uppstår mellan kropparna. En nödvändig förenkling är att endast hantera kollisioner som sker mellan hörn och sida för kroppar. Dessa är de absolut vanligast förekommande kollisionerna och det är ur optimeringssynpunkt inte värt att ta hänsyn till andra typer av kollisioner. Den data som finns tillgänglig för kollisionsrespondern är:
+Då en kollision detekteras ska fysikmotorn lösa vilka krafter som uppstår mellan kropparna. En nödvändig förenkling är att endast hantera kollisioner som sker mellan hörn och sida för kroppar (Figur ~\ref{fig:impulse}). Dessa är de absolut vanligast förekommande kollisionerna och det är ur optimeringssynpunkt inte värt att ta hänsyn till andra typer av kollisioner. Den data som finns tillgänglig för kollisionsrespondern är:
 
 \begin{itemize}
 \item \text{De kroppar som ingår i kollisionen}
@@ -316,7 +331,7 @@ j_r = \frac{-(1+e)\bar{v}_r \cdot \hat{n}}
 
 Genom detta skapas en grundläggande teori om hur kollisioner ska bete sig i simuleringen. En impuls beräknas i (\ref{eq:impulse_magnitude}) och appliceras sedan i (\ref{eq:impulse_apply_linear}) och (\ref{eq:impulse_apply_angular}).
 \\
-\\Under implementationen introducerades ett specialfall för kollision mellan rörlig och icke-rörlig kropp. Detta resulterade i en förenklad impulsmodell enligt (\ref{eq:impulse_magnitude_simple}).
+\\Under implementationen introducerades ett specialfall för kollision mellan rörlig och stationär kropp. Detta resulterade i en förenklad impulsmodell enligt (\ref{eq:impulse_magnitude_simple}).
 
 \begin{equation}\label{eq:impulse_magnitude_simple}
 j_r = \frac{-(1+e)\bar{v}_r \cdot \hat{n}}
@@ -326,14 +341,13 @@ j_r = \frac{-(1+e)\bar{v}_r \cdot \hat{n}}
 Ekvation (\ref{eq:impulse_magnitude_simple}) kan likställas med att sätta den stationära kroppens massa och tröghetsmoment till $\infty$.
 
 \subsection{Penalty-baserade system}
-Vid kollision mellan två kroppar i verkligheten är det två kontinuerliga motriktade krafter som verkar på objekten, dessa krafter är aktiva över en kort tidsperiod, något som gör att det är mer korrekt att använda än impulsbaserad kollisionslösning.
-Vid vilande kontakt är detta dock inte en lösning som ger trovärdiga resultat, vilket diskuterats ovan. Detta eftersom det sällan endast är ett hörn som är i kontakt mellan två kroppar i vila. Vid implementation ansågs därför att en penalty-baserad kollisionslösning var mer lämplig i dessa fall.
-
-Metoden medför att en utflyttning ej sker, objekt använder sig istället av mindre impulser för för att fjädra ifrån varandra. Detta kan illustreras (Figur ~\ref{fig:penalty}) som dämpade fjädrar som spänns mellan kropparna längs penetrationsvektorn.
+Vid kollision mellan två kroppar i verkligheten är det två kontinuerliga motriktade krafter som verkar på objekten, dessa krafter är aktiva över en kort tidsperiod, något som gör att det är mer korrekt att använda än impulsbaserad kollisionslösning. Vid vilande kontakt är detta dock inte en lösning som ger trovärdiga resultat, vilket diskuterats ovan. Detta eftersom det sällan endast är ett hörn som är i kontakt mellan två kroppar i vila. Vid implementation ansågs därför att en penalty-baserad kollisionslösning var mer lämplig i dessa fall.
+\\
+\\Metoden medför att en utflyttning ej sker, objekt använder sig istället av mindre impulser för för att fjädra ifrån varandra. Detta kan illustreras (Figur ~\ref{fig:penalty}) som dämpade fjädrar som spänns mellan kropparna längs penetrationsvektorn.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics{illustrations/penalty.pdf}
+	\includegraphics[width=0.4\textwidth]{illustrations/penalty.pdf}
 	\caption{Tillämpning av dämpade fjädrar som kontaktmodell}
 	\label{fig:penalty}
 \end{figure}
@@ -344,7 +358,7 @@ Ekvation (\ref{eq:penalty_impulse}) anger den impuls $J$ som ger fjädringen på
 \bar{J} = C \cdot \bar{P}
 \end{equation}
 
-Där $C$ är en framerate-baserad konstant och $\bar{P}$ är penetrationsvektorn mellan de två objekten.
+$C$ är en empiriskt framtagen konstant för att ge realistiska simuleringar och $\bar{P}$ är penetrationsvektorn mellan de två objekten.
 
 \subsubsection{Övergång}
 En övergång mellan de två lösningsmetoderna är aktuell först när objekt vilar på varandra, vilket innebär att deras relativa hastighet i kollisionspunkten är låg.
@@ -434,7 +448,7 @@ j_f =\begin{cases}
   \end{cases}
 \end{equation}
 
-Friktionsimpulsen (\ref{eq:friction_impulse_final}) appliceras samtidigt som kollisionsimpulsen för respektive kropp och kollision. Ekvation (\ref{eq:static_friction_impulse}-\ref{eq:friction_impulse_final}) är en ideal [Gravitas] friktionslösning för impulsbaserade system. Det kan emellertid visas att (\ref{eq:static_friction_impulse}) och (\ref{eq:dynamic_friction_impulse}) inte ger energibevarande lösningar för höga värden på $\mu_s$ och $\mu_d$.
+Friktionsimpulsen (\ref{eq:friction_impulse_final}) appliceras samtidigt som kollisionsimpulsen för respektive kropp och kollision. Ekvation (\ref{eq:static_friction_impulse}-\ref{eq:friction_impulse_final}) är en ideal \cite{vella08} friktionslösning för impulsbaserade system. Det kan emellertid visas att (\ref{eq:static_friction_impulse}) och (\ref{eq:dynamic_friction_impulse}) inte ger energibevarande lösningar för höga värden på $\mu_s$ och $\mu_d$.
 \\
 \\Friktion simulerades utan hänsyn till friktionstal mellan specifika material. Istället har en naiv förenkling till de allra mest grundläggande egenskaperna implementerats enligt (\ref{eq:friction_simple}).
 
@@ -449,7 +463,7 @@ Ekvation (\ref{eq:friction_simple}) kan jämföras med (\ref{eq:impulse_magnitud
 
 
 \section{Resultat}
-Under projektet har en prototyp till en fysikmotor utvecklats. Motorn kan lösa ett antal sofistikerade uppsättningar av konvexa stelkroppar och producera trovärdiga resultat. 
+Under projektet har en prototyp till en fysikmotor utvecklats. Motorn kan lösa sofistikerade uppsättningar av konvexa stelkroppar och producera trovärdiga resultat. 
 Exempel på detta är:
 
 \begin{itemize}
@@ -461,19 +475,19 @@ Exempel på detta är:
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\textwidth]{illustrations/printscreen_general.png}
+	\includegraphics[width=0.8\textwidth]{illustrations/printscreen_general.png}
 	\caption{Energibevarande kollisioner}
 	\label{fig:general}
 \end{figure}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\textwidth]{illustrations/printscreen_resting.png}
+	\includegraphics[width=0.8\textwidth]{illustrations/printscreen_resting.png}
 	\caption{Vilande kroppar}
 	\label{fig:resting}
 \end{figure}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\textwidth]{illustrations/printscreen_a_vagn_that_can_go.png}
+	\includegraphics[width=0.8\textwidth]{illustrations/printscreen_a_vagn_that_can_go.png}
 	\caption{Massa-fjäder-system}
 	\label{fig:vagn_that_can_go}
 \end{figure}
@@ -490,12 +504,12 @@ Exempel på detta är:
 \subsection{Kontaktgrupper}
 En möjlig optimering som har diskuterats under projektets gång har varit att gruppera ihop statiska kontakter mellan kroppar. Denna optimering skulle möjliggöra att gruppera ihop kroppar som under en längre tid kolliderat och lägga dessa i vila. Inga beräkningar skulle då behöva utföras på dessa objekt då deras tillståndsvariabler ej förändras när de ligger i detta tillstånd. Den implementation som har beskrivits i rapporten har den svagheten att GJK-algoritmen kommer att behöva köras mellan alla objekt som vilar mot varandra i varje tidssteg.
 
-\subsection{Konkava Kroppar}
+\subsection{Konkava kroppar}
 Att fysikmotorer begränsas till att hantera konvexa polygoner är en vanlig förenkling då det resulterar i en adekvat kompromiss mellan prestanda och generalitet. Konkava former skulle framförallt kräva en mer komplex metod för att detektera kollisioner.
 
 Möjliga lösningar på detta problem är att antingen använda konkava kroppars konvexa hölje vid kollisionsdetektion, eller att segmentera den konkava kroppen till flera mindre konvexa kroppar.
 
-\subsubsection{Konvext Hölje}
+\subsubsection{Konvext hölje}
 Ett konkavt objekt kan utvidgas till att vara ett konvext objekt. Det kallas att hitta det konvexa höljet till kroppen. Syftet med detta är att förenkla kroppens kollisionsberäkningar \cite[s.~29]{avis97}.
 
 \subsubsection{Segmentering}
