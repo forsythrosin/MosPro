@@ -2,12 +2,15 @@
 \usepackage{amsmath,amssymb,mathrsfs}
 \usepackage[utf8]{inputenc}
 \usepackage{blindtext}
+\usepackage{graphicx}
 \usepackage[swedish]{babel}
 \usepackage[margin={1in, 1in}]{geometry}
+%\usepackage{mathtools}
 \setlength{\parindent}{0pt}
 \renewcommand{\thetable}{\Alph{table}}
 %----------------------------------------------------------------------------
 \begin{document}
+
 %=================================================================
 \title{Stelkroppssimulering}
 %----------------------------------------------------------------------------
@@ -79,7 +82,72 @@ I modellen som skulle simuleras ingick tre typer av entiteter: rörliga stelkrop
 
 
 \clearpage \clearpage
-Fysiksimulering  är en vital del av många moderna datorspel. I spelsammanhang kallas detta för ett spels fysikmotor. Att implementera en fysikmotor handlar om att skapa en miljö med regler vilka en uppsättning objekt måste följa. I denna rapport undersöks stelkroppssimulering som utgör basen i de allra flesta fysikmotorer. Begreppet antyder att en fysikmotor för stelkroppssimulering gör vissa antaganden och förenklingar av den fysiken i en riktig värld. Mest påtagligt är att systemets objekt antas vara okomprimerbara, eller stela. Även med dessa förenklingar i beaktning är implementation av en fysikmotor ett komplext problem. Det finns många olika metoder för att nå likvärdiga resultat och att låsa projektet till en metod i ett tidigt skede kan försvåra senare utveckling. I denna rapport implementeras och utvärderas en impulsbaserad, iterativ, fysikmotor med stelkroppssimulering.
+%------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+\section{Kollisionslösning}
+	Att två objekt interpenetrerar varandra representerar inget verkligt fysikaliskt förlopp. Det första som därför måste göras när en sådan händelse upptäckts är att flytta ut objekten från varandra. En metod för detta är att hitta det tidssteg mellan innevarande och föregående bildruta då objekten kolliderade. En analytisk lösning är emellertid komplicerad att implementera med tanke på translations- och rotationshastigheter. En enklare metod är att hitta den punkt hos polygon A som interpenetrerar längst och betrakta den sida på polygon B som ligger närmast denna punkt som en trolig kollisionssida. Hur objekten sedan separeras från varandra går att lösa på olika sätt - linjärt 
+	\subsection{Expanding Polytope Algorithm (EPA)}
+		I denna tillämpning användes metoden EPA (Expanding Polytope Algorithm) för att hitta penetrationspunkten och en vektor mellan denna punkt och kollisionssidan, nedan kallad penetrationsvektorn. I det konvexa höljet av Minkowskidifferensen, beskriven i avsnitt \ref{sec:gjk}, kommer den linje med minst avstånd till origo att vara av intresse. De punkter som spänner upp denna linje har genererats utifrån penetrationspunkten, i  BEHÖVER FIGUR benämnd c, och de två punkter, d och e, som spänner upp kollisionssidan.
+	\subsection{Linjär Kollisionslösning}
+		\begin{figure}[!h]
+			\centering
+			\includegraphics{illustrations/linear.pdf}
+			\caption{Exempel på linjär utflyttning}
+			\label{fig:linear}
+		\end{figure}
+		En linjär kollisionslösning är det enklaste sättet att lösa interpenetration. Penetrationen löses sådant att kropparna a och b (Figur \ref{fig:linear}) translateras i penetrationsvektorns positiva respektive negativa riktning. Hur stor del av penetrationsvektorn respektive kropp skall translateras beräknas med avseende på dess omvända relativa massa enligt (\ref{eq:impulse_part}).
+		\begin{equation}\label{eq:impulse_part}
+			J_{part} = \frac{m1}{m1+m2}
+		\end{equation}
+		Att translatera en rörlig kropp ut från en stationär kropp utan att påverka dess hastighet medför en förändring av systemets energi. För att motverka detta beräknas hastigheten om med avseende på utflyttningen och gravitationen.
+		\begin{equation}\label{eq:v_magnitude}
+			|\bar{v}| = \sqrt{|v^{2}-2\cdot|g_y| \cdot t_y|}
+		\end{equation}
+		Ekvation (\ref{eq:v_magnitude}) beskriver den nya hastigheten $v$ där $t$ är kroppens utflyttningsvektor och $g$ är den aktuella gravitationen för systemet.
+	\subsection{Icke-linjär kollisionslösning}
+
+		Linjära lösningar för interpenetration skapar problem för kroppar i vila. Detta eftersom gravitationen påverkar kropparna vilket resulterar i interpenetration med underlaget. Detta resulterar i sin tur i en linjär utflytt med avseende på den punkt med längst penetrationsvektor. För kroppar i vila innebär detta att de kommer vibrera istället för att ligga stilla. Dessutom kan det visas att oönskad friktion introduceras i systemet. Ett förslag till förbättring är att dela upp utflytt av en kropp till två komponenter. En linjär förflyttningskomponent med avseende på kroppens tröghet (\ref{eq:mass_mass_inertia_part}) och en rotationskomponent med avseende på kroppens tröghetsmoment (\ref{eq:inertia_mass_inertia_part}).
+		
+		\begin{equation}\label{eq:mass_mass_inertia_part}
+		 	lm_i = \frac{\frac{1}{m_i}}{\frac{1}{m_1} + \frac{1}{m_2} + \frac{1}{I_1} + \frac{1}{I_2}}
+		\end{equation}
+		\begin{equation}\label{eq:inertia_mass_inertia_part}
+		 	am_i = \frac{\frac{1}{m_i}}{\frac{1}{m_1} + \frac{1}{m_2} + \frac{1}{I_1} + \frac{1}{I_2}}
+		\end{equation}
+
+		I simuleringen implementerades endast den linjära utflyttningskomponenten (\ref{eq:mass_mass_inertia_part}) och sedan en explicit lösning (Figur \ref{fig:nonlinear}) för hur kroppen ska roteras ut.
+				
+						\begin{figure}[h!]
+							\centering
+							\includegraphics{illustrations/nonlinear.pdf}
+							\caption{Exempel på icke-linjär utflyttning}
+							\label{fig:nonlinear}
+						\end{figure}
+		
+		Metoden innebär att lösa ett ekvationssystem med fyra rötter och sedan testa vilken lösning som ger den optimala, dvs. minsta,  rotationen ut.
+		\begin{equation} \label{eq:nonlinear_1}
+			Q' = P + \bar{r}' = A + s \cdot \bar{l}
+		\end{equation}
+		\begin{equation}\label{eq:nonlinear_2}
+			|\bar{r}|^2 = |\bar{r}'|^2 = (Q-P)^2 = (Q' - P)^2
+		\end{equation}
+		\begin{equation}\label{eq:nonlinear_3}
+			\theta = \arccos{\frac{\bar{r}\cdot\bar{r} '}{|\bar{r}|^2}}
+		\end{equation}
+		Från (\ref{eq:nonlinear_1}) och (\ref{eq:nonlinear_2}) löses $\bar{r}'$ut och rotationen beräknas enligt (\ref{eq:nonlinear_3}).
+
+		För djupa penetrationer mellan kroppar med stor tröghet kan den linjära komponenten inte räcka för att lösa interpenetrationen utan gör att rotationen förvärrar interpenetrationen. I dessa fall kan en nedre gräns för den linjära komponenten införas för att vikta förhållandet mellan rotation och translation [BEHÖVER REFERENS].
+
+
+
+
 %----------------------------------------------------------------------------
 \section{Kollisionsdetektion}
 
