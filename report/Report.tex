@@ -23,7 +23,7 @@
 \setcounter{page}{1}
 \pagenumbering{roman}
 \begin{abstract}
-\noindent Denna rapport beskriver de fysikaliska koncept och metoder som har använts för att utveckla en fysikmotor för stelkroppar, fjädrar och dämpare. I rapporten beskrivs metoder för kollisionshantering,  friktionsmodeller och hantering av både kroppar i rörelse och i vila. Även Euler- och Runge-Kutta-metoder för lösning av differentialekvationer behandlas. 
+\noindent Denna rapport beskriver de fysikaliska koncept och metoder som har använts för att utveckla en fysikmotor för stelkroppar och fjädrar. I rapporten beskrivs metoder för kollisionshantering,  friktionsmodeller och hantering av både kroppar i rörelse och i vila. Även Euler- och Runge-Kutta-metoder för lösning av differentialekvationer behandlas. 
 \\
 \\Resultatet som presenteras i rapporten är en prototyp av en tvådimensionell fysikmotor implementerad i C++ med grafikramverket OpenGL till stöd.
 \end{abstract}
@@ -44,12 +44,12 @@
 Fysiksimulering är en vital del av många moderna datorspel. I spelsammanhang kallas detta för ett spels \emph{fysikmotor}. Att implementera en fysikmotor handlar om att skapa en miljö med regler till vilka en uppsättning objekt måste förhålla sig. I många spel utgörs fysikmotorns bas av en \emph{stelkroppssimulering}, vilket innebär vissa antaganden och förenklingar av verkligheten. Mest påtagligt är att systemets objekt antas vara okomprimerbara, eller stela. Även med dessa förenklingar i beaktning är implementation av en fysikmotor ett komplext problem, som kan lösas på olika sätt beroende på aktuella förutsättningar och tillämpningsområden.
 
 \subsection{Syfte}
-Syftet med denna rapport är att beskriva utvecklingen av en fysikmotor, som ska kunna användas i datorspel med tvådimensionell grafik. Motorn ska ha stöd för att simulera kollisioner och friktion mellan stelkroppar modellerade som generella konvexa polygoner. Den ska också innehålla stöd för fjädrar och dämpare, som ska kunna fästas i stelkropparna. Motorn ska producera trovärdiga resultat vid såväl kollisioner som när flera stelkroppar vilar på varandra. Eftersom motorn ska kunna användas till datorspel behöver algoritmerna som används vara tillräckligt tidseffektiva för att tillåta interaktivitet. Motorn ska implementeras i C++ med hjälp av grafikbiblioteket OpenGL varpå resultatet ska utvärderas i rapporten.
+Syftet med denna rapport är att beskriva utvecklingen av en fysikmotor, som ska kunna användas i datorspel med tvådimensionell grafik. Motorn ska ha stöd för att simulera kollisioner och friktion mellan stelkroppar modellerade som generella konvexa polygoner. Den ska också innehålla stöd för fjädrar som ska kunna fästas i stelkropparna. Motorn ska producera trovärdiga resultat vid såväl kollisioner som när flera stelkroppar vilar på varandra. Eftersom motorn ska kunna användas till datorspel behöver algoritmerna som används vara tillräckligt tidseffektiva för att tillåta interaktivitet. Motorn ska implementeras i C++ med hjälp av grafikbiblioteket OpenGL varpå resultatet ska utvärderas i rapporten.
 
 %----------------------------------------------------------------------------
 
 \section{Modell}
-I modellen som skulle simuleras ingick tre typer av entiteter: rörliga stelkroppar, fasta stelkroppar samt fjädrar med dämpning. Varje entitet kan ha både konstanta egenskaper och variabla tillstånd, enligt tabell \ref{table:states_and_properties}.
+I modellen som skulle simuleras ingick tre typer av entiteter: rörliga stelkroppar, fasta stelkroppar samt fjädrar. Varje entitet kan ha både konstanta egenskaper och variabla tillstånd, enligt tabell \ref{table:states_and_properties}.
 
 \begin{table}[!h]
 	\caption{Tillstånd och egenskaper hos olika entiteter}
@@ -57,13 +57,13 @@ I modellen som skulle simuleras ingick tre typer av entiteter: rörliga stelkrop
 	\renewcommand{\arraystretch}{1.5}
 	\begin{tabular}{|p{2.2cm}|p{2.3cm}|p{2.2cm}|p{2.3cm}|p{2.2cm}|p{2.3cm}|}
 		\hline
-			\multicolumn{2}{|c|}{\textbf{Rörliga stelkroppar}} & \multicolumn{2}{|c|}{\textbf{Fasta stelkroppar}} & \multicolumn{2}{|c|}{\textbf{Fjädrar med dämpare}} \\
+			\multicolumn{2}{|c|}{\textbf{Rörliga stelkroppar}} & \multicolumn{2}{|c|}{\textbf{Fasta stelkroppar}} & \multicolumn{2}{|c|}{\textbf{Fjädrar}} \\
 		\hline
 			\textbf{Tillstånd} & \textbf{Egenskaper} & \textbf{Tillstånd} & \textbf{Egenskaper} & \textbf{Tillstånd} & \textbf{Egenskaper} \\
 		\hline
 			Position & Densitet & & Position & & Infästnings\-punkter \\
 			Vinkel & Studs\-koefficient & & Vinkel & & Fjäder\-konstant \\
-			Hastighet & & & & & Dämpnings\-koefficient \\
+			Hastighet & & & & & {} \\
 			Vinkel\-hastighet & & & & & {} \\
 		\hline
 	\end{tabular}
