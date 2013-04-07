@@ -17,6 +17,8 @@ class Collision2D;
 class BSPNode2D;
 class ForceGenerator2D;
 
+class MBStateMap;
+
 
 class PhysicsEngine2D
 {
@@ -26,6 +28,7 @@ class PhysicsEngine2D
 		void add(MovableBody2D* rb);
 		void add(ImmovableBody2D* rb);
 		void add(ForceGenerator2D* fg);
+		void generateState(MBStateMap *in, MBStateMap *out);
 		void step();
 		glm::vec2 getGravity();
 		void collisionResponse(std::vector<Collision2D> collisions);

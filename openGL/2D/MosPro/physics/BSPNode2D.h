@@ -51,9 +51,6 @@ private:
 	
 	void insert(RigidBody2D *rb);
 	void remove(RigidBody2D *rb);
-
-
-
 	
 };
 

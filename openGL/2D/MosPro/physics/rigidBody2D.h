@@ -14,29 +14,26 @@ class PhysicsEngine2D;
 
 class RigidBody2D {
 	public:
-		RigidBody2D(Shape2D *s, glm::vec2 p, double angle = 0);
+		RigidBody2D(Shape2D *s);
 
 		virtual void step();
 		virtual void impulse(glm::vec2 anchor, glm::vec2 j) {};
 		virtual double getAngularVelocity();
 		virtual glm::vec2 getVelocity();
 
-		glm::vec2 getPosition();
-		void setPosition(glm::vec2 pos);
+		virtual void setPosition(glm::vec2 pos) = 0;
+		virtual void setAngle(double a) = 0;
+		virtual glm::vec2 getPosition() const = 0;
+		virtual double getAngle() const = 0;
 
 		virtual const Box2D getBoundingBox() const;
 		
 		Shape2D* getShape();
 		PhysicsEngine2D* getEngine();
 
-		double getAngle();
-		glm::vec2 getPointInGlobalCoordinates(glm::vec2 localCoordinates);
+		virtual glm::vec2 getPointInGlobalCoordinates(glm::vec2 localCoordinates);
 
 	protected:
-		// position and velocity (linear and angular)
-		glm::vec2 position;
-		double angle;
-
 		Box2D localBoundingBox;
 		glm::vec2 com;
 
@@ -44,9 +41,7 @@ class RigidBody2D {
 		PhysicsEngine2D* engine;
 
 		void calculateBoundingBox();
-		glm::vec2 getFarthestPointInDirection(glm::vec2);
-
-		
+		glm::vec2 getFarthestPointInDirection(glm::vec2);	
 
 	friend PhysicsEngine2D;
 };

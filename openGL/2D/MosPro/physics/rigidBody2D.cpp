@@ -5,13 +5,12 @@
 
 #include "../graphics/shape2D.h"
 
-RigidBody2D::RigidBody2D(Shape2D *s, glm::vec2 p, double a) {
+RigidBody2D::RigidBody2D(Shape2D *s) {
 	shape = s;
-	position = p;
-	angle = a;
-	calculateBoundingBox();
 	
-	shape->setAttribs(position, angle, com);
+	calculateBoundingBox();
+	engine = NULL;
+
 }
 
 void RigidBody2D::step() {
@@ -40,7 +39,7 @@ void RigidBody2D::calculateBoundingBox() {
 }
 
 const Box2D RigidBody2D::getBoundingBox() const {
-	return localBoundingBox + position;
+	return localBoundingBox + getPosition();
 }
 
 
@@ -50,24 +49,8 @@ glm::vec2 RigidBody2D::getPointInGlobalCoordinates(glm::vec2 localCoordinates) {
 
 
 
-void RigidBody2D::setPosition(glm::vec2 position) {
-	this->position = position;
-	if (engine) {
-		engine->updatePosition(this);
-	}	
-}
-
-glm::vec2 RigidBody2D::getPosition() {
-	return position;
-}
-
 Shape2D* RigidBody2D::getShape(){
 	return this->shape;
-}
-
-
-double RigidBody2D::getAngle(){
-	return angle;
 }
 
 

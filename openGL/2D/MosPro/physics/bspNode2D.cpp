@@ -113,8 +113,6 @@ std::set<PotentialCollision2D> BSPNode2D::getPotentialCollisions() {
 					RigidBody2D *b = *j;
 
 					PotentialCollision2D p(a, b);
-					//std::cout << "potential collision" << a << " and " << b << std::endl;
-					//a->getEngine()->getDebug()->debugBox(getBox());
 					pc.insert(p);
 				}
 			}

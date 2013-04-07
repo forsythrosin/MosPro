@@ -76,7 +76,7 @@ Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &
 	while(true){
 		Edge e = findClosestEdge(s);
 		MinkowskiPoint2D p(a->getShape(),b->getShape(),e.getN());
-		//a->getEngine()->getDebug()->debugLine(p.getP1(),p.getP2());
+
 		double d = glm::dot(p.getP(), glm::normalize(e.getN()));
 		
 		if(d - glm::length(e.getN()) < CollisionDetector2D::tolerance){
@@ -112,8 +112,6 @@ Edge CollisionDetector2D::findClosestEdge(simplex2D &s){
 		glm::vec2 e = b - a;
 
 		e = glm::normalize(e);
-
-		//glm::mat2 m(-e.y*a.x, e.x*a.x, -e.y*a.y, e.x*a.x); 
 
 		glm::vec2 n = glm::dot(glm::vec2(-e.y, e.x), a)*glm::vec2(-e.y,e.x);
 

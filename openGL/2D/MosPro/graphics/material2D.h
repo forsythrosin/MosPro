@@ -1,6 +1,5 @@
 #pragma once
-//#ifndef __MATERIAL2D__
-//#define __MATERIAL2D__
+
 #include <glm/glm.hpp>
 #include <vector>
 #include <ctime>
@@ -14,4 +13,3 @@ public:
 private:
 	glm::vec3 color;
 };
-//#endif

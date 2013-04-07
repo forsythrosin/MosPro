@@ -61,8 +61,11 @@ void Collision2D::resolve(MovableBody2D *a, MovableBody2D *b) {
 
 		a->impulse(getPoint(), 0.1f*getPenVector()-fj);
 		b->impulse(getPoint(), -0.1f*getPenVector()+fj);
-		a->setVelocity(a->getVelocity()*0.8f);
-		b->setVelocity(b->getVelocity()*0.8f);
+		/*a->impulse(getPoint(), 0.1f*getPenVector()-fj);
+		b->impulse(getPoint(), -0.1f*getPenVector()+fj);*/
+
+		//a->setVelocity(a->getVelocity()*0.8f);
+		//b->setVelocity(b->getVelocity()*0.8f);
 	} else {
 		a->teleport(pv1);
 		b->teleport(pv2);
@@ -87,7 +90,6 @@ void Collision2D::resolve(MovableBody2D *a, MovableBody2D *b) {
 			glm::vec2 fj = (float)(mu*fjr)*t;
 
 			a->impulse(getPoint(),j-fj);
-			//a->getEngine()->getDebug()->debugVector(getPoint(),fj);
 			b->impulse(getPoint(),-j+fj);
 		}
 	}
@@ -132,7 +134,7 @@ void Collision2D::resolve(MovableBody2D *a) {
 		glm::vec2 fj = (float)(mu*fjr)*t;
 
 		a->impulse(getPoint(),j+fj);
-		//a->getEngine()->getDebug()->debugVector(getPoint(),fj);
+
 	}
 
 
