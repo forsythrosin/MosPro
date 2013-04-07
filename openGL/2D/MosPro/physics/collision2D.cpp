@@ -9,6 +9,15 @@ RigidBody2D* Collision2D::getRb1(){
 RigidBody2D* Collision2D::getRb2(){
 	return rb2;
 }
+
+RigidBody2D* Collision2D::getOther(RigidBody2D* rb) {
+	if (rb == rb1) {
+		return rb2;
+	} else {
+		return rb1;
+	}
+}
+
 glm::vec2 Collision2D::getPoint(){
 	return point;
 }

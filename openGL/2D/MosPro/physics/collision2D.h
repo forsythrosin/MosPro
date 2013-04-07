@@ -14,6 +14,7 @@ public:
 	  rb1(rb1N), rb2(rb2N), point(p), penetrationVector(pVec){};
 	RigidBody2D* getRb1();
 	RigidBody2D* getRb2();
+	RigidBody2D* getOther(RigidBody2D*);
 	glm::vec2 getPoint();
 	glm::vec2 getPenVector();
 	void resolve();

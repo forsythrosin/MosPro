@@ -13,6 +13,7 @@ class ImmovableBody2D : public RigidBody2D
 		double getAngle() const;
 
 		void setPosition(glm::vec2 p);
+		void setVelocity(glm::vec2 v);
 		void setAngle(double a);
 	private:
 		glm::vec2 position;

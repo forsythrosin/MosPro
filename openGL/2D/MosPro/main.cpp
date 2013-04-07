@@ -1,4 +1,3 @@
-#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <glm/glm.hpp>
@@ -13,9 +12,11 @@
 #include "graphics/glEngine2D.h"
 #include "graphics/wallGeometry2D.h"
 #include "physics/collisionDetector2D.h"
+#include "physics/collision2D.h"
 #include "physics/immovableBody2D.h"
 #include "physics/spring.h"
 #include "lib/debugGL.h"
+
 
 #include "glmIO.h"
 #include "graphics/shape2D.h"
@@ -55,6 +56,8 @@ double floatRand() {
 }
 
 
+
+
 int main( void )
 {
 	srand(time(NULL));
@@ -86,9 +89,6 @@ int main( void )
 		return -1;
 	}
 
-
-
-	//glfwSetWindowTitle( "Tutorial 04" );
 	
 	glfwEnable( GLFW_STICKY_KEYS );
 	glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
@@ -111,6 +111,15 @@ int main( void )
 	ImmovableBody2D* rb3 = new ImmovableBody2D(wall3,vec2(0,10),0);
 	ImmovableBody2D* rb4 = new ImmovableBody2D(wall4,vec2(0,-10),0);
 
+	Geometry2D cGeo = CircleGeometry2D(0.2, 5);
+	Shape2D *cShape = new Shape2D(&cGeo);
+	
+	MovableBody2D* cursor = new MovableBody2D(cShape, vec2(0), 0, vec2(0), 0);
+	
+	ge.add(cShape);
+	//pe.add(cursor);
+	
+
 	pe.add(rb1);
 	pe.add(rb2);
 	pe.add(rb3);
@@ -125,99 +134,107 @@ int main( void )
 
 	pe.setDebug(&debug);
 
-	int nBodies = 5;
-	for (int i = 0; i < nBodies; ++i) {
-		vector<vec2> geo;
-		geo.push_back(vec2(0,0));
-		geo.push_back(vec2(0.8,0));	
-		geo.push_back(vec2(0.8,0.8));
-		geo.push_back(vec2(0,0.8));
+	//init cloth particles
+	int clothWidth = 5;
+	int clothHeight = 5;
 
-		Geometry2D *g = new Geometry2D(geo);
-		Shape2D* s = new Shape2D(g);
-		ge.add(s);
-		glm::vec2 p(-8 + i*1.2, -5);
-		glm::vec2 v(0);
-		double w = i*0.03 - 0.1;
+	double wScaled = 20/clothWidth;
+	double hScaled = 20/clothHeight;
 
-		MovableBody2D* rb = new MovableBody2D(s, p, 0, v, w); 
-		pe.add(rb);
-	}
-	 
-	{
-		int n = 5;
-		for (int i = 0; i < n; ++i) {
-			int m = 5;
-			for (int j = 0; j < m; ++j) {
-				vector<vec2> geo;
-				geo.push_back(vec2(0,0));
-				geo.push_back(vec2(0.5+ 0.02*j,0));
-				geo.push_back(vec2(0.8+ 0.015*i ,0.5));
-				geo.push_back(vec2(0,0.7));
+	Geometry2D pGeo = CircleGeometry2D(0.3, 5);
+	
+	vector<vector<MovableBody2D*>> cloth; 
 
-				Geometry2D *g = new Geometry2D(geo);
-				Shape2D* s = new Shape2D(g);
-				ge.add(s);
-				glm::vec2 p(2 - j*0.3 + i*1.4, -3+1.5*j);
-				glm::vec2 v(0);
-				double w = i*0.03 - 0.1;
+	for (int i = 0; i < clothWidth; ++i) {
+		cloth.push_back(vector<MovableBody2D*>());
 
-				MovableBody2D* rb = new MovableBody2D(s, p, 0, v, w); 
-				pe.add(rb);
+		for (int j = 0; j < clothHeight; ++j) {
+
+			Shape2D* s = new Shape2D(&pGeo);
+			ge.add(s);
+			glm::vec2 p(-wScaled*(i - clothWidth/2), -hScaled*(j - clothHeight/2));
+
+			MovableBody2D* rb = new MovableBody2D(s, p, 0, glm::vec2(0), 0);
+			pe.add(rb);
+			
+			cloth[i].push_back(rb);
+
+			if(i > 0){
+				Spring *s = new Spring (cloth[i][j], glm::vec2(0), cloth[i-1][j], glm::vec2(0), wScaled, 0.001, 0.002);
+				pe.add(s);
+			}
+			if(j > 0){
+				Spring *s = new Spring (cloth[i][j], glm::vec2(0), cloth[i][j-1], glm::vec2(0), hScaled, 0.001, 0.002);
+				pe.add(s);
+			}
+			if(i > 0 && j > 0){
+				Spring *s = new Spring (cloth[i][j], glm::vec2(0), cloth[i-1][j-1], glm::vec2(0), wScaled*1.414213562373095, 0.001, 0.2);
+				pe.add(s);
 			}
 		}
 	}
 	
-
-	
-
-	MovableBody2D* car;
-	MovableBody2D* frontWheel;
-	MovableBody2D* rearWheel;
-
-	{
-		vector<vec2> geo2;
-		geo2.push_back(vec2(-3, 1));
-		geo2.push_back(vec2(-3, 0));
-		geo2.push_back(vec2(3, 0));
-		geo2.push_back(vec2(2, 1));
-		Geometry2D *g = new Geometry2D(geo2);
-		
-
-		Shape2D* s = new Shape2D(g);
-		ge.add(s);
-		car = new MovableBody2D(s, glm::vec2(0, -8), 0, glm::vec2(0), 0); 
-
-		Geometry2D *w = new CircleGeometry2D(0.3, 20);
-		Shape2D* w1 = new Shape2D(w);
-		Shape2D* w2 = new Shape2D(w);
-		frontWheel = new MovableBody2D(w1, glm::vec2(2, -8.5), 0, glm::vec2(0), 0); 
-		rearWheel = new MovableBody2D(w2, glm::vec2(-2.5, -8.5), 0, glm::vec2(0), 0); 
-	
-		ge.add(w1);
-		ge.add(w2);
-
-		Spring s1(car, glm::vec2(1.0, 0), frontWheel, glm::vec2(0, 0), 0.6, 0.005, 0.005);
-		Spring s2(car, glm::vec2(2.0, 0), frontWheel, glm::vec2(0, 0), 0.6, 0.005, 0.005);
-
-		Spring s3(car, glm::vec2(-2, 0), rearWheel, glm::vec2(0, 0), 0.6, 0.005, 0.005);
-		Spring s4(car, glm::vec2(-3, 0), rearWheel, glm::vec2(0, 0), 0.6, 0.005, 0.005);
-
-
-		pe.add(car);
-		pe.add(frontWheel);
-		pe.add(rearWheel);
-		pe.add(&s1);
-		pe.add(&s2);
-		pe.add(&s3);
-		pe.add(&s4);
-	}
-
-	
-
 	ge.bindBuffers();
 	glfwSwapInterval(1);
+
+	
+	vector<RigidBody2D*> selectedObjects;
+
 	do{
+
+		int xPos, yPos;
+		glfwGetMousePos(&xPos, &yPos);
+		double worldX = xPos/1024.0*20.0 - 10;
+		double worldY = - yPos/768.0*20.0 + 10;
+
+		cursor->setPosition(vec2(worldX, worldY));
+		cursor->update();
+		
+		for (int i = 0; i < selectedObjects.size(); i++) {
+			RigidBody2D *rb = selectedObjects[i]; 
+			rb->setPosition(vec2(worldX, worldY));
+			rb->setVelocity(vec2(0));
+
+			try {
+				MovableBody2D* mb = dynamic_cast<MovableBody2D*>(rb);
+				if (mb) { mb->update(); }
+			} catch(std::exception e) {}
+
+		}
+
+		
+		if (glfwGetMouseButton(GLFW_MOUSE_BUTTON_LEFT)) {
+
+			CollisionDetector2D cd = CollisionDetector2D();
+		
+			vector<MovableBody2D*> mbs = pe.getMovableBodies();
+			vector<RigidBody2D*> rbs;
+			for (int i = 0; i < mbs.size(); i++) {
+				mbs[i]->update();
+				rbs.push_back((RigidBody2D*) mbs[i]);
+			}	
+			
+
+			vector<Collision2D> collisions = cd.getCollisions(rbs, cursor);
+			//cout << collisions.size();
+			for (int i = 0; i < collisions.size(); i++) {
+				RigidBody2D* rb = collisions[i].getOther(cursor);
+
+				rb->setPosition(vec2(worldX, worldY));
+				rb->setVelocity(vec2(0));
+
+				try {
+					MovableBody2D* mb = dynamic_cast<MovableBody2D*>(rb);
+					if (mb) { mb->update(); }
+				} catch(std::exception e) {}
+
+
+				selectedObjects.push_back(rb);
+			}
+		} else {
+			selectedObjects.clear();
+		}
+
 		showFPS();
 		ge.render();
 		pe.step();
@@ -242,6 +259,10 @@ int main( void )
 			w += 0.06;
 			rearWheel->setAngularVelocity(w);
 		}*/
+		cloth[0][0]->setPosition(glm::vec2(7, 9));
+		cloth[0][0]->setVelocity(glm::vec2(0));
+		cloth[clothWidth-1][0]->setPosition(glm::vec2(-7, 9));
+		cloth[clothWidth-1][0]->setVelocity(glm::vec2(0));
 	} // Check if the ESC key was pressed or the window was closed
 	while( glfwGetKey( GLFW_KEY_ESC ) != GLFW_PRESS &&
 		   glfwGetWindowParam( GLFW_OPENED ) );

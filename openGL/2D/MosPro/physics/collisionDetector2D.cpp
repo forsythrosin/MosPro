@@ -124,6 +124,23 @@ Edge CollisionDetector2D::findClosestEdge(simplex2D &s){
 
 
 
+std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBody2D*> &bodies, RigidBody2D* body) {
+	std::vector<Collision2D> collisions;
+	for(int i = 0; i < bodies.size(); i++) {
+		simplex2D s;
+
+		RigidBody2D* a = bodies[i];
+		RigidBody2D* b = body;
+
+		if (a->getBoundingBox().intersects(b->getBoundingBox())) {
+			if (gjk(a, b, s)) {
+				collisions.push_back(epa(a, b, s));
+			}
+		}
+	}
+	return collisions;
+}
+
 std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBody2D*> &bodies) {
 	std::vector<Collision2D> collisions;
 	for(int i = 0; i < bodies.size(); i++) {
@@ -134,7 +151,7 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBod
 			RigidBody2D* b = bodies[j];
 
 			if (a->getBoundingBox().intersects(b->getBoundingBox())) {
-				if (gjk(bodies[i], bodies[j], s)) {
+				if (gjk(a, b, s)) {
 					collisions.push_back(epa(a, b, s));
 				}
 			}
@@ -142,6 +159,8 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBod
 	}
 	return collisions;
 }
+
+
 
 
 std::vector<Collision2D> CollisionDetector2D::getCollisions(BSPNode2D *rootNode) {

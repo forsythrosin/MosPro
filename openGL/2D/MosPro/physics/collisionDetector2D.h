@@ -18,6 +18,7 @@ class CollisionDetector2D
 		CollisionDetector2D(void);
 		~CollisionDetector2D(void);
 		std::vector<Collision2D> getCollisions(std::vector<RigidBody2D*> &bodies);
+		std::vector<Collision2D> getCollisions(std::vector<RigidBody2D*> &bodies, RigidBody2D* body);
 		std::vector<Collision2D> getCollisions(BSPNode2D *bsp);
 	private:
 		bool gjk(RigidBody2D* a, RigidBody2D* b, simplex2D &s);

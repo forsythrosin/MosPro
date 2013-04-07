@@ -28,6 +28,9 @@ class PhysicsEngine2D
 		void add(MovableBody2D* rb);
 		void add(ImmovableBody2D* rb);
 		void add(ForceGenerator2D* fg);
+
+		std::vector<MovableBody2D*> getMovableBodies();
+
 		void generateState(MBStateMap *in, MBStateMap *out);
 		void step();
 		glm::vec2 getGravity();

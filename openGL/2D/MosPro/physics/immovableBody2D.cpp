@@ -31,6 +31,8 @@ glm::vec2 ImmovableBody2D::getPosition() const {
 	return position;
 }
 
+void ImmovableBody2D::setVelocity(glm::vec2 v) {}
+
 double ImmovableBody2D::getAngle() const {
 	return angle;
 }

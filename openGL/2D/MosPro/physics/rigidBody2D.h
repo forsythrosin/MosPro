@@ -22,6 +22,7 @@ class RigidBody2D {
 		virtual glm::vec2 getVelocity();
 
 		virtual void setPosition(glm::vec2 pos) = 0;
+		virtual void setVelocity(glm::vec2 v) = 0;
 		virtual void setAngle(double a) = 0;
 		virtual glm::vec2 getPosition() const = 0;
 		virtual double getAngle() const = 0;

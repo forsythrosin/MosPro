@@ -1,8 +1,8 @@
 #include "spring.h"
-#include "rigidBody2D.h";
-#include "movableBody2D.h";
-#include "physicsEngine2D.h";
-#include "../lib/debugInterface.h";
+#include "rigidBody2D.h"
+#include "movableBody2D.h"
+#include "physicsEngine2D.h"
+#include "../lib/debugInterface.h"
 #include "mbStateMap.h"
 #include "../glmIO.h"
 #include <iostream>
@@ -24,15 +24,14 @@ void Spring::applyForces(MBStateMap *in, MBStateMap *out) {
 	MovableBody2D *mb1 = NULL;
 	MovableBody2D *mb2 = NULL;
 
-	
 
 	try {
 		mb1 = dynamic_cast<MovableBody2D*>(rb1);
-	} catch(std::exception e) {};
+	} catch(std::exception e) {}
 
 	try {
 		mb2 = dynamic_cast<MovableBody2D*>(rb2);
-	} catch(std::exception e) {};
+	} catch(std::exception e) {}
 
 	if (mb1) {
 		a = mb1->getPointInGlobalCoordinates(anchor1, &in->states[mb1]);
@@ -46,8 +45,13 @@ void Spring::applyForces(MBStateMap *in, MBStateMap *out) {
 		b = rb1->getPointInGlobalCoordinates(anchor2);
 	}
 
-	MBState* s1 = &in->states[mb1];
-	MBState* s2 = &in->states[mb2];
+	MBState *s1, *s2;
+	if (mb1) {
+		s1 = &in->states[mb1];
+	}
+	if (mb2) {
+		s2 = &in->states[mb2];
+	}
 	
 
 	glm::vec2 ab = b - a;
@@ -79,7 +83,7 @@ void Spring::applyForces(MBStateMap *in, MBStateMap *out) {
 	 	
 	glm::vec2 n = glm::normalize(ab);	
 	glm::vec2 vr = v2 - v1;
-	glm::vec2 dampingForce = glm::vec2(0);
+	glm::vec2 dampingForce = glm::vec2(0); //glm::dot(vr, r2 - r1) * b * 0.05f * (r2-r1);
 
 	
 	if (mb1) {
