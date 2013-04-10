@@ -68,13 +68,10 @@ void PhysicsEngine2D::step() {
 	MBStateMap k3(movableBodies, false);
 	MBStateMap k4(movableBodies, false);
 
-	
 	generateState(&y, &k1);
 	generateState(&(y + k1/2), &k2);
 	generateState(&(y + k2/2), &k3);
 	generateState(&(y + k3), &k4);
-	
-
 	y += (k1 + k2*2 + k3*2 + k4)/6;
 
 	//std::cout << y.states[0].velocity << std::endl;

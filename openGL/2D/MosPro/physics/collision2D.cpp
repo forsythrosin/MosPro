@@ -120,7 +120,7 @@ void Collision2D::resolve(MovableBody2D *a) {
 	glm::vec2 rOrt = glm::vec2(-r.y, r.x);
 	glm::vec2 v = a->getVelocity() +  rOrt * (float)a->getAngularVelocity();
 
-	glm::vec2 n = glm::normalize(getPenVector());
+	glm::vec2 n = glm::normalize(pv);
 	a->teleport(pv);
 	if(glm::length(v) < 0.1){
 		e = 0;
@@ -165,10 +165,11 @@ void Collision2D::resolve(){
 
 	if (a && b) {
 		resolve(a, b);
-	} else if (a = a ? a : b) {
+	} else if (a) {
 		resolve(a);
 	} else {
-		assert(false);
+		penetrationVector *= -1;
+		resolve(b);
 	}
 
 }
