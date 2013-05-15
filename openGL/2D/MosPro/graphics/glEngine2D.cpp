@@ -10,6 +10,9 @@ glEngine2D::glEngine2D(glm::vec3 camera){
 	programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
 	modelID = glGetUniformLocation(programID, "MVP");
 	colorID = glGetUniformLocation(programID, "vertexColor");
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);	
 	setCamera(camera);
 }
 
@@ -92,6 +95,7 @@ void glEngine2D::render(){
 		glDrawArrays(GL_TRIANGLE_FAN, 0, (*i)->getShape()->getLocalVertices().size());
 		glDisableVertexAttribArray(0);
 	}
+
 	std::list<TemporaryBufferObject*>::iterator it;
 	for(it = temporaryBuffers.begin(); it != temporaryBuffers.end(); it++){
 		if((*it)->frameStep()){
@@ -121,6 +125,7 @@ void glEngine2D::render(){
 		glDrawArrays(GL_TRIANGLE_FAN, 0, (*it)->getShape()->getLocalVertices().size());
 		glDisableVertexAttribArray(0);
 	}
+
 	glfwSwapBuffers();
 }
 
