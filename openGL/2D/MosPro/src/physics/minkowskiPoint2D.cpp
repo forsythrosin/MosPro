@@ -21,13 +21,11 @@ glm::vec2 MinkowskiPoint2D::getFarthestPointInDirection(Shape2D* s1, glm::vec2 d
 	int index = 0;
 	for(unsigned int i = 1; i < vert.size(); i++){
 		double curr = glm::dot(vert[i], d);
-		//std::cout << "vert[" << i << "] = "<< vert[i] << std::endl;
 		if (curr > dist){
 			dist = curr;
 			index = i;
 		}
 	}
-	//std::cout << "Index: " << index << " Which is the vector " << vert[index] << std::endl;
 	return vert[index];
 }
 

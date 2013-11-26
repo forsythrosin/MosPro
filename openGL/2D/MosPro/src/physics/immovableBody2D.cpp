@@ -1,14 +1,40 @@
 #include "immovableBody2D.h"
 #include "../graphics/shape2D.h"
 #include <algorithm>
+#include "physicsEngine2D.h"
 
-ImmovableBody2D::ImmovableBody2D(Shape2D *s, glm::vec2 p, double a) : RigidBody2D(s, p, a)
+ImmovableBody2D::ImmovableBody2D(Shape2D *s, glm::vec2 p, double a) : RigidBody2D(s)
 {
+	setPosition(p);
+	setAngle(a);
+	shape->setAttribs(p, a, com);
 }
 
 
 ImmovableBody2D::~ImmovableBody2D(void)
 {
+}
+
+
+void ImmovableBody2D::setPosition(glm::vec2 p) {
+	this->position = p;
+	if (engine) {
+		engine->updatePosition(this);
+	}	
+}
+
+void ImmovableBody2D::setAngle(double a) {
+	angle = a;
+}
+
+glm::vec2 ImmovableBody2D::getPosition() const {
+	return position;
+}
+
+void ImmovableBody2D::setVelocity(glm::vec2 v) {}
+
+double ImmovableBody2D::getAngle() const {
+	return angle;
 }
 
 const Box2D ImmovableBody2D::getBoundingBox() const{

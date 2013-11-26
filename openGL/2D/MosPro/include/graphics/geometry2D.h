@@ -10,6 +10,3 @@ public:
 private:
 	std::vector<glm::vec2> vecList;
 };
-//#endif
-
-

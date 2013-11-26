@@ -76,7 +76,7 @@ Collision2D CollisionDetector2D::epa(RigidBody2D* a, RigidBody2D* b, simplex2D &
 	while(true){
 		Edge e = findClosestEdge(s);
 		MinkowskiPoint2D p(a->getShape(),b->getShape(),e.getN());
-		//a->getEngine()->getDebug()->debugLine(p.getP1(),p.getP2());
+
 		double d = glm::dot(p.getP(), glm::normalize(e.getN()));
 		
 		if(d - glm::length(e.getN()) < CollisionDetector2D::tolerance){
@@ -113,8 +113,6 @@ Edge CollisionDetector2D::findClosestEdge(simplex2D &s){
 
 		e = glm::normalize(e);
 
-		//glm::mat2 m(-e.y*a.x, e.x*a.x, -e.y*a.y, e.x*a.x); 
-
 		glm::vec2 n = glm::dot(glm::vec2(-e.y, e.x), a)*glm::vec2(-e.y,e.x);
 
 		if(glm::length(n) < glm::length(closest.getN())){
@@ -126,6 +124,23 @@ Edge CollisionDetector2D::findClosestEdge(simplex2D &s){
 
 
 
+std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBody2D*> &bodies, RigidBody2D* body) {
+	std::vector<Collision2D> collisions;
+	for(int i = 0; i < bodies.size(); i++) {
+		simplex2D s;
+
+		RigidBody2D* a = bodies[i];
+		RigidBody2D* b = body;
+
+		if (a->getBoundingBox().intersects(b->getBoundingBox())) {
+			if (gjk(a, b, s)) {
+				collisions.push_back(epa(a, b, s));
+			}
+		}
+	}
+	return collisions;
+}
+
 std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBody2D*> &bodies) {
 	std::vector<Collision2D> collisions;
 	for(int i = 0; i < bodies.size(); i++) {
@@ -136,7 +151,7 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBod
 			RigidBody2D* b = bodies[j];
 
 			if (a->getBoundingBox().intersects(b->getBoundingBox())) {
-				if (gjk(bodies[i], bodies[j], s)) {
+				if (gjk(a, b, s)) {
 					collisions.push_back(epa(a, b, s));
 				}
 			}
@@ -144,6 +159,8 @@ std::vector<Collision2D> CollisionDetector2D::getCollisions(std::vector<RigidBod
 	}
 	return collisions;
 }
+
+
 
 
 std::vector<Collision2D> CollisionDetector2D::getCollisions(BSPNode2D *rootNode) {

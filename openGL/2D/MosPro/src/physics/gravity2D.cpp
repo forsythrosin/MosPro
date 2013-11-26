@@ -1,6 +1,8 @@
 #include "gravity2D.h"
 #include "../lib/debugInterface.h"
 #include "physicsEngine2D.h"
+#include "mbStateMap.h"
+#include "movableBody2D.h"
 
 Gravity2D::Gravity2D(std::vector<MovableBody2D*> bodies)
 {
@@ -21,10 +23,9 @@ glm::vec2 Gravity2D::getGravityConstant() {
 }
 
 
-void Gravity2D::applyForces() {
-	for (int i = 0; i < bodies.size(); i++) {
-		//bodies[i]->getEngine()->getDebug()->debugVector(bodies[i]->getPosition(), gravityConstant*(float)bodies[i]->getMass());
-		bodies[i]->impulse(bodies[i]->getPosition(), gravityConstant*(float)bodies[i]->getMass());
+void Gravity2D::applyForces(MBStateMap *in, MBStateMap *out) {
+	for (int i = 0; i < bodies.size(); i++) {	
+		bodies[i]->impulse(bodies[i]->getPosition(), gravityConstant*(float)bodies[i]->getMass(), &in->states[bodies[i]], &out->states[bodies[i]]);
 	}
 }
 

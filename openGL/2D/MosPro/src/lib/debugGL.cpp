@@ -7,11 +7,11 @@ DebugGL::DebugGL(glEngine2D *ge){
 }
 
 void DebugGL::debugVector(glm::vec2 startPoint, glm::vec2 vector){
-	engine->drawVector(startPoint, vector,glm::vec3(1.0f,0.0f,0.0f), 0.1, 5);
+	engine->drawVector(startPoint, vector,glm::vec3(1.0f,0.0f,0.0f), 0.01, 1);
 }
 
 void DebugGL::debugLine(glm::vec2 startPoint, glm::vec2 endPoint){
-	engine->drawLine(startPoint, endPoint, glm::vec3(1.0f,0.0f,0.0f), 0.1, 5);
+	engine->drawLine(startPoint, endPoint, glm::vec3(1.0f,0.0f,0.0f), 0.01, 1);
 }
 
 void DebugGL::debugBox(Box2D box){

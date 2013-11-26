@@ -6,13 +6,11 @@ layout(location = 0) in vec3 vertexPosition_modelspace;
 uniform mat4 MVP;
 uniform vec3 vertexColor;
 out vec3 fragColor;
-out vec3 vertexPosition;
 void main(){	
 
 	// Output position of the vertex, in clip space : MVP * position
 	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
 	fragColor = vertexColor;
-	vertexPosition = vertexPosition_modelspace;
 	// The color of each vertex will be interpolated
 	// to produce the color of each fragment
 }

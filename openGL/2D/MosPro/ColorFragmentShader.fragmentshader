@@ -3,10 +3,19 @@
 // Ouput data
 out vec3 color;
 in vec3 fragColor;
+in vec3 vertexPosition;
+
 void main(){
 
 	// Output color = color specified in the vertex shader, 
 	// interpolated between all 3 surrounding vertices
 	color = fragColor;
+	float intensity = length(vertexPosition)/2.0; 
 
+	//intensity *= 0.4 + 1.0 - intensity*2.0;
+
+	intensity *= 0.4 + 0.05/intensity;
+
+	color += intensity;
+	color = clamp(color, 0.0, 0.9) - vec3(0.1, 0.1, 0.1);
 }

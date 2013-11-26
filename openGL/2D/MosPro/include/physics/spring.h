@@ -9,7 +9,7 @@ class Spring : public ForceGenerator2D
 public:
 	Spring(RigidBody2D *rb1, glm::vec2 anchor1, RigidBody2D *rb2, glm::vec2 anchor2, double length, double k, double b);
 	~Spring(void);
-	void applyForces();
+	void applyForces(MBStateMap *in, MBStateMap *out);
 private:
 	RigidBody2D *rb1, *rb2;
 	glm::vec2 anchor1, anchor2;

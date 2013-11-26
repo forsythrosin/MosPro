@@ -100,6 +100,8 @@ add_library(potentialCollision2D "${PROJECT_CXX_DIR}/physics/potentialCollision2
 add_library(rigidBody2D "${PROJECT_CXX_DIR}/physics/rigidBody2D.cpp")
 add_library(spring "${PROJECT_CXX_DIR}/physics/spring.cpp")
 add_library(minkowskiPoint2D "${PROJECT_CXX_DIR}/physics/minkowskiPoint2D.cpp")
+add_library(mbStateMap "${PROJECT_CXX_DIR}/physics/mbStateMap.cpp")
+add_library(mbState "${PROJECT_CXX_DIR}/physics/mbState.cpp")
 
 #Executable
 add_executable(mospro 
@@ -112,6 +114,7 @@ add_executable(mospro
 target_link_libraries(mospro
 	${ALL_LIBS}
     box2D
+    circleGeometry2D
     physicsEngine2D
     glEngine2D
     material2D
@@ -131,6 +134,9 @@ target_link_libraries(mospro
     BSPNode2D
     potentialCollision2D
     gravity2D
+    mbState
+    mbStateMap
+    spring
 )
 # Xcode and Visual working directories
 set_target_properties(mospro PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/mospro/")
